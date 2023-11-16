@@ -70,3 +70,22 @@ export function UploadFileDb(originalname: string): string {
   const pathFile = process.env.PATH_FILE || 'http://localhost:3000/';
   return `${pathFile}uploads/${originalname}`;
 }
+
+export const imageFileFilter = (req, file, cb) => {
+  if (!/^image\/.+$/.test(file.mimetype)) {
+    req.fileValidationError = new Error('Not a Image File!');
+    return cb(null, false);
+  }
+  cb(null, true);
+};
+
+export const xlsxFileFilter = (req, file, cb) => {
+  if (
+    file.mimetype !==
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ) {
+    req.fileValidationError = new Error('Not a Xlsx File!');
+    return cb(null, false);
+  }
+  cb(null, true);
+};
