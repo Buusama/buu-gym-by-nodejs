@@ -6,7 +6,7 @@ import { Member } from 'src/entities/member.entity';
 import { AwsModule } from '../aws/aws.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Member]),AwsModule],
+  imports: [TypeOrmModule.forFeature([Member]), AwsModule],
   controllers: [MembersController],
   providers: [MembersService],
   exports: [MembersService],

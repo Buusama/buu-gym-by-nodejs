@@ -8,13 +8,14 @@ import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageService } from '../pagination/page.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { AwsService } from '../aws/aws.service';
+import { UpdateMemberDto } from './dto/update-member.dto';
 
 @Injectable()
 export class MembersService extends PageService {
   constructor(
     @InjectRepository(Member)
     private membersRepository: Repository<Member>,
-    private s3Service: AwsService
+    private s3Service: AwsService,
   ) {
     super();
   }
@@ -59,14 +60,38 @@ export class MembersService extends PageService {
     const prepareBeforeCreating = this.membersRepository.create(params);
     const member: Member = this.membersRepository.create(prepareBeforeCreating);
     await this.membersRepository.save(member);
-    const image = avatar
-      ? await this.uploadAvatar(member.id, avatar)
-      : null;
-    if (image){
+    const image = avatar ? await this.uploadAvatar(member.id, avatar) : null;
+    if (image) {
       member.avatar = image.Location;
       await this.membersRepository.save(member);
     }
     return this.getById(member.id);
+  }
 
+  async getMemberById(memberId: number) {
+    return await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
+  }
+
+  async updateMember(
+    memberId: number,
+    updateMemberDto: UpdateMemberDto,
+    avatar: Express.Multer.File,
+  ) {
+    const existingMailTemplate = await this.getMemberById(memberId);
+    this.membersRepository.merge(existingMailTemplate, updateMemberDto);
+    const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
+    if (image) {
+      if (existingMailTemplate.avatar) {
+        const avatar = existingMailTemplate.avatar.split('/');
+        const key = avatar[avatar.length - 1];
+        const fullKey = `memberAvatar/${memberId}/images/${key}`;
+        await this.s3Service.deleteFile(fullKey);
+      }
+      existingMailTemplate.avatar = image.Location;
+    }
+    await this.membersRepository.save(existingMailTemplate);
+    return this.getById(existingMailTemplate.id);
   }
 }

@@ -1,14 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsDateString,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateMemberDto {
+export class UpdateMemberDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -22,22 +16,23 @@ export class CreateMemberDto {
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)
-  birth_date: Date;
+  birth_date?: Date;
 
   @ApiProperty({ enum: ['M', 'F'] })
-  gender: string;
+  gender?: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  phone: string;
+  phone?: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  address: string;
+  address?: string;
 
   @ApiProperty({ enum: [0, 1] })
   @IsOptional()
-  status: number;
+  @IsEnum([0, 1])
+  status?: number;
 }

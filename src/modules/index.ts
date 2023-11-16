@@ -5,7 +5,13 @@ import { MembersModule } from './members/members.module';
 import { AwsModule } from './aws/aws.module';
 class ApplicationModular {
   public static register() {
-    return [UsersModule, AuthModule, AuditObserverModule, MembersModule, AwsModule];
+    return [
+      UsersModule,
+      AuthModule,
+      AuditObserverModule,
+      MembersModule,
+      AwsModule,
+    ];
   }
 }
 
