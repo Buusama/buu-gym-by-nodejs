@@ -48,7 +48,6 @@ export class MembersService extends PageService {
         file.mimetype,
         `memberAvatar/${memberId}/images`,
       );
-      console.log(uploadResult);
       return uploadResult;
     } catch (error) {
       throw error;
@@ -56,16 +55,18 @@ export class MembersService extends PageService {
   }
 
   async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
-      const { ...params } = dto;
-      const prepareBeforeCreating = this.membersRepository.create(params);
-      const member : Member = this.membersRepository.create(prepareBeforeCreating);
-      const image = avatar
+    const { ...params } = dto;
+    const prepareBeforeCreating = this.membersRepository.create(params);
+    const member: Member = this.membersRepository.create(prepareBeforeCreating);
+    await this.membersRepository.save(member);
+    const image = avatar
       ? await this.uploadAvatar(member.id, avatar)
       : null;
-      
-      
+    if (image){
+      member.avatar = image.Location;
       await this.membersRepository.save(member);
-      return this.getById(member.id);
-    
+    }
+    return this.getById(member.id);
+
   }
 }
