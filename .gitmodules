@@ -1,0 +1,6 @@
+[submodule "buu-gym-by-vuejs"]
+	path = buu-gym-by-vuejs
+	url = https://github.com/Buusama/buu-gym-by-vuejs.git
+[submodule "buu-gym-by-nodejs"]
+	path = buu-gym-by-nodejs
+	url = https://github.com/Buusama/buu-gym-by-nodejs.git
