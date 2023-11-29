@@ -11,11 +11,11 @@ export class Member {
   @Column()
   avatar: string;
 
-  @Column()
+  @Column({ type: 'date' })
   birth_date: Date;
 
   @Column()
-  gender: string;
+  gender: number;
 
   @Column()
   phone: string;

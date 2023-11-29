@@ -79,19 +79,39 @@ export class MembersService extends PageService {
     updateMemberDto: UpdateMemberDto,
     avatar: Express.Multer.File,
   ) {
-    const existingMailTemplate = await this.getMemberById(memberId);
-    this.membersRepository.merge(existingMailTemplate, updateMemberDto);
+    const existingMember = await this.getMemberById(memberId);
+    const { ...params } = updateMemberDto;
+
+    if (params.avatar) {
+      delete params.avatar;
+    }
+
+    this.membersRepository.merge(existingMember, params)
     const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
     if (image) {
-      if (existingMailTemplate.avatar) {
-        const avatar = existingMailTemplate.avatar.split('/');
+      if (existingMember.avatar) {
+        const avatar = existingMember.avatar.split('/');
         const key = avatar[avatar.length - 1];
         const fullKey = `memberAvatar/${memberId}/images/${key}`;
         await this.s3Service.deleteFile(fullKey);
       }
-      existingMailTemplate.avatar = image.Location;
+      existingMember.avatar = image.Location;
+    } else {
+      if (updateMemberDto.avatar === 'null') {
+        const avatar = existingMember.avatar.split('/');
+        const key = avatar[avatar.length - 1];
+        const fullKey = `memberAvatar/${memberId}/images/${key}`;
+        await this.s3Service.deleteFile(fullKey);
+        existingMember.avatar = "";
+      }
+      
     }
-    await this.membersRepository.save(existingMailTemplate);
-    return this.getById(existingMailTemplate.id);
+    await this.membersRepository.save(existingMember);
+    
+    return this.getById(existingMember.id);
+  }
+
+  async getMember(memberId: number): Promise<PageResponseDto<Member>> {
+    return this.membersRepository.findOneByOrFail({ id: memberId }).then((response) => new PageResponseDto(response));
   }
 }

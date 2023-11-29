@@ -1,43 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
-  IsDate,
   IsDateString,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { MemberGenderValue } from 'src/commons/enums/members/member-gender';
+import { MemberStatusValue } from 'src/commons/enums/members/member-status';
 
 export class CreateMemberDto {
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()
   name?: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
   @IsOptional()
   avatar?: any;
 
-  @ApiProperty()
-  @IsDate()
-  @IsNotEmpty()
-  @Type(() => Date)
-  birth_date: Date;
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDateString()
+  birth_date: string;
 
-  @ApiProperty({ enum: ['M', 'F'] })
-  gender: string;
+  @ApiProperty({ required: false })
+  @Transform(({ value }) => parseInt(value))
+  @IsEnum(MemberGenderValue)
+  gender: number;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   phone: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
   address: string;
 
-  @ApiProperty({ enum: [0, 1] })
+  @ApiProperty({ required: false })
+  @Transform(({ value }) => parseInt(value))
   @IsOptional()
+  @IsEnum(MemberStatusValue)
   status: number;
 }

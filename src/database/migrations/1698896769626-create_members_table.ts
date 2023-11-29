@@ -31,8 +31,8 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
           },
           {
             name: 'gender',
-            type: 'enum',
-            enum: ['M', 'F'],
+            type: 'smallint',
+            unsigned: true,
             isNullable: true,
           },
           {
