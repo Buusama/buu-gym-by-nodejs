@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateMembersTable1698896769626 implements MigrationInterface {
+export class CreatePaymentsTable1701583032155 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'members',
+        name: 'payments',
         columns: [
           {
             name: 'id',
@@ -14,50 +14,39 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'name',
-            type: 'varchar',
-            length: '255',
+            name: 'registration_id',
+            type: 'int',
+            unsigned: true,
           },
           {
-            name: 'avatar',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
+            name: 'amount',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+            unsigned: true,
           },
           {
-            name: 'birth_date',
-            type: 'date',
-            isNullable: true,
-          },
-          {
-            name: 'gender',
+            name: 'payment_method',
             type: 'smallint',
             unsigned: true,
             isNullable: true,
           },
           {
-            name: 'phone',
-            type: 'varchar',
-            length: '20',
-            isNullable: true,
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
-          },
-          {
-            name: 'address',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
+            name: 'type',
+            type: 'smallint',
+            unsigned: true,
+            comment: '1: registration, 2: monthly payment',
           },
           {
             name: 'status',
             type: 'smallint',
             unsigned: true,
             default: 1,
+          },
+          {
+            name: 'note',
+            type: 'text',
+            isNullable: true,
           },
           {
             name: 'created_at',
@@ -96,6 +85,6 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('members');
+    await queryRunner.dropTable('payments');
   }
 }

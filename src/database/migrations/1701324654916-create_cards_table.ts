@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateUsersTable1693193412439 implements MigrationInterface {
+export class CreateCardsTable1701324654916 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'users',
+        name: 'cards',
         columns: [
           {
             name: 'id',
@@ -14,30 +14,29 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'role',
+            name: 'member_id',
+            type: 'int',
+            isNullable: true,
+          },
+          {
+            name: 'register_date',
+            type: 'Date',
+            isNullable: true,
+          },
+          {
+            name: 'activation_date',
+            type: 'Date',
+            isNullable: true,
+          },
+          {
+            name: 'expiration_date',
+            type: 'Date',
+            isNullable: true,
+          },
+          {
+            name: 'status',
             type: 'smallint',
             unsigned: true,
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-            length: '255',
-            isUnique: true,
-          },
-          {
-            name: 'password',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'avatar',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            length: '255',
           },
           {
             name: 'created_at',
@@ -45,14 +44,28 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             default: 'CURRENT_TIMESTAMP',
           },
           {
+            name: 'created_user_id',
+            type: 'int',
+            isNullable: true,
+          },
+          {
             name: 'updated_at',
             type: 'datetime',
             default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'updated_user_id',
+            type: 'int',
+            isNullable: true,
           },
           {
             name: 'deleted_at',
             type: 'datetime',
+            isNullable: true,
+          },
+          {
+            name: 'deleted_user_id',
+            type: 'int',
             isNullable: true,
           },
         ],
@@ -62,6 +75,6 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('users');
+    await queryRunner.dropTable('cards');
   }
 }

@@ -1,10 +1,12 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateMembersTable1698896769626 implements MigrationInterface {
+export class CreateRegistrationInfoTable1701583307483
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'members',
+        name: 'registration_info',
         columns: [
           {
             name: 'id',
@@ -13,44 +15,36 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
             isGenerated: true,
             generationStrategy: 'increment',
           },
+
           {
-            name: 'name',
-            type: 'varchar',
-            length: '255',
+            name: 'member_id',
+            type: 'int',
+            isNullable: true,
           },
+
           {
-            name: 'avatar',
-            type: 'varchar',
-            length: '255',
+            name: 'class_id',
+            type: 'int',
             isNullable: true,
           },
           {
-            name: 'birth_date',
+            name: 'package_id',
+            type: 'int',
+            isNullable: true,
+          },
+          {
+            name: 'trainer_id',
+            type: 'int',
+            isNullable: true,
+          },
+          {
+            name: 'start_date',
             type: 'date',
             isNullable: true,
           },
           {
-            name: 'gender',
-            type: 'smallint',
-            unsigned: true,
-            isNullable: true,
-          },
-          {
-            name: 'phone',
-            type: 'varchar',
-            length: '20',
-            isNullable: true,
-          },
-          {
-            name: 'email',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
-          },
-          {
-            name: 'address',
-            type: 'varchar',
-            length: '255',
+            name: 'end_date',
+            type: 'date',
             isNullable: true,
           },
           {
@@ -96,6 +90,6 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('members');
+    await queryRunner.dropTable('registration_info');
   }
 }
