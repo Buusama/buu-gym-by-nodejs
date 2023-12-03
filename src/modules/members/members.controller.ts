@@ -11,7 +11,6 @@ import {
   Put,
   UseFilters,
   Param,
-  Patch,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { Member } from 'src/entities/member.entity';
@@ -37,7 +36,7 @@ import { UpdateMemberDto } from './dto/update-member.dto';
 @UseGuards(AuthGuard('jwt'))
 @Controller('members')
 export class MembersController {
-  constructor(private readonly membersService: MembersService) { }
+  constructor(private readonly membersService: MembersService) {}
 
   @Get()
   @ApiOkResponse({ description: 'List all member' })

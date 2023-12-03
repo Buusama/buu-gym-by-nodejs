@@ -18,9 +18,6 @@ export enum MemberStatusLabel {
 
 export class MemberStatus extends BaseEnum {
   constructor() {
-    super(
-      MemberStatusLabel,
-      MemberStatusValue,
-    );
+    super(MemberStatusLabel, MemberStatusValue);
   }
 }

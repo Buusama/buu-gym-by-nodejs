@@ -86,7 +86,7 @@ export class MembersService extends PageService {
       delete params.avatar;
     }
 
-    this.membersRepository.merge(existingMember, params)
+    this.membersRepository.merge(existingMember, params);
     const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
     if (image) {
       if (existingMember.avatar) {
@@ -102,16 +102,17 @@ export class MembersService extends PageService {
         const key = avatar[avatar.length - 1];
         const fullKey = `memberAvatar/${memberId}/images/${key}`;
         await this.s3Service.deleteFile(fullKey);
-        existingMember.avatar = "";
+        existingMember.avatar = '';
       }
-      
     }
     await this.membersRepository.save(existingMember);
-    
+
     return this.getById(existingMember.id);
   }
 
   async getMember(memberId: number): Promise<PageResponseDto<Member>> {
-    return this.membersRepository.findOneByOrFail({ id: memberId }).then((response) => new PageResponseDto(response));
+    return this.membersRepository
+      .findOneByOrFail({ id: memberId })
+      .then((response) => new PageResponseDto(response));
   }
 }

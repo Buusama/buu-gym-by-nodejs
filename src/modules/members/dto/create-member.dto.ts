@@ -9,6 +9,8 @@ import {
 } from 'class-validator';
 import { MemberGenderValue } from 'src/commons/enums/members/member-gender';
 import { MemberStatusValue } from 'src/commons/enums/members/member-status';
+import { Member } from 'src/entities/member.entity';
+import { IsUnique } from 'src/validators/unique-column.validator';
 
 export class CreateMemberDto {
   @ApiProperty({ type: 'string' })
@@ -25,7 +27,7 @@ export class CreateMemberDto {
   @IsDateString()
   birth_date: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: MemberGenderValue, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsEnum(MemberGenderValue)
   gender: number;
@@ -33,14 +35,19 @@ export class CreateMemberDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsUnique(Member)
   phone: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  email: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsNotEmpty()
   address: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: MemberStatusValue, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsOptional()
   @IsEnum(MemberStatusValue)

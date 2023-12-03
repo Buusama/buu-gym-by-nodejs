@@ -3,9 +3,4 @@ export enum GlobalEnum {
   DATE_TO = ' 23:59:59',
   PAGE_DEFAULT = 1,
   PAGE_LIMIT = 10,
-  COMPANY_TYPE = 1,
-  COMPANY_PAGE_SETTING_FLAG = 1,
-  MATCHING_SERVICE_CONTRACT_FLAG = 1,
-  FLAG = 1,
-  STATUS = 2,
 }

@@ -4,7 +4,6 @@ export enum MemberGenderValue {
   NAM = 1,
   NU = 2,
   KHAC = 3,
-
 }
 
 export enum MemberGenderLabel {
@@ -15,9 +14,6 @@ export enum MemberGenderLabel {
 
 export class MemberGender extends BaseEnum {
   constructor() {
-    super(
-      MemberGenderLabel,
-      MemberGenderValue,
-    );
+    super(MemberGenderLabel, MemberGenderValue);
   }
 }
