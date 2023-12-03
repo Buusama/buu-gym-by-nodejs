@@ -3,6 +3,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuditObserverModule } from './observers/audit-observer.module';
 import { MembersModule } from './members/members.module';
 import { AwsModule } from './aws/aws.module';
+import { PackagesModule } from './packages/packages.module';
 class ApplicationModular {
   public static register() {
     return [
@@ -10,6 +11,7 @@ class ApplicationModular {
       AuthModule,
       AuditObserverModule,
       MembersModule,
+      PackagesModule,
       AwsModule,
     ];
   }

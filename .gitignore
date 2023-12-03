@@ -38,5 +38,6 @@ lerna-debug.log*
 #env
 .env
 
-/public/companies/images/*
-/public/businesses/pdf/*
+#lock
+yarn.lock
+package-lock.json
