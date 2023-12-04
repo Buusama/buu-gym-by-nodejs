@@ -10,7 +10,13 @@ export default class UserSeeder extends Seeder {
       .insert()
       .into(User)
       .values([
-        { email: 'admin@gmail.com', password: await bcrypt.hash('admin', 10) },
+        {
+          name: 'admin',
+          email: 'admin@gmail.com',
+          password: await bcrypt.hash('admin', 10),
+          role: 1,
+          avatar: 'https://i.pravatar.cc/300',
+        },
       ])
       .execute();
   }
