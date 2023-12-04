@@ -115,4 +115,20 @@ export class MembersService extends PageService {
       .findOneByOrFail({ id: memberId })
       .then((response) => new PageResponseDto(response));
   }
+
+  async detroyMember(memberId: number) {
+    const member: Member =
+      await this.membersRepository.findOneByOrFail({
+        id: memberId,
+      });
+    const avatar = member.avatar.split('/');
+    const key = avatar[avatar.length - 1];
+    const fullKey = `memberAvatar/${memberId}/images/${key}`;
+    await this.s3Service.deleteFile(fullKey);
+
+    const deletedmember =
+      await this.membersRepository.softRemove(member);
+
+    return this.membersRepository.save(deletedmember);
+  }
 }

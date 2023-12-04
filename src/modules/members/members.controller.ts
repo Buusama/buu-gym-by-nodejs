@@ -11,6 +11,7 @@ import {
   Put,
   UseFilters,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { Member } from 'src/entities/member.entity';
@@ -88,5 +89,11 @@ export class MembersController {
   @UseFilters(EntityNotFoundErrorFilter)
   async getMember(@Param('id') member_id: string) {
     return this.membersService.getMember(Number(member_id));
+  }
+
+  @Delete(':id')
+  @UseFilters(EntityNotFoundErrorFilter)
+  async detroyMember(@Param('id') member_id: string) {
+    return this.membersService.detroyMember(Number(member_id));
   }
 }
