@@ -32,6 +32,15 @@ export class MembersService extends PageService {
       getListMembersDto,
     );
     queryBuilder.where('table.deleted_at is null');
+    if (getListMembersDto.status) {
+      queryBuilder.andWhere('table.status = :status', { status: getListMembersDto.status });
+    }
+    if (getListMembersDto.field && getListMembersDto.type && getListMembersDto.value) {
+      if (getListMembersDto.type === 'like') {
+        getListMembersDto.value = `%${getListMembersDto.value}%`;
+      }
+      queryBuilder.andWhere(`table.${getListMembersDto.field} ${getListMembersDto.type} :value`, { value: getListMembersDto.value });
+    }
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
@@ -57,6 +66,7 @@ export class MembersService extends PageService {
 
   async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
     const { ...params } = dto;
+    
     const prepareBeforeCreating = this.membersRepository.create(params);
     const member: Member = this.membersRepository.create(prepareBeforeCreating);
     await this.membersRepository.save(member);
