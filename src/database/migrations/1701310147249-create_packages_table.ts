@@ -25,9 +25,24 @@ export class CreatePackagesTable1701310147249 implements MigrationInterface {
             scale: 2,
           },
           {
-            name: 'duration',
-            type: 'smallint',
+            name: 'type',
+            type: 'int',
             unsigned: true,
+          },
+          {
+            name: 'usage_type',
+            type: 'int',
+            unsigned: true,
+          },
+          {
+            name: 'usage_limit',
+            type: 'int',
+            unsigned: true,
+          },
+          {
+            name: 'free_service',
+            type: 'json',
+            isNullable: true,
           },
           {
             name: 'status',
@@ -39,6 +54,29 @@ export class CreatePackagesTable1701310147249 implements MigrationInterface {
             name: 'note',
             type: 'text',
             isNullable: true,
+          },
+          {
+            name: 'commission_for_sellers',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+          },
+          {
+            name: 'referral_commission',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+          },
+          {
+            name: 'employee_referral_commission',
+            type: 'decimal',
+            precision: 10,
+            scale: 2,
+          },
+          {
+            name: 'commission_status',
+            type: 'smallint',
+            unsigned: true,
           },
           {
             name: 'created_at',

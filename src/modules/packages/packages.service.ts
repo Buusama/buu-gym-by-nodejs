@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { GetListPackagesDto } from './dto/get-list-packages.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
+import { CreatePackageDto } from './dto/create-package.dto';
 
 @Injectable()
 export class PackagesService extends PageService {
@@ -15,6 +16,7 @@ export class PackagesService extends PageService {
   ) {
     super();
   }
+
   async getPackages(
     getListPackagesDto: GetListPackagesDto,
   ): Promise<PageResponseDto<Package>> {
@@ -27,5 +29,13 @@ export class PackagesService extends PageService {
     const { entities } = await queryBuilder.getRawAndEntities();
     const pageMeta = new PageMetaDto(getListPackagesDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
+  }
+
+  async createPackage(createPackageDto: CreatePackageDto): Promise<PageResponseDto<Package>> {
+    const newPackage = new Package();
+    const { ...params } = createPackageDto;
+    Object.assign(newPackage, params);
+    await this.packagesRepository.save(newPackage);
+    return new PageResponseDto(newPackage);
   }
 }
