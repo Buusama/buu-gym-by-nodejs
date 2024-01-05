@@ -33,7 +33,7 @@ export class PackagesController {
 
   @Post()
   @ApiOkResponse({ description: 'Create package' })
-  createPackage(@Query() createPackageDto: CreatePackageDto): Promise<PageResponseDto<Package>> {
+  createPackage(@Body() createPackageDto: CreatePackageDto): Promise<PageResponseDto<Package>> {
     return this.packagesService.createPackage(createPackageDto);
   }
 }
