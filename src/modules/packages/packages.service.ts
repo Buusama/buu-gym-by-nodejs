@@ -31,11 +31,33 @@ export class PackagesService extends PageService {
     return new PageResponseDto(entities, pageMeta);
   }
 
-  async createPackage(createPackageDto: CreatePackageDto): Promise<PageResponseDto<Package>> {
+  async createPackage(
+    createPackageDto: CreatePackageDto,
+  ): Promise<PageResponseDto<Package>> {
     const newPackage = new Package();
     const { ...params } = createPackageDto;
     Object.assign(newPackage, params);
     await this.packagesRepository.save(newPackage);
     return new PageResponseDto(newPackage);
+  }
+
+  async getPackage(id: number): Promise<PageResponseDto<Package>> {
+    return this.packagesRepository
+      .findOneByOrFail({ id: id })
+      .then((response) => new PageResponseDto(response));
+  }
+
+  async updatePackage(
+    id: number,
+    updatePackageDto: CreatePackageDto,
+  ): Promise<PageResponseDto<Package>> {
+    const existingMember = await this.packagesRepository.findOneByOrFail({
+      id: id,
+    });
+    const { ...params } = updatePackageDto;
+
+    this.packagesRepository.merge(existingMember, params);
+    await this.packagesRepository.save(existingMember);
+    return this.getPackage(id);
   }
 }

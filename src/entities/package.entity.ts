@@ -22,7 +22,7 @@ export class Package extends BaseEntity {
   usage_limit: number;
 
   @Column({ type: 'json', nullable: true })
-  free_service: string;
+  free_service: number[];
 
   @Column({ type: 'smallint', unsigned: true, default: 1 })
   status: number;

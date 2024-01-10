@@ -13,11 +13,11 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ access_token: string, user: any }> {
+  ): Promise<{ access_token: string; user: any }> {
     const { email, password } = authCredentialsDto;
     const user = await this.usersRepository.findOneBy({ email });
 
@@ -34,7 +34,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         avatar: user.avatar,
-      }
+      };
       return { access_token: accessToken, user: UserInfo };
     } else {
       throw new UnauthorizedException('Please check');

@@ -33,13 +33,22 @@ export class MembersService extends PageService {
     );
     queryBuilder.where('table.deleted_at is null');
     if (getListMembersDto.status) {
-      queryBuilder.andWhere('table.status = :status', { status: getListMembersDto.status });
+      queryBuilder.andWhere('table.status = :status', {
+        status: getListMembersDto.status,
+      });
     }
-    if (getListMembersDto.field && getListMembersDto.type && getListMembersDto.value) {
+    if (
+      getListMembersDto.field &&
+      getListMembersDto.type &&
+      getListMembersDto.value
+    ) {
       if (getListMembersDto.type === 'like') {
         getListMembersDto.value = `%${getListMembersDto.value}%`;
       }
-      queryBuilder.andWhere(`table.${getListMembersDto.field} ${getListMembersDto.type} :value`, { value: getListMembersDto.value });
+      queryBuilder.andWhere(
+        `table.${getListMembersDto.field} ${getListMembersDto.type} :value`,
+        { value: getListMembersDto.value },
+      );
     }
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
@@ -66,7 +75,7 @@ export class MembersService extends PageService {
 
   async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
     const { ...params } = dto;
-    
+
     const prepareBeforeCreating = this.membersRepository.create(params);
     const member: Member = this.membersRepository.create(prepareBeforeCreating);
     await this.membersRepository.save(member);
@@ -127,17 +136,15 @@ export class MembersService extends PageService {
   }
 
   async detroyMember(memberId: number) {
-    const member: Member =
-      await this.membersRepository.findOneByOrFail({
-        id: memberId,
-      });
+    const member: Member = await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
     const avatar = member.avatar.split('/');
     const key = avatar[avatar.length - 1];
     const fullKey = `memberAvatar/${memberId}/images/${key}`;
     await this.s3Service.deleteFile(fullKey);
 
-    const deletedmember =
-      await this.membersRepository.softRemove(member);
+    const deletedmember = await this.membersRepository.softRemove(member);
 
     return this.membersRepository.save(deletedmember);
   }
