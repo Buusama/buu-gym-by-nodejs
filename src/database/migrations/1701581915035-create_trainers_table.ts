@@ -54,6 +54,29 @@ export class CreateTrainersTable1701581915035 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'certificate',
+            type: 'varchar',
+            length: '255',
+            isNullable: true,
+          },
+          {
+            name: 'status',
+            type: 'smallint',
+            unsigned: true,
+            default: 1,
+          },
+          {
+            name: 'note',
+            type: 'text',
+            isNullable: true,
+          },
+          {
+            name: 'facebook',
+            type: 'varchar',
+            length: '255',
+            isNullable: true,
+          },
+          {
             name: 'created_at',
             type: 'datetime',
             default: 'CURRENT_TIMESTAMP',

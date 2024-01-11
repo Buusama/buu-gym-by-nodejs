@@ -135,7 +135,7 @@ export class MembersService extends PageService {
       .then((response) => new PageResponseDto(response));
   }
 
-  async detroyMember(memberId: number) {
+  async destroyMember(memberId: number) {
     const member: Member = await this.membersRepository.findOneByOrFail({
       id: memberId,
     });

@@ -1,36 +1,35 @@
 import {
-  Controller,
-  Get,
-  UseInterceptors,
-  UseGuards,
-  Query,
-  Post,
   Body,
-  UploadedFile,
-  Req,
-  Put,
-  UseFilters,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UploadedFile,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { MembersService } from './members.service';
-import { Member } from 'src/entities/member.entity';
-import { TransformInterceptor } from '../../interceptors/transform.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiConsumes,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { GetListMembersDto } from './dto/get-list-members.dto';
+import { Member } from 'src/entities/member.entity';
+import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { imageFileFilter } from 'src/supports/helpers';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { imageFileFilter } from 'src/supports/helpers';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
+import { MembersService } from './members.service';
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)
 @ApiBearerAuth('access-token')
@@ -93,7 +92,7 @@ export class MembersController {
 
   @Delete(':id')
   @UseFilters(EntityNotFoundErrorFilter)
-  async detroyMember(@Param('id') member_id: string) {
-    return this.membersService.detroyMember(Number(member_id));
+  async destroyMember(@Param('id') member_id: string) {
+    return this.membersService.destroyMember(Number(member_id));
   }
 }

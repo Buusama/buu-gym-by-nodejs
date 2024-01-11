@@ -4,6 +4,7 @@ import { AuditObserverModule } from './observers/audit-observer.module';
 import { MembersModule } from './members/members.module';
 import { AwsModule } from './aws/aws.module';
 import { PackagesModule } from './packages/packages.module';
+import { TrainerModule } from './trainers/trainers.module';
 class ApplicationModular {
   public static register() {
     return [
@@ -11,6 +12,7 @@ class ApplicationModular {
       AuthModule,
       AuditObserverModule,
       MembersModule,
+      TrainerModule,
       PackagesModule,
       AwsModule,
     ];
