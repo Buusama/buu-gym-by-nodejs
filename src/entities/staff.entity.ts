@@ -1,8 +1,8 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity('members')
-export class Member {
+@Entity('staffs')
+export class Staff {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -10,16 +10,10 @@ export class Member {
   user_id: number;
 
   @Column()
-  package_id: number;
-
-  @Column()
-  trainer_id: number;
+  salary_amount: number;
 
   @Column()
   start_date: Date;
-
-  @Column()
-  end_date: Date;
 
   @OneToOne(() => User, (user) => user.id)
   user: User;

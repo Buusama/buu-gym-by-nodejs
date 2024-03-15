@@ -31,12 +31,13 @@ export class MembersService extends PageService {
       this.membersRepository,
       getListMembersDto,
     );
-    queryBuilder.where('table.deleted_at is null');
+    
     if (getListMembersDto.status) {
       queryBuilder.andWhere('table.status = :status', {
         status: getListMembersDto.status,
       });
     }
+    
     if (
       getListMembersDto.field &&
       getListMembersDto.type &&
@@ -50,102 +51,103 @@ export class MembersService extends PageService {
         { value: getListMembersDto.value },
       );
     }
+    
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
   }
 
-  async uploadAvatar(
-    memberId: number,
-    file: Express.Multer.File,
-  ): Promise<any> {
-    try {
-      const uploadResult = await this.s3Service.uploadFile(
-        file.originalname,
-        file.buffer,
-        file.mimetype,
-        `memberAvatar/${memberId}/images`,
-      );
-      return uploadResult;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // async uploadAvatar(
+  //   memberId: number,
+  //   file: Express.Multer.File,
+  // ): Promise<any> {
+  //   try {
+  //     const uploadResult = await this.s3Service.uploadFile(
+  //       file.originalname,
+  //       file.buffer,
+  //       file.mimetype,
+  //       `memberAvatar/${memberId}/images`,
+  //     );
+  //     return uploadResult;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-  async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
-    const { ...params } = dto;
+  // async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
+  //   const { ...params } = dto;
 
-    const prepareBeforeCreating = this.membersRepository.create(params);
-    const member: Member = this.membersRepository.create(prepareBeforeCreating);
-    await this.membersRepository.save(member);
-    const image = avatar ? await this.uploadAvatar(member.id, avatar) : null;
-    if (image) {
-      member.avatar = image.Location;
-      await this.membersRepository.save(member);
-    }
-    return this.getById(member.id);
-  }
+  //   const prepareBeforeCreating = this.membersRepository.create(params);
+  //   const member: Member = this.membersRepository.create(prepareBeforeCreating);
+  //   await this.membersRepository.save(member);
+  //   const image = avatar ? await this.uploadAvatar(member.id, avatar) : null;
+  //   if (image) {
+  //     member.avatar = image.Location;
+  //     await this.membersRepository.save(member);
+  //   }
+  //   return this.getById(member.id);
+  // }
 
-  async getMemberById(memberId: number) {
-    return await this.membersRepository.findOneByOrFail({
-      id: memberId,
-    });
-  }
+  // async getMemberById(memberId: number) {
+  //   return await this.membersRepository.findOneByOrFail({
+  //     id: memberId,
+  //   });
+  // }
 
-  async updateMember(
-    memberId: number,
-    updateMemberDto: UpdateMemberDto,
-    avatar: Express.Multer.File,
-  ) {
-    const existingMember = await this.getMemberById(memberId);
-    const { ...params } = updateMemberDto;
+  // async updateMember(
+  //   memberId: number,
+  //   updateMemberDto: UpdateMemberDto,
+  //   avatar: Express.Multer.File,
+  // ) {
+  //   const existingMember = await this.getMemberById(memberId);
+  //   const { ...params } = updateMemberDto;
 
-    if (params.avatar) {
-      delete params.avatar;
-    }
+  //   if (params.avatar) {
+  //     delete params.avatar;
+  //   }
 
-    this.membersRepository.merge(existingMember, params);
-    const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
-    if (image) {
-      if (existingMember.avatar) {
-        const avatar = existingMember.avatar.split('/');
-        const key = avatar[avatar.length - 1];
-        const fullKey = `memberAvatar/${memberId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-      }
-      existingMember.avatar = image.Location;
-    } else {
-      if (updateMemberDto.avatar === 'null') {
-        const avatar = existingMember.avatar.split('/');
-        const key = avatar[avatar.length - 1];
-        const fullKey = `memberAvatar/${memberId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-        existingMember.avatar = '';
-      }
-    }
-    await this.membersRepository.save(existingMember);
+  //   this.membersRepository.merge(existingMember, params);
+  //   const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
+  //   if (image) {
+  //     if (existingMember.avatar) {
+  //       const avatar = existingMember.avatar.split('/');
+  //       const key = avatar[avatar.length - 1];
+  //       const fullKey = `memberAvatar/${memberId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //     }
+  //     existingMember.avatar = image.Location;
+  //   } else {
+  //     if (updateMemberDto.avatar === 'null') {
+  //       const avatar = existingMember.avatar.split('/');
+  //       const key = avatar[avatar.length - 1];
+  //       const fullKey = `memberAvatar/${memberId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //       existingMember.avatar = '';
+  //     }
+  //   }
+  //   await this.membersRepository.save(existingMember);
 
-    return this.getById(existingMember.id);
-  }
+  //   return this.getById(existingMember.id);
+  // }
 
-  async getMember(memberId: number): Promise<PageResponseDto<Member>> {
-    return this.membersRepository
-      .findOneByOrFail({ id: memberId })
-      .then((response) => new PageResponseDto(response));
-  }
+  // async getMember(memberId: number): Promise<PageResponseDto<Member>> {
+  //   return this.membersRepository
+  //     .findOneByOrFail({ id: memberId })
+  //     .then((response) => new PageResponseDto(response));
+  // }
 
-  async destroyMember(memberId: number) {
-    const member: Member = await this.membersRepository.findOneByOrFail({
-      id: memberId,
-    });
-    const avatar = member.avatar.split('/');
-    const key = avatar[avatar.length - 1];
-    const fullKey = `memberAvatar/${memberId}/images/${key}`;
-    await this.s3Service.deleteFile(fullKey);
+  // async destroyMember(memberId: number) {
+  //   const member: Member = await this.membersRepository.findOneByOrFail({
+  //     id: memberId,
+  //   });
+  //   const avatar = member.avatar.split('/');
+  //   const key = avatar[avatar.length - 1];
+  //   const fullKey = `memberAvatar/${memberId}/images/${key}`;
+  //   await this.s3Service.deleteFile(fullKey);
 
-    const deletedmember = await this.membersRepository.softRemove(member);
+  //   const deletedmember = await this.membersRepository.softRemove(member);
 
-    return this.membersRepository.save(deletedmember);
-  }
+  //   return this.membersRepository.save(deletedmember);
+  // }
 }

@@ -6,12 +6,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
-
   @Column()
   name: string;
 
@@ -19,7 +13,28 @@ export class User {
   role: number;
 
   @Column()
+  gender: number;
+
+  @Column()
   avatar: string;
+
+  @Column({ type: 'date', nullable: true })
+  birth_date: Date;
+
+  @Column()
+  phone: string;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  password: string;
+
+  @Column({ nullable: true })
+  facebook: string;
+
+  @Column()
+  address: string;
 
   @BeforeInsert()
   async hashPassword() {

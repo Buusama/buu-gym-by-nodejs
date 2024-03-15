@@ -14,9 +14,33 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
+            name: 'name',
+            type: 'varchar',
+            length: '255',
+          },
+          {
             name: 'role',
             type: 'smallint',
             unsigned: true,
+          },
+          {
+            name: 'gender',
+            type: 'smallint',
+          },
+
+          {
+            name: 'avatar',
+            type: 'varchar',
+            length: '255',
+          },
+          {
+            name: 'birth_date',
+            type: 'date',
+            isNullable: true,
+          },
+          {
+            name: 'phone',
+            type: 'varchar',
           },
           {
             name: 'email',
@@ -30,30 +54,15 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             length: '255',
           },
           {
-            name: 'avatar',
+            name: 'facebook',
             type: 'varchar',
             length: '255',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            length: '255',
-          },
-          {
-            name: 'created_at',
-            type: 'datetime',
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updated_at',
-            type: 'datetime',
-            default: 'CURRENT_TIMESTAMP',
-            onUpdate: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'deleted_at',
-            type: 'datetime',
             isNullable: true,
+          },
+          {
+            name: 'address',
+            type: 'varchar',
+            length: '255',
           },
         ],
       }),

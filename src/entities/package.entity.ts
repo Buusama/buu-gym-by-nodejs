@@ -13,9 +13,6 @@ export class Package extends BaseEntity {
   price: number;
 
   @Column({ type: 'int', unsigned: true })
-  type: number;
-
-  @Column({ type: 'int', unsigned: true })
   usage_type: number;
 
   @Column({ type: 'int', unsigned: true })
@@ -28,7 +25,7 @@ export class Package extends BaseEntity {
   status: number;
 
   @Column({ type: 'text', nullable: true })
-  note: string;
+  description: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   commission_for_sellers: number;

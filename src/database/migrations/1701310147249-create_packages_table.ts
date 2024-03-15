@@ -25,11 +25,6 @@ export class CreatePackagesTable1701310147249 implements MigrationInterface {
             scale: 2,
           },
           {
-            name: 'type',
-            type: 'int',
-            unsigned: true,
-          },
-          {
             name: 'usage_type',
             type: 'int',
             unsigned: true,
@@ -51,7 +46,7 @@ export class CreatePackagesTable1701310147249 implements MigrationInterface {
             default: 1,
           },
           {
-            name: 'note',
+            name: 'description',
             type: 'text',
             isNullable: true,
           },
@@ -77,36 +72,6 @@ export class CreatePackagesTable1701310147249 implements MigrationInterface {
             name: 'commission_status',
             type: 'smallint',
             unsigned: true,
-          },
-          {
-            name: 'created_at',
-            type: 'datetime',
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'created_user_id',
-            type: 'int',
-            isNullable: true,
-          },
-          {
-            name: 'updated_at',
-            type: 'datetime',
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updated_user_id',
-            type: 'int',
-            isNullable: true,
-          },
-          {
-            name: 'deleted_at',
-            type: 'datetime',
-            isNullable: true,
-          },
-          {
-            name: 'deleted_user_id',
-            type: 'int',
-            isNullable: true,
           },
         ],
       }),

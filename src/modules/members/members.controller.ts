@@ -46,53 +46,53 @@ export class MembersController {
     return this.membersService.getMembers(getListMembersDto);
   }
 
-  @ApiConsumes('multipart/form-data')
-  @Post()
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async createMember(
-    @Body() body: CreateMemberDto,
-    @UploadedFile() avatar: Express.Multer.File,
-    @Req() req: any,
-  ) {
-    return this.membersService.createMember(body, avatar);
-  }
+  // @ApiConsumes('multipart/form-data')
+  // @Post()
+  // @UseInterceptors(
+  //   FileInterceptor('avatar', {
+  //     limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
+  //     fileFilter: imageFileFilter,
+  //   }),
+  // )
+  // async createMember(
+  //   @Body() body: CreateMemberDto,
+  //   @UploadedFile() avatar: Express.Multer.File,
+  //   @Req() req: any,
+  // ) {
+  //   return this.membersService.createMember(body, avatar);
+  // }
 
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
-      fileFilter: imageFileFilter,
-    }),
-  )
-  @Put(':id')
-  @UseFilters(EntityNotFoundErrorFilter)
-  async update(
-    @Param('id') member_id: string,
-    @Body() updateMemberDto: UpdateMemberDto,
-    @UploadedFile() avatar: Express.Multer.File,
-    @Req() req: any,
-  ) {
-    return this.membersService.updateMember(
-      Number(member_id),
-      updateMemberDto,
-      avatar,
-    );
-  }
+  // @ApiConsumes('multipart/form-data')
+  // @UseInterceptors(
+  //   FileInterceptor('avatar', {
+  //     limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
+  //     fileFilter: imageFileFilter,
+  //   }),
+  // )
+  // @Put(':id')
+  // @UseFilters(EntityNotFoundErrorFilter)
+  // async update(
+  //   @Param('id') member_id: string,
+  //   @Body() updateMemberDto: UpdateMemberDto,
+  //   @UploadedFile() avatar: Express.Multer.File,
+  //   @Req() req: any,
+  // ) {
+  //   return this.membersService.updateMember(
+  //     Number(member_id),
+  //     updateMemberDto,
+  //     avatar,
+  //   );
+  // }
 
-  @Get(':id')
-  @UseFilters(EntityNotFoundErrorFilter)
-  async getMember(@Param('id') member_id: string) {
-    return this.membersService.getMember(Number(member_id));
-  }
+  // @Get(':id')
+  // @UseFilters(EntityNotFoundErrorFilter)
+  // async getMember(@Param('id') member_id: string) {
+  //   return this.membersService.getMember(Number(member_id));
+  // }
 
-  @Delete(':id')
-  @UseFilters(EntityNotFoundErrorFilter)
-  async destroyMember(@Param('id') member_id: string) {
-    return this.membersService.destroyMember(Number(member_id));
-  }
+  // @Delete(':id')
+  // @UseFilters(EntityNotFoundErrorFilter)
+  // async destroyMember(@Param('id') member_id: string) {
+  //   return this.membersService.destroyMember(Number(member_id));
+  // }
 }

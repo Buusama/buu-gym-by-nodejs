@@ -10,200 +10,200 @@ import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 
 @Injectable()
 export class TrainersService extends PageService {
-  constructor(
-    @InjectRepository(Trainer)
-    private trainersRepository: Repository<Trainer>,
-    private s3Service: AwsService,
-  ) {
-    super();
-  }
-  async getById(trainerId: number) {
-    return this.trainersRepository
-      .findOneByOrFail({ id: trainerId })
-      .then((response) => new PageResponseDto(response));
-  }
-  async getTrainers(
-    getListTrainersDto: GetListTrainersDto,
-  ): Promise<PageResponseDto<Trainer>> {
-    const queryBuilder = await this.paginate(
-      this.trainersRepository,
-      getListTrainersDto,
-    );
-    queryBuilder.where('table.deleted_at is null');
-    if (getListTrainersDto.status) {
-      queryBuilder.andWhere('table.status = :status', {
-        status: getListTrainersDto.status,
-      });
-    }
-    if (
-      getListTrainersDto.field &&
-      getListTrainersDto.type &&
-      getListTrainersDto.value
-    ) {
-      if (getListTrainersDto.type === 'like') {
-        getListTrainersDto.value = `%${getListTrainersDto.value}%`;
-      }
-      queryBuilder.andWhere(
-        `table.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
-        { value: getListTrainersDto.value },
-      );
-    }
-    const itemCount = await queryBuilder.getCount();
-    const { entities } = await queryBuilder.getRawAndEntities();
-    const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
-    return new PageResponseDto(entities, pageMeta);
-  }
+  // constructor(
+  //   @InjectRepository(Trainer)
+  //   private trainersRepository: Repository<Trainer>,
+  //   private s3Service: AwsService,
+  // ) {
+  //   super();
+  // }
+  // async getById(trainerId: number) {
+  //   return this.trainersRepository
+  //     .findOneByOrFail({ id: trainerId })
+  //     .then((response) => new PageResponseDto(response));
+  // }
+  // async getTrainers(
+  //   getListTrainersDto: GetListTrainersDto,
+  // ): Promise<PageResponseDto<Trainer>> {
+  //   const queryBuilder = await this.paginate(
+  //     this.trainersRepository,
+  //     getListTrainersDto,
+  //   );
+  //   queryBuilder.where('table.deleted_at is null');
+  //   if (getListTrainersDto.status) {
+  //     queryBuilder.andWhere('table.status = :status', {
+  //       status: getListTrainersDto.status,
+  //     });
+  //   }
+  //   if (
+  //     getListTrainersDto.field &&
+  //     getListTrainersDto.type &&
+  //     getListTrainersDto.value
+  //   ) {
+  //     if (getListTrainersDto.type === 'like') {
+  //       getListTrainersDto.value = `%${getListTrainersDto.value}%`;
+  //     }
+  //     queryBuilder.andWhere(
+  //       `table.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
+  //       { value: getListTrainersDto.value },
+  //     );
+  //   }
+  //   const itemCount = await queryBuilder.getCount();
+  //   const { entities } = await queryBuilder.getRawAndEntities();
+  //   const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
+  //   return new PageResponseDto(entities, pageMeta);
+  // }
 
-  async uploadAvatar(
-    trainerId: number,
-    file: Express.Multer.File,
-  ): Promise<any> {
-    try {
-      const uploadResult = await this.s3Service.uploadFile(
-        file.originalname,
-        file.buffer,
-        file.mimetype,
-        `trainerAvatar/${trainerId}/images`,
-      );
-      return uploadResult;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // async uploadAvatar(
+  //   trainerId: number,
+  //   file: Express.Multer.File,
+  // ): Promise<any> {
+  //   try {
+  //     const uploadResult = await this.s3Service.uploadFile(
+  //       file.originalname,
+  //       file.buffer,
+  //       file.mimetype,
+  //       `trainerAvatar/${trainerId}/images`,
+  //     );
+  //     return uploadResult;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-  async uploadCertificate(
-    trainerId: number,
-    file: Express.Multer.File,
-  ): Promise<any> {
-    try {
-      const uploadResult = await this.s3Service.uploadFile(
-        file.originalname,
-        file.buffer,
-        file.mimetype,
-        `trainerCertificate/${trainerId}/images`,
-      );
-      return uploadResult;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // async uploadCertificate(
+  //   trainerId: number,
+  //   file: Express.Multer.File,
+  // ): Promise<any> {
+  //   try {
+  //     const uploadResult = await this.s3Service.uploadFile(
+  //       file.originalname,
+  //       file.buffer,
+  //       file.mimetype,
+  //       `trainerCertificate/${trainerId}/images`,
+  //     );
+  //     return uploadResult;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-  async createTrainer(
-    dto: CreateTrainerDto,
-    files?: { avatar?: Express.Multer.File; certificate?: Express.Multer.File },
-  ) {
-    const { ...params } = dto;
-    const avatar = files?.avatar ? files.avatar[0] : null;
-    const certificate = files?.certificate ? files.certificate[0] : null;
+  // async createTrainer(
+  //   dto: CreateTrainerDto,
+  //   files?: { avatar?: Express.Multer.File; certificate?: Express.Multer.File },
+  // ) {
+  //   const { ...params } = dto;
+  //   const avatar = files?.avatar ? files.avatar[0] : null;
+  //   const certificate = files?.certificate ? files.certificate[0] : null;
 
-    const prepareBeforeCreating = this.trainersRepository.create(params);
-    const trainer: Trainer = this.trainersRepository.create(
-      prepareBeforeCreating,
-    );
-    await this.trainersRepository.save(trainer);
-    const image = avatar ? await this.uploadAvatar(trainer.id, avatar) : null;
-    if (image) {
-      trainer.avatar = image.Location;
-      await this.trainersRepository.save(trainer);
-    }
+  //   const prepareBeforeCreating = this.trainersRepository.create(params);
+  //   const trainer: Trainer = this.trainersRepository.create(
+  //     prepareBeforeCreating,
+  //   );
+  //   await this.trainersRepository.save(trainer);
+  //   const image = avatar ? await this.uploadAvatar(trainer.id, avatar) : null;
+  //   if (image) {
+  //     trainer.avatar = image.Location;
+  //     await this.trainersRepository.save(trainer);
+  //   }
 
-    const certificateImage = certificate
-      ? await this.uploadCertificate(trainer.id, certificate)
-      : null;
-    if (certificateImage) {
-      trainer.certificate = certificateImage.Location;
-      await this.trainersRepository.save(trainer);
-    }
-    return this.getById(trainer.id);
-  }
+  //   const certificateImage = certificate
+  //     ? await this.uploadCertificate(trainer.id, certificate)
+  //     : null;
+  //   if (certificateImage) {
+  //     trainer.certificate = certificateImage.Location;
+  //     await this.trainersRepository.save(trainer);
+  //   }
+  //   return this.getById(trainer.id);
+  // }
 
-  async getTrainerById(trainerId: number) {
-    return await this.trainersRepository.findOneByOrFail({
-      id: trainerId,
-    });
-  }
+  // async getTrainerById(trainerId: number) {
+  //   return await this.trainersRepository.findOneByOrFail({
+  //     id: trainerId,
+  //   });
+  // }
 
-  async updateTrainer(
-    trainerId: number,
-    dto: UpdateTrainerDto,
-    files?: { avatar?: Express.Multer.File; certificate?: Express.Multer.File },
-  ) {
-    console.log(trainerId);
-    const existingTrainer = await this.getTrainerById(trainerId);
-    const { ...params } = dto;
-    const avatar = files?.avatar ? files.avatar[0] : null;
-    const certificate = files?.certificate ? files.certificate[0] : null;
+  // async updateTrainer(
+  //   trainerId: number,
+  //   dto: UpdateTrainerDto,
+  //   files?: { avatar?: Express.Multer.File; certificate?: Express.Multer.File },
+  // ) {
+  //   console.log(trainerId);
+  //   const existingTrainer = await this.getTrainerById(trainerId);
+  //   const { ...params } = dto;
+  //   const avatar = files?.avatar ? files.avatar[0] : null;
+  //   const certificate = files?.certificate ? files.certificate[0] : null;
 
-    if (params.avatar) {
-      delete params.avatar;
-    }
-    if (params.certificate) {
-      delete params.certificate;
-    }
+  //   if (params.avatar) {
+  //     delete params.avatar;
+  //   }
+  //   if (params.certificate) {
+  //     delete params.certificate;
+  //   }
 
-    this.trainersRepository.merge(existingTrainer, params);
-    const image = avatar ? await this.uploadAvatar(trainerId, avatar) : null;
-    if (image) {
-      if (existingTrainer.avatar) {
-        const avatar = existingTrainer.avatar.split('/');
-        const key = avatar[avatar.length - 1];
-        const fullKey = `trainerAvatar/${trainerId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-      }
-      existingTrainer.avatar = image.Location;
-    } else {
-      if (dto.avatar === 'null') {
-        const avatar = existingTrainer.avatar.split('/');
-        const key = avatar[avatar.length - 1];
-        const fullKey = `trainerAvatar/${trainerId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-        existingTrainer.avatar = '';
-      }
-    }
+  //   this.trainersRepository.merge(existingTrainer, params);
+  //   const image = avatar ? await this.uploadAvatar(trainerId, avatar) : null;
+  //   if (image) {
+  //     if (existingTrainer.avatar) {
+  //       const avatar = existingTrainer.avatar.split('/');
+  //       const key = avatar[avatar.length - 1];
+  //       const fullKey = `trainerAvatar/${trainerId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //     }
+  //     existingTrainer.avatar = image.Location;
+  //   } else {
+  //     if (dto.avatar === 'null') {
+  //       const avatar = existingTrainer.avatar.split('/');
+  //       const key = avatar[avatar.length - 1];
+  //       const fullKey = `trainerAvatar/${trainerId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //       existingTrainer.avatar = '';
+  //     }
+  //   }
 
-    const certificateImage = certificate
-      ? await this.uploadCertificate(trainerId, certificate)
-      : null;
-    if (certificateImage) {
-      if (existingTrainer.certificate) {
-        const certificate = existingTrainer.certificate.split('/');
-        const key = certificate[certificate.length - 1];
-        const fullKey = `trainerCertificate/${trainerId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-      }
-      existingTrainer.certificate = certificateImage.Location;
-    } else {
-      if (dto.certificate === 'null') {
-        const certificate = existingTrainer.certificate.split('/');
-        const key = certificate[certificate.length - 1];
-        const fullKey = `trainerCertificate/${trainerId}/images/${key}`;
-        await this.s3Service.deleteFile(fullKey);
-        existingTrainer.certificate = '';
-      }
-    }
+  //   const certificateImage = certificate
+  //     ? await this.uploadCertificate(trainerId, certificate)
+  //     : null;
+  //   if (certificateImage) {
+  //     if (existingTrainer.certificate) {
+  //       const certificate = existingTrainer.certificate.split('/');
+  //       const key = certificate[certificate.length - 1];
+  //       const fullKey = `trainerCertificate/${trainerId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //     }
+  //     existingTrainer.certificate = certificateImage.Location;
+  //   } else {
+  //     if (dto.certificate === 'null') {
+  //       const certificate = existingTrainer.certificate.split('/');
+  //       const key = certificate[certificate.length - 1];
+  //       const fullKey = `trainerCertificate/${trainerId}/images/${key}`;
+  //       await this.s3Service.deleteFile(fullKey);
+  //       existingTrainer.certificate = '';
+  //     }
+  //   }
 
-    await this.trainersRepository.save(existingTrainer);
+  //   await this.trainersRepository.save(existingTrainer);
 
-    return this.getById(existingTrainer.id);
-  }
+  //   return this.getById(existingTrainer.id);
+  // }
 
-  async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
-    return this.trainersRepository
-      .findOneByOrFail({ id: trainerId })
-      .then((response) => new PageResponseDto(response));
-  }
+  // async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
+  //   return this.trainersRepository
+  //     .findOneByOrFail({ id: trainerId })
+  //     .then((response) => new PageResponseDto(response));
+  // }
 
-  async destroyTrainer(trainer_id: number) {
-    const trainer: Trainer = await this.trainersRepository.findOneByOrFail({
-      id: trainer_id,
-    });
-    const avatar = trainer.avatar.split('/');
-    const key = avatar[avatar.length - 1];
-    const fullKey = `trainerAvatar/${trainer_id}/images/${key}`;
-    await this.s3Service.deleteFile(fullKey);
+  // async destroyTrainer(trainer_id: number) {
+  //   const trainer: Trainer = await this.trainersRepository.findOneByOrFail({
+  //     id: trainer_id,
+  //   });
+  //   const avatar = trainer.avatar.split('/');
+  //   const key = avatar[avatar.length - 1];
+  //   const fullKey = `trainerAvatar/${trainer_id}/images/${key}`;
+  //   await this.s3Service.deleteFile(fullKey);
 
-    const deletedTrainer = await this.trainersRepository.softRemove(trainer);
+  //   const deletedTrainer = await this.trainersRepository.softRemove(trainer);
 
-    return this.trainersRepository.save(deletedTrainer);
-  }
+  //   return this.trainersRepository.save(deletedTrainer);
+  // }
 }

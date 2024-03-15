@@ -1,41 +1,20 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
-import { BaseEntity } from './base-entity.entity';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Staff } from './staff.entity';
 
 @Entity('trainers')
-export class Trainer extends BaseEntity {
+export class Trainer {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  name: string;
-
-  @Column()
-  avatar: string;
+  staff_id: number;
 
   @Column()
   certificate: string;
 
-  @Column({ type: 'date' })
-  birth_date: Date;
-
   @Column()
-  gender: number;
+  specialization: string;
 
-  @Column()
-  email: string;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  address: string;
-
-  @Column()
-  status: number;
-
-  @Column()
-  note: string;
-
-  @Column()
-  facebook: string;
+  @OneToOne(() => Staff, (staff) => staff.id)
+  staff: Staff;
 }
