@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UploadedFile,
@@ -30,25 +31,33 @@ import { GetListMembersDto } from './dto/get-list-members.dto';
 import { MembersService } from './members.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
+import { RoleGuard } from 'src/modules/auth/guard/role.guard';
+import { RequireRole } from 'src/commons/decorators/require-role.decorator';
+import { RoleValue } from 'src/commons/enums/role-enum';
+import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
+import { User } from 'src/entities/user.entity';
 
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)
 @ApiBearerAuth('access-token')
-@UseGuards(AuthGuard('jwt'))
 @Controller('members')
+@UseGuards(RoleGuard)
 export class MembersController {
   constructor(private readonly membersService: MembersService) { }
 
   @Get()
   @ApiOkResponse({ description: 'List all member' })
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF, RoleValue.TRAINER)
   getMembers(
     @Query() getListMembersDto: GetListMembersDto,
+    @UserInRequest() user: User,
   ): Promise<PageResponseDto<Member>> {
-    return this.membersService.getMembers(getListMembersDto);
+    return this.membersService.getMembers(getListMembersDto, user);
   }
 
   @ApiConsumes('multipart/form-data')
   @Post()
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   @UseInterceptors(
     FileInterceptor('avatar', {
       limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
@@ -70,6 +79,7 @@ export class MembersController {
       fileFilter: imageFileFilter,
     }),
   )
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   @Put(':id')
   @UseFilters(EntityNotFoundErrorFilter)
   async update(
@@ -86,12 +96,14 @@ export class MembersController {
   }
 
   @Get(':id')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF, RoleValue.TRAINER)
   @UseFilters(EntityNotFoundErrorFilter)
   async getMember(@Param('id') member_id: string) {
     return this.membersService.getMember(Number(member_id));
   }
 
   @Delete(':id')
+  @RequireRole(RoleValue.ADMIN)
   @UseFilters(EntityNotFoundErrorFilter)
   async destroyMember(@Param('id') member_id: string) {
     return this.membersService.destroyMember(Number(member_id));

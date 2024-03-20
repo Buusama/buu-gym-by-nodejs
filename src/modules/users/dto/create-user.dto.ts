@@ -24,11 +24,6 @@ export class CreateUserDto {
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
-  role: number;
-
-  @ApiProperty()
-  @Transform(({ value }) => parseInt(value))
-  @IsNumber()
   gender: number;
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
@@ -63,6 +58,8 @@ export class CreateUserDto {
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password is too weak',
   })
+  //default password: Abc@1234
+  
   password: string;
 
   @ApiProperty({ required: false })

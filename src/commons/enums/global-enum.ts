@@ -4,3 +4,20 @@ export enum GlobalEnum {
   PAGE_DEFAULT = 1,
   PAGE_LIMIT = 10,
 }
+
+export interface RoleInterface {
+  Admin: 'Admin',
+  Staff: 'Staff',
+  Trainer: 'Trainer',
+  Member: 'Member',
+};
+
+export type Role = keyof RoleInterface;
+
+export enum Action {
+  Manage = 'manage',
+  Create = 'create',
+  Read = 'read',
+  Update = 'update',
+  Delete = 'delete',
+}

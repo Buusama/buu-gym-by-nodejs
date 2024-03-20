@@ -1,19 +1,19 @@
-import { Injectable, UploadedFile } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { RoleValue } from 'src/commons/enums/role-enum';
 import { Member } from 'src/entities/member.entity';
-import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { GetListMembersDto } from './dto/get-list-members.dto';
+import { Repository } from 'typeorm';
+import { Package } from '../../entities/package.entity';
+import { Staff } from '../../entities/staff.entity';
+import { Trainer } from '../../entities/trainer.entity';
+import { User } from '../../entities/user.entity';
+import { AwsService } from '../aws/aws.service';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
+import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { AwsService } from '../aws/aws.service';
+import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { User } from '../../entities/user.entity';
-import { Package } from '../../entities/package.entity';
-import { Trainer } from '../../entities/trainer.entity';
-import { Staff } from '../../entities/staff.entity';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -34,6 +34,7 @@ export class MembersService extends PageService {
 
   async getMembers(
     getListMembersDto: GetListMembersDto,
+    user: User,
   ): Promise<PageResponseDto<Member>> {
     const queryBuilder = await this.paginate(
       this.membersRepository,
@@ -44,14 +45,21 @@ export class MembersService extends PageService {
         'table.id AS MemberId',
         'P.name AS MemberName',
         'MP.name AS PackageName',
-        'PT.specialization AS TrainerSpecialization',
+        'PT.id AS TrainerId',
         'TR.name AS TrainerName',
+        'TR.id AS TrainerId',
       ])
       .innerJoin(User, 'P', 'table.user_id = P.id')
       .innerJoin(Package, 'MP', 'table.package_id = MP.id')
-      .leftJoin(Trainer, 'PT', 'table.trainer_id = PT.id')
+
+      .innerJoin(Trainer, 'PT', 'table.trainer_id = PT.id')
       .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
       .leftJoin(User, 'TR', 'ST.user_id = TR.id');
+      // .orderBy('table.id', 'DESC');
+
+    if (user.role === RoleValue.TRAINER) {
+      queryBuilder.andWhere('TR.id = :userId', { userId: user.id });
+    }
 
     if (getListMembersDto.status) {
       queryBuilder.andWhere('table.status = :status', {
@@ -176,12 +184,4 @@ export class MembersService extends PageService {
     return new PageResponseDto(member);
   }
 
-  async resumeMember(memberId: number) {
-    const member: Member = await this.membersRepository.findOneByOrFail({
-      id: memberId,
-    });
-
-    await this.membersRepository.save(member);
-    return new PageResponseDto(member);
-  }
 }
