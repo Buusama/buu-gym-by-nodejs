@@ -36,7 +36,6 @@ import { TrainersService } from './trainers.service';
 @Controller('trainers')
 export class TrainersController {
   // constructor(private readonly trainersService: TrainersService) {}
-
   // @Get()
   // @ApiOkResponse({ description: 'List all trainer' })
   // getTrainers(
@@ -44,7 +43,6 @@ export class TrainersController {
   // ): Promise<PageResponseDto<Trainer>> {
   //   return this.trainersService.getTrainers(getListTrainersDto);
   // }
-
   // @ApiConsumes('multipart/form-data')
   // @Post()
   // @UseInterceptors(
@@ -69,7 +67,6 @@ export class TrainersController {
   // ) {
   //   return this.trainersService.createTrainer(body, files);
   // }
-
   // @ApiConsumes('multipart/form-data')
   // @UseInterceptors(
   //   FileFieldsInterceptor(
@@ -98,13 +95,11 @@ export class TrainersController {
   //   console.log('trainer_id', trainerID);
   //   return this.trainersService.updateTrainer(Number(trainerID), dto, files);
   // }
-
   // @Get(':id')
   // @UseFilters(EntityNotFoundErrorFilter)
   // async getTrainer(@Param('id') trainer_id: string) {
   //   return this.trainersService.getTrainer(Number(trainer_id));
   // }
-
   // @Delete(':id')
   // @UseFilters(EntityNotFoundErrorFilter)
   // async destroyTrainer(@Param('id') trainer_id: string) {

@@ -19,12 +19,6 @@ export class CreatePackageDto {
   @Transform(({ value }) => parseInt(value))
   @IsNotEmpty()
   @IsNumber()
-  type: number;
-
-  @ApiProperty({ required: false })
-  @Transform(({ value }) => parseInt(value))
-  @IsNotEmpty()
-  @IsNumber()
   usage_type: number;
 
   @ApiProperty({ required: false })
@@ -43,7 +37,7 @@ export class CreatePackageDto {
   status: number;
 
   @ApiProperty({ required: false })
-  note: string;
+  description: string;
 
   @ApiProperty({ required: false })
   @Transform(({ value }) => parseInt(value))

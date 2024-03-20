@@ -53,7 +53,6 @@ export class TrainersService extends PageService {
   //   const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
   //   return new PageResponseDto(entities, pageMeta);
   // }
-
   // async uploadAvatar(
   //   trainerId: number,
   //   file: Express.Multer.File,
@@ -70,7 +69,6 @@ export class TrainersService extends PageService {
   //     throw error;
   //   }
   // }
-
   // async uploadCertificate(
   //   trainerId: number,
   //   file: Express.Multer.File,
@@ -87,7 +85,6 @@ export class TrainersService extends PageService {
   //     throw error;
   //   }
   // }
-
   // async createTrainer(
   //   dto: CreateTrainerDto,
   //   files?: { avatar?: Express.Multer.File; certificate?: Express.Multer.File },
@@ -95,7 +92,6 @@ export class TrainersService extends PageService {
   //   const { ...params } = dto;
   //   const avatar = files?.avatar ? files.avatar[0] : null;
   //   const certificate = files?.certificate ? files.certificate[0] : null;
-
   //   const prepareBeforeCreating = this.trainersRepository.create(params);
   //   const trainer: Trainer = this.trainersRepository.create(
   //     prepareBeforeCreating,
@@ -106,7 +102,6 @@ export class TrainersService extends PageService {
   //     trainer.avatar = image.Location;
   //     await this.trainersRepository.save(trainer);
   //   }
-
   //   const certificateImage = certificate
   //     ? await this.uploadCertificate(trainer.id, certificate)
   //     : null;
@@ -116,13 +111,11 @@ export class TrainersService extends PageService {
   //   }
   //   return this.getById(trainer.id);
   // }
-
   // async getTrainerById(trainerId: number) {
   //   return await this.trainersRepository.findOneByOrFail({
   //     id: trainerId,
   //   });
   // }
-
   // async updateTrainer(
   //   trainerId: number,
   //   dto: UpdateTrainerDto,
@@ -133,14 +126,12 @@ export class TrainersService extends PageService {
   //   const { ...params } = dto;
   //   const avatar = files?.avatar ? files.avatar[0] : null;
   //   const certificate = files?.certificate ? files.certificate[0] : null;
-
   //   if (params.avatar) {
   //     delete params.avatar;
   //   }
   //   if (params.certificate) {
   //     delete params.certificate;
   //   }
-
   //   this.trainersRepository.merge(existingTrainer, params);
   //   const image = avatar ? await this.uploadAvatar(trainerId, avatar) : null;
   //   if (image) {
@@ -160,7 +151,6 @@ export class TrainersService extends PageService {
   //       existingTrainer.avatar = '';
   //     }
   //   }
-
   //   const certificateImage = certificate
   //     ? await this.uploadCertificate(trainerId, certificate)
   //     : null;
@@ -181,18 +171,14 @@ export class TrainersService extends PageService {
   //       existingTrainer.certificate = '';
   //     }
   //   }
-
   //   await this.trainersRepository.save(existingTrainer);
-
   //   return this.getById(existingTrainer.id);
   // }
-
   // async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
   //   return this.trainersRepository
   //     .findOneByOrFail({ id: trainerId })
   //     .then((response) => new PageResponseDto(response));
   // }
-
   // async destroyTrainer(trainer_id: number) {
   //   const trainer: Trainer = await this.trainersRepository.findOneByOrFail({
   //     id: trainer_id,
@@ -201,9 +187,7 @@ export class TrainersService extends PageService {
   //   const key = avatar[avatar.length - 1];
   //   const fullKey = `trainerAvatar/${trainer_id}/images/${key}`;
   //   await this.s3Service.deleteFile(fullKey);
-
   //   const deletedTrainer = await this.trainersRepository.softRemove(trainer);
-
   //   return this.trainersRepository.save(deletedTrainer);
   // }
 }

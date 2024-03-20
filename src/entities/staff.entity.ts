@@ -1,4 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('staffs')
@@ -15,6 +21,7 @@ export class Staff {
   @Column()
   start_date: Date;
 
-  @OneToOne(() => User, (user) => user.id)
+  @OneToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }

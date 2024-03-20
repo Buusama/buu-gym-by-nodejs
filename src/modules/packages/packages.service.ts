@@ -10,54 +10,64 @@ import { CreatePackageDto } from './dto/create-package.dto';
 
 @Injectable()
 export class PackagesService extends PageService {
-  // constructor(
-  //   @InjectRepository(Package)
-  //   private packagesRepository: Repository<Package>,
-  // ) {
-  //   super();
-  // }
+  constructor(
+    @InjectRepository(Package)
+    private packagesRepository: Repository<Package>,
+  ) {
+    super();
+  }
 
-  // async getPackages(
-  //   getListPackagesDto: GetListPackagesDto,
-  // ): Promise<PageResponseDto<Package>> {
-  //   const queryBuilder = await this.paginate(
-  //     this.packagesRepository,
-  //     getListPackagesDto,
-  //   );
-  //   queryBuilder.where('table.deleted_at is null');
-  //   const itemCount = await queryBuilder.getCount();
-  //   const { entities } = await queryBuilder.getRawAndEntities();
-  //   const pageMeta = new PageMetaDto(getListPackagesDto, itemCount);
-  //   return new PageResponseDto(entities, pageMeta);
-  // }
+  async getPackages(
+    getListPackagesDto: GetListPackagesDto,
+  ): Promise<PageResponseDto<Package>> {
+    const queryBuilder = await this.paginate(
+      this.packagesRepository,
+      getListPackagesDto,
+    );
 
-  // async createPackage(
-  //   createPackageDto: CreatePackageDto,
-  // ): Promise<PageResponseDto<Package>> {
-  //   const newPackage = new Package();
-  //   const { ...params } = createPackageDto;
-  //   Object.assign(newPackage, params);
-  //   await this.packagesRepository.save(newPackage);
-  //   return new PageResponseDto(newPackage);
-  // }
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+    const pageMeta = new PageMetaDto(getListPackagesDto, itemCount);
+    return new PageResponseDto(entities, pageMeta);
+  }
 
-  // async getPackage(id: number): Promise<PageResponseDto<Package>> {
-  //   return this.packagesRepository
-  //     .findOneByOrFail({ id: id })
-  //     .then((response) => new PageResponseDto(response));
-  // }
+  async createPackage(
+    createPackageDto: CreatePackageDto,
+  ): Promise<PageResponseDto<Package>> {
+    const newPackage = new Package();
+    const { ...params } = createPackageDto;
+    Object.assign(newPackage, params);
+    await this.packagesRepository.save(newPackage);
+    return new PageResponseDto(newPackage);
+  }
 
-  // async updatePackage(
-  //   id: number,
-  //   updatePackageDto: CreatePackageDto,
-  // ): Promise<PageResponseDto<Package>> {
-  //   const existingMember = await this.packagesRepository.findOneByOrFail({
-  //     id: id,
-  //   });
-  //   const { ...params } = updatePackageDto;
+  async getPackage(id: number): Promise<PageResponseDto<Package>> {
+    return this.packagesRepository
+      .findOneByOrFail({ id: id })
+      .then((response) => new PageResponseDto(response));
+  }
 
-  //   this.packagesRepository.merge(existingMember, params);
-  //   await this.packagesRepository.save(existingMember);
-  //   return this.getPackage(id);
-  // }
+  async updatePackage(
+    id: number,
+    updatePackageDto: CreatePackageDto,
+  ): Promise<PageResponseDto<Package>> {
+    const existingPackage = await this.packagesRepository.findOneByOrFail({
+      id: id,
+    });
+    const { ...params } = updatePackageDto;
+
+    this.packagesRepository.merge(existingPackage, params);
+    await this.packagesRepository.save(existingPackage);
+    return this.getPackage(id);
+  }
+
+  async deletePackage(id: number): Promise<PageResponseDto<Package>> {
+    const existingPackage = await this.packagesRepository.findOneByOrFail({
+      id: id,
+    });
+    
+    const deletedPackage = await this.packagesRepository.remove(existingPackage);
+    this.packagesRepository.save(deletedPackage);
+    return new PageResponseDto(existingPackage);
+  }
 }

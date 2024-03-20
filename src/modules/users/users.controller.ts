@@ -7,15 +7,19 @@ import {
   UseInterceptors,
   UseGuards,
   Query,
+  UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GetListUsersDto } from './dto/get-list-users.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { imageFileFilter } from 'src/supports/helpers';
 
 @ApiTags('users')
 @UseInterceptors(TransformInterceptor)
@@ -23,7 +27,7 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Get()
   @ApiOkResponse({ description: 'List all users' })
@@ -39,10 +43,19 @@ export class UsersController {
     return this.usersService.getUserById(id);
   }
 
+  @ApiConsumes('multipart/form-data')
   @Post()
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
+      fileFilter: imageFileFilter,
+    }),
+  )
   createTask(
     @Body() createUserDto: CreateUserDto,
+    @UploadedFile() avatar: Express.Multer.File,
+    @Req() req: any,
   ): Promise<PageResponseDto<User>> {
-    return this.usersService.createUser(createUserDto);
+    return this.usersService.createUser(createUserDto,avatar);
   }
 }

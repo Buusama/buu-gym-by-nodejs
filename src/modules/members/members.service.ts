@@ -9,12 +9,19 @@ import { PageService } from '../pagination/page.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { AwsService } from '../aws/aws.service';
 import { UpdateMemberDto } from './dto/update-member.dto';
+import { User } from '../../entities/user.entity';
+import { Package } from '../../entities/package.entity';
+import { Trainer } from '../../entities/trainer.entity';
+import { Staff } from '../../entities/staff.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class MembersService extends PageService {
   constructor(
     @InjectRepository(Member)
     private membersRepository: Repository<Member>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private s3Service: AwsService,
   ) {
     super();
@@ -24,6 +31,7 @@ export class MembersService extends PageService {
       .findOneByOrFail({ id: memberId })
       .then((response) => new PageResponseDto(response));
   }
+
   async getMembers(
     getListMembersDto: GetListMembersDto,
   ): Promise<PageResponseDto<Member>> {
@@ -31,13 +39,26 @@ export class MembersService extends PageService {
       this.membersRepository,
       getListMembersDto,
     );
-    
+    queryBuilder
+      .select([
+        'table.id AS MemberId',
+        'P.name AS MemberName',
+        'MP.name AS PackageName',
+        'PT.specialization AS TrainerSpecialization',
+        'TR.name AS TrainerName',
+      ])
+      .innerJoin(User, 'P', 'table.user_id = P.id')
+      .innerJoin(Package, 'MP', 'table.package_id = MP.id')
+      .leftJoin(Trainer, 'PT', 'table.trainer_id = PT.id')
+      .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
+      .leftJoin(User, 'TR', 'ST.user_id = TR.id');
+
     if (getListMembersDto.status) {
       queryBuilder.andWhere('table.status = :status', {
         status: getListMembersDto.status,
       });
     }
-    
+
     if (
       getListMembersDto.field &&
       getListMembersDto.type &&
@@ -51,103 +72,116 @@ export class MembersService extends PageService {
         { value: getListMembersDto.value },
       );
     }
-    
+
     const itemCount = await queryBuilder.getCount();
-    const { entities } = await queryBuilder.getRawAndEntities();
+    const entities = await queryBuilder.getRawMany();
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
   }
 
-  // async uploadAvatar(
-  //   memberId: number,
-  //   file: Express.Multer.File,
-  // ): Promise<any> {
-  //   try {
-  //     const uploadResult = await this.s3Service.uploadFile(
-  //       file.originalname,
-  //       file.buffer,
-  //       file.mimetype,
-  //       `memberAvatar/${memberId}/images`,
-  //     );
-  //     return uploadResult;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  async uploadAvatar(
+    memberId: number,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    try {
+      const uploadResult = await this.s3Service.uploadFile(
+        file.originalname,
+        file.buffer,
+        file.mimetype,
+        `Avatar/${memberId}/images`,
+      );
+      return uploadResult;
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  // async createMember(dto: CreateMemberDto, avatar: Express.Multer.File) {
-  //   const { ...params } = dto;
+  async createMember(memberDto: CreateMemberDto, avatar: Express.Multer.File) {
+    const { ...params } = memberDto;
+    console.log('params', params);
+    const user = this.userRepository.create(params);
+    await this.userRepository.save(user);
 
-  //   const prepareBeforeCreating = this.membersRepository.create(params);
-  //   const member: Member = this.membersRepository.create(prepareBeforeCreating);
-  //   await this.membersRepository.save(member);
-  //   const image = avatar ? await this.uploadAvatar(member.id, avatar) : null;
-  //   if (image) {
-  //     member.avatar = image.Location;
-  //     await this.membersRepository.save(member);
-  //   }
-  //   return this.getById(member.id);
-  // }
+    if (avatar) {
+      const image = await this.uploadAvatar(user.id, avatar);
+      user.avatar = image.Location;
+      await this.userRepository.save(user);
+    }
 
-  // async getMemberById(memberId: number) {
-  //   return await this.membersRepository.findOneByOrFail({
-  //     id: memberId,
-  //   });
-  // }
+    const member = this.membersRepository.create({
+      user_id: user.id,
+      ...params,
+    });
 
-  // async updateMember(
-  //   memberId: number,
-  //   updateMemberDto: UpdateMemberDto,
-  //   avatar: Express.Multer.File,
-  // ) {
-  //   const existingMember = await this.getMemberById(memberId);
-  //   const { ...params } = updateMemberDto;
+    await this.membersRepository.save(member);
+    return this.getById(member.id);
+  }
 
-  //   if (params.avatar) {
-  //     delete params.avatar;
-  //   }
+  async getMemberById(memberId: number) {
+    return await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
+  }
 
-  //   this.membersRepository.merge(existingMember, params);
-  //   const image = avatar ? await this.uploadAvatar(memberId, avatar) : null;
-  //   if (image) {
-  //     if (existingMember.avatar) {
-  //       const avatar = existingMember.avatar.split('/');
-  //       const key = avatar[avatar.length - 1];
-  //       const fullKey = `memberAvatar/${memberId}/images/${key}`;
-  //       await this.s3Service.deleteFile(fullKey);
-  //     }
-  //     existingMember.avatar = image.Location;
-  //   } else {
-  //     if (updateMemberDto.avatar === 'null') {
-  //       const avatar = existingMember.avatar.split('/');
-  //       const key = avatar[avatar.length - 1];
-  //       const fullKey = `memberAvatar/${memberId}/images/${key}`;
-  //       await this.s3Service.deleteFile(fullKey);
-  //       existingMember.avatar = '';
-  //     }
-  //   }
-  //   await this.membersRepository.save(existingMember);
+  async updateMember(
+    memberId: number,
+    updateMemberDto: UpdateMemberDto,
+    avatar: Express.Multer.File,
+  ) {
+    const existingMember = await this.getMemberById(memberId);
+    const { ...params } = updateMemberDto;
+    const user = await this.userRepository.findOneByOrFail({
+      id: existingMember.user_id,
+    });
 
-  //   return this.getById(existingMember.id);
-  // }
+    if (avatar) {
+      const image = await this.uploadAvatar(user.id, avatar);
+      user.avatar = image.Location;
+      await this.userRepository.save(user);
+    }
 
-  // async getMember(memberId: number): Promise<PageResponseDto<Member>> {
-  //   return this.membersRepository
-  //     .findOneByOrFail({ id: memberId })
-  //     .then((response) => new PageResponseDto(response));
-  // }
+    await this.membersRepository.update(existingMember.id, params);
+    return this.getById(existingMember.id);
+  }
 
-  // async destroyMember(memberId: number) {
-  //   const member: Member = await this.membersRepository.findOneByOrFail({
-  //     id: memberId,
-  //   });
-  //   const avatar = member.avatar.split('/');
-  //   const key = avatar[avatar.length - 1];
-  //   const fullKey = `memberAvatar/${memberId}/images/${key}`;
-  //   await this.s3Service.deleteFile(fullKey);
+  async getMember(memberId: number): Promise<PageResponseDto<Member>> {
+    return this.membersRepository
+      .createQueryBuilder('member')
+      .select([
+        'member.id AS MemberId',
+        'P.name AS MemberName',
+        'MP.name AS PackageName',
+        'PT.specialization AS TrainerSpecialization',
+        'TR.name AS TrainerName',
+      ])
+      .innerJoin(User, 'P', 'member.user_id = P.id')
+      .innerJoin(Package, 'MP', 'member.package_id = MP.id')
+      .leftJoin(Trainer, 'PT', 'member.trainer_id = PT.id')
+      .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
+      .leftJoin(User, 'TR', 'ST.user_id = TR.id')
+      .where('member.id = :memberId', { memberId })
+      .getRawOne()
+      .then((response) => {
+        return new PageResponseDto(response);
+      });
+  }
 
-  //   const deletedmember = await this.membersRepository.softRemove(member);
+  async destroyMember(memberId: number) {
+    const member: Member = await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
 
-  //   return this.membersRepository.save(deletedmember);
-  // }
+    const deletedmember = await this.membersRepository.remove(member);
+    this.membersRepository.save(deletedmember);
+    return new PageResponseDto(member);
+  }
+
+  async resumeMember(memberId: number) {
+    const member: Member = await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
+
+    await this.membersRepository.save(member);
+    return new PageResponseDto(member);
+  }
 }
