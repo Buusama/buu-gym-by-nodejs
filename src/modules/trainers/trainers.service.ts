@@ -7,52 +7,70 @@ import { AwsService } from '../aws/aws.service';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { CreateTrainerDto, GetListTrainersDto, UpdateTrainerDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
+import { User } from 'src/entities/user.entity';
+import { RoleValue } from 'src/commons/enums/role-enum';
 
 @Injectable()
 export class TrainersService extends PageService {
-  // constructor(
-  //   @InjectRepository(Trainer)
-  //   private trainersRepository: Repository<Trainer>,
-  //   private s3Service: AwsService,
-  // ) {
-  //   super();
-  // }
-  // async getById(trainerId: number) {
-  //   return this.trainersRepository
-  //     .findOneByOrFail({ id: trainerId })
-  //     .then((response) => new PageResponseDto(response));
-  // }
-  // async getTrainers(
-  //   getListTrainersDto: GetListTrainersDto,
-  // ): Promise<PageResponseDto<Trainer>> {
-  //   const queryBuilder = await this.paginate(
-  //     this.trainersRepository,
-  //     getListTrainersDto,
-  //   );
-  //   queryBuilder.where('table.deleted_at is null');
-  //   if (getListTrainersDto.status) {
-  //     queryBuilder.andWhere('table.status = :status', {
-  //       status: getListTrainersDto.status,
-  //     });
-  //   }
-  //   if (
-  //     getListTrainersDto.field &&
-  //     getListTrainersDto.type &&
-  //     getListTrainersDto.value
-  //   ) {
-  //     if (getListTrainersDto.type === 'like') {
-  //       getListTrainersDto.value = `%${getListTrainersDto.value}%`;
-  //     }
-  //     queryBuilder.andWhere(
-  //       `table.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
-  //       { value: getListTrainersDto.value },
-  //     );
-  //   }
-  //   const itemCount = await queryBuilder.getCount();
-  //   const { entities } = await queryBuilder.getRawAndEntities();
-  //   const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
-  //   return new PageResponseDto(entities, pageMeta);
-  // }
+  constructor(
+    @InjectRepository(Trainer)
+    private trainersRepository: Repository<Trainer>,
+    private s3Service: AwsService,
+  ) {
+    super();
+  }
+
+  async getById(trainerId: number) {
+    return this.trainersRepository
+      .findOneByOrFail({ id: trainerId })
+      .then((response) => new PageResponseDto(response));
+  }
+
+  async getTrainers(
+    getListTrainersDto: GetListTrainersDto,
+    user: User,
+  ): Promise<PageResponseDto<Trainer>> {
+    const queryBuilder = await this.paginate(
+      this.trainersRepository,
+      getListTrainersDto,
+    );
+    queryBuilder
+      .select([
+        'table.id AS TrainerId',
+        'user.id AS UserId',
+        'user.email AS Email',
+        'user.name AS Name',
+        'user.phone AS Phone',
+        'user.avatar AS Avatar',
+        'user.address AS Address',
+      ])
+      .innerJoin('table.staff', 'staff')
+      .leftJoin('staff.user', 'user');
+
+    if (getListTrainersDto.status) {
+      queryBuilder.andWhere('table.status = :status', {
+        status: getListTrainersDto.status,
+      });
+    }
+    if (
+      getListTrainersDto.field &&
+      getListTrainersDto.type &&
+      getListTrainersDto.value
+    ) {
+      if (getListTrainersDto.type === 'like') {
+        getListTrainersDto.value = `%${getListTrainersDto.value}%`;
+      }
+      queryBuilder.andWhere(
+        `table.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
+        { value: getListTrainersDto.value },
+      );
+    }
+    const itemCount = await queryBuilder.getCount();
+    const entities = await queryBuilder.getRawMany();
+    const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
+    return new PageResponseDto(entities, pageMeta);
+  }
+
   // async uploadAvatar(
   //   trainerId: number,
   //   file: Express.Multer.File,
@@ -174,20 +192,30 @@ export class TrainersService extends PageService {
   //   await this.trainersRepository.save(existingTrainer);
   //   return this.getById(existingTrainer.id);
   // }
-  // async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
-  //   return this.trainersRepository
-  //     .findOneByOrFail({ id: trainerId })
-  //     .then((response) => new PageResponseDto(response));
-  // }
-  // async destroyTrainer(trainer_id: number) {
-  //   const trainer: Trainer = await this.trainersRepository.findOneByOrFail({
-  //     id: trainer_id,
-  //   });
-  //   const avatar = trainer.avatar.split('/');
-  //   const key = avatar[avatar.length - 1];
-  //   const fullKey = `trainerAvatar/${trainer_id}/images/${key}`;
-  //   await this.s3Service.deleteFile(fullKey);
-  //   const deletedTrainer = await this.trainersRepository.softRemove(trainer);
-  //   return this.trainersRepository.save(deletedTrainer);
-  // }
+  async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
+    return this.trainersRepository
+      .createQueryBuilder('trainer')
+      .select([
+        'trainer.id AS TrainerId',
+        'user.id AS UserId',
+        'user.email AS Email',
+        'user.name AS Name',
+        'user.phone AS Phone',
+        'user.avatar AS Avatar',
+        'user.address AS Address',
+      ])
+      .innerJoin('trainer.staff', 'staff')
+      .leftJoin('staff.user', 'user')
+      .where('trainer.id = :trainerId', { trainerId })
+      .getRawOne()
+      .then((response) => new PageResponseDto(response));
+  }
+
+  async destroyTrainer(trainer_id: number) {
+    const trainer = await this.trainersRepository.findOneByOrFail({ id: trainer_id });
+
+    const deleteTrainer = await this.trainersRepository.remove(trainer);
+    this.trainersRepository.save(deleteTrainer);
+    return new PageResponseDto(trainer);
+  }
 }

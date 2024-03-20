@@ -107,7 +107,10 @@ export class MembersService extends PageService {
   async createMember(memberDto: CreateMemberDto, avatar: Express.Multer.File) {
     const { ...params } = memberDto;
     console.log('params', params);
-    const user = this.userRepository.create(params);
+    const user = this.userRepository.create({
+      ...params,
+      role: RoleValue.MEMBER,
+    });
     await this.userRepository.save(user);
 
     if (avatar) {

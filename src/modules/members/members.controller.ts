@@ -13,7 +13,6 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
@@ -21,21 +20,20 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { RequireRole } from 'src/commons/decorators/require-role.decorator';
+import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
+import { RoleValue } from 'src/commons/enums/role-enum';
 import { Member } from 'src/entities/member.entity';
+import { User } from 'src/entities/user.entity';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { RoleGuard } from 'src/modules/auth/guard/role.guard';
 import { imageFileFilter } from 'src/supports/helpers';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
-import { MembersService } from './members.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { RoleGuard } from 'src/modules/auth/guard/role.guard';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
-import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
-import { User } from 'src/entities/user.entity';
+import { MembersService } from './members.service';
 
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)

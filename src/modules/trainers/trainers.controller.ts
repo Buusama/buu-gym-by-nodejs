@@ -1,48 +1,47 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Param,
-  Post,
-  Put,
   Query,
-  Req,
-  UploadedFiles,
   UseFilters,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
-  ApiConsumes,
   ApiOkResponse,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
+import { RequireRole } from 'src/commons/decorators/require-role.decorator';
+import { RoleValue } from 'src/commons/enums/role-enum';
 import { Trainer } from 'src/entities/trainer.entity';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
-import { imageFileFilter } from 'src/supports/helpers';
+import { RoleGuard } from '../auth/guard/role.guard';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { CreateTrainerDto, GetListTrainersDto, UpdateTrainerDto } from './dto';
+import { GetListTrainersDto } from './dto';
 import { TrainersService } from './trainers.service';
+import { User } from 'src/entities/user.entity';
+import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
+import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
 
 @ApiTags('trainers')
 @UseInterceptors(TransformInterceptor)
 @ApiBearerAuth('access-token')
-@UseGuards(AuthGuard('jwt'))
 @Controller('trainers')
+@UseGuards(RoleGuard)
 export class TrainersController {
-  // constructor(private readonly trainersService: TrainersService) {}
-  // @Get()
-  // @ApiOkResponse({ description: 'List all trainer' })
-  // getTrainers(
-  //   @Query() getListTrainersDto: GetListTrainersDto,
-  // ): Promise<PageResponseDto<Trainer>> {
-  //   return this.trainersService.getTrainers(getListTrainersDto);
-  // }
+  constructor(private readonly trainersService: TrainersService) { }
+
+  @Get()
+  @ApiOkResponse({ description: 'List all trainer' })
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  getTrainers(
+    @Query() getListTrainersDto: GetListTrainersDto,
+    @UserInRequest() user: User,
+  ): Promise<PageResponseDto<Trainer>> {
+    return this.trainersService.getTrainers(getListTrainersDto, user);
+  }
+
   // @ApiConsumes('multipart/form-data')
   // @Post()
   // @UseInterceptors(
@@ -95,11 +94,12 @@ export class TrainersController {
   //   console.log('trainer_id', trainerID);
   //   return this.trainersService.updateTrainer(Number(trainerID), dto, files);
   // }
-  // @Get(':id')
-  // @UseFilters(EntityNotFoundErrorFilter)
-  // async getTrainer(@Param('id') trainer_id: string) {
-  //   return this.trainersService.getTrainer(Number(trainer_id));
-  // }
+  @Get(':id')
+  @UseFilters(EntityNotFoundErrorFilter)
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  async getTrainer(@Param('id') trainer_id: string) {
+    return this.trainersService.getTrainer(Number(trainer_id));
+  }
   // @Delete(':id')
   // @UseFilters(EntityNotFoundErrorFilter)
   // async destroyTrainer(@Param('id') trainer_id: string) {
