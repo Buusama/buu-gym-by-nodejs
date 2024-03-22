@@ -4,6 +4,7 @@ import { Package } from '../../entities/package.entity';
 import { Trainer } from '../../entities/trainer.entity';
 import { User } from '../../entities/user.entity';
 import { DataSource } from 'typeorm';
+import { RoleValue } from '../../commons/enums/role-enum';
 
 export default class MemberSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -13,7 +14,7 @@ export default class MemberSeeder extends Seeder {
     const memberData = [];
 
     users.map((user) => {
-      if (user.role === 4) {
+      if (user.role === RoleValue.MEMBER) {
         memberData.push({
           user_id: user.id,
           package_id:

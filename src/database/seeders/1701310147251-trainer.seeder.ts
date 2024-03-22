@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import { Staff } from '../../entities/staff.entity';
 import { DataSource } from 'typeorm';
+import { RoleValue } from '../../commons/enums/role-enum';
 
 export default class TrainerSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -9,7 +10,7 @@ export default class TrainerSeeder extends Seeder {
     const trainerData = [];
 
     staff.forEach((staff) => {
-      if (staff.user.role === 2) {
+      if (staff.user.role === RoleValue.TRAINER) {
         trainerData.push({
           staff_id: staff.id,
           certificate: faker.lorem.sentence(),
