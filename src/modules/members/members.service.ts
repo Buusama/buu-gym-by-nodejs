@@ -14,6 +14,7 @@ import { PageService } from '../pagination/page.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
+import { BodyMeasurement } from 'src/entities/body-measurement.entity';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -55,7 +56,7 @@ export class MembersService extends PageService {
       .innerJoin(Trainer, 'PT', 'table.trainer_id = PT.id')
       .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
       .leftJoin(User, 'TR', 'ST.user_id = TR.id');
-      // .orderBy('table.id', 'DESC');
+    // .orderBy('table.id', 'DESC');
 
     if (user.role === RoleValue.TRAINER) {
       queryBuilder.andWhere('TR.id = :userId', { userId: user.id });
@@ -164,12 +165,17 @@ export class MembersService extends PageService {
         'MP.name AS PackageName',
         'PT.specialization AS TrainerSpecialization',
         'TR.name AS TrainerName',
+        'BM.MeasurementDate',
+        'BM.Height',
+        'BM.Weight',
+        'BM.BMI',
       ])
       .innerJoin(User, 'P', 'member.user_id = P.id')
       .innerJoin(Package, 'MP', 'member.package_id = MP.id')
       .leftJoin(Trainer, 'PT', 'member.trainer_id = PT.id')
       .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
       .leftJoin(User, 'TR', 'ST.user_id = TR.id')
+      .leftJoin(BodyMeasurement, 'BM', 'BM.member_id = member.id')
       .where('member.id = :memberId', { memberId })
       .getRawOne()
       .then((response) => {
