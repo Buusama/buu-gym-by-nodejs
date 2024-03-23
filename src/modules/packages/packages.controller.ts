@@ -19,15 +19,19 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { Package } from 'src/entities/package.entity';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { RoleGuard } from '../auth/guard/role.guard';
+import { RequireRole } from 'src/commons/decorators/require-role.decorator';
+import { RoleValue } from 'src/commons/enums/role-enum';
 
 @ApiTags('packages')
 @UseInterceptors(TransformInterceptor)
 @ApiBearerAuth('access-token')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(RoleGuard)
 @Controller('packages')
 export class PackagesController {
   constructor(private readonly packagesService: PackagesService) { }
   @Get()
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   @ApiOkResponse({ description: 'List all package' })
   getPackages(
     @Query() getListPackagesDto: GetListPackagesDto,

@@ -15,6 +15,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { BodyMeasurement } from 'src/entities/body-measurement.entity';
+import moment from 'moment';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -37,14 +38,17 @@ export class MembersService extends PageService {
     getListMembersDto: GetListMembersDto,
     user: User,
   ): Promise<PageResponseDto<Member>> {
-    const queryBuilder = await this.paginate(
-      this.membersRepository,
-      getListMembersDto,
-    );
+    const queryBuilder = await this.membersRepository.createQueryBuilder('table');
     queryBuilder
       .select([
         'table.id AS MemberId',
         'P.name AS MemberName',
+        'P.email AS MemberEmail',
+        'P.phone AS MemberPhone',
+        'P.address AS MemberAddress',
+        'P.avatar AS MemberAvatar',
+        'P.birth_date AS MemberBirthDate',
+        'P.gender AS MemberGender',
         'MP.name AS PackageName',
         'PT.id AS TrainerId',
         'TR.name AS TrainerName',
@@ -62,10 +66,25 @@ export class MembersService extends PageService {
       queryBuilder.andWhere('TR.id = :userId', { userId: user.id });
     }
 
-    if (getListMembersDto.status) {
-      queryBuilder.andWhere('table.status = :status', {
-        status: getListMembersDto.status,
-      });
+
+    if (getListMembersDto.sort_by && getListMembersDto.sort_enum) {
+      queryBuilder.addOrderBy(`P.${getListMembersDto.sort_by}`, getListMembersDto.sort_enum);
+    }
+
+    if (getListMembersDto.skip !== null && getListMembersDto.take !== null) {
+      queryBuilder.offset(getListMembersDto.skip).limit(getListMembersDto.take);
+    }
+
+    // if (getListMembersDto.status) {
+    //   queryBuilder.andWhere('table.status = :status', {
+    //     status: getListMembersDto.status,
+    //   });
+    // }
+    if (getListMembersDto.status === 1) {
+      queryBuilder.andWhere('table.end_date > CURRENT_DATE');
+    }
+    if (getListMembersDto.status === 2) {
+      queryBuilder.andWhere('table.end_date < CURRENT_DATE');
     }
 
     if (
@@ -77,8 +96,10 @@ export class MembersService extends PageService {
         getListMembersDto.value = `%${getListMembersDto.value}%`;
       }
       queryBuilder.andWhere(
-        `table.${getListMembersDto.field} ${getListMembersDto.type} :value`,
+        `P.${getListMembersDto.field} ${getListMembersDto.type} :value`,
         { value: getListMembersDto.value },
+        // `P.${getListMembersDto.field} ${getListMembersDto.type} :value`,
+        // { value: getListMembersDto.value },
       );
     }
 
@@ -162,13 +183,18 @@ export class MembersService extends PageService {
       .select([
         'member.id AS MemberId',
         'P.name AS MemberName',
+        'P.gender AS MemberGender',
+        'P.email AS MemberEmail',
+        'P.phone AS MemberPhone',
+        'P.address AS MemberAddress',
+        'P.avatar AS MemberAvatar',
+        'P.birth_date AS MemberBirthDate',
         'MP.name AS PackageName',
         'PT.specialization AS TrainerSpecialization',
         'TR.name AS TrainerName',
-        'BM.MeasurementDate',
-        'BM.Height',
-        'BM.Weight',
-        'BM.BMI',
+        'BM.measurement_date',
+        'BM.height',
+        'BM.weight',
       ])
       .innerJoin(User, 'P', 'member.user_id = P.id')
       .innerJoin(Package, 'MP', 'member.package_id = MP.id')
@@ -179,6 +205,7 @@ export class MembersService extends PageService {
       .where('member.id = :memberId', { memberId })
       .getRawOne()
       .then((response) => {
+        response.MemberBirthDate = moment(response.MemberBirthDate).format('DD-MM-YYYY');
         return new PageResponseDto(response);
       });
   }
