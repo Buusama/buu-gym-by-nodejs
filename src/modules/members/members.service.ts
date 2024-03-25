@@ -15,7 +15,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { BodyMeasurement } from 'src/entities/body-measurement.entity';
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -38,7 +38,7 @@ export class MembersService extends PageService {
     getListMembersDto: GetListMembersDto,
     user: User,
   ): Promise<PageResponseDto<Member>> {
-    const queryBuilder = await this.membersRepository.createQueryBuilder('table');
+    const queryBuilder = await this.paginate(this.membersRepository, getListMembersDto);
     queryBuilder
       .select([
         'table.id AS MemberId',
@@ -64,15 +64,6 @@ export class MembersService extends PageService {
 
     if (user.role === RoleValue.TRAINER) {
       queryBuilder.andWhere('TR.id = :userId', { userId: user.id });
-    }
-
-
-    if (getListMembersDto.sort_by && getListMembersDto.sort_enum) {
-      queryBuilder.addOrderBy(`P.${getListMembersDto.sort_by}`, getListMembersDto.sort_enum);
-    }
-
-    if (getListMembersDto.skip !== null && getListMembersDto.take !== null) {
-      queryBuilder.offset(getListMembersDto.skip).limit(getListMembersDto.take);
     }
 
     // if (getListMembersDto.status) {
@@ -104,7 +95,13 @@ export class MembersService extends PageService {
     }
 
     const itemCount = await queryBuilder.getCount();
-    const entities = await queryBuilder.getRawMany();
+    const entities = await queryBuilder.getRawMany()
+      .then((response) => {
+        response.forEach((entity) => {
+          entity.MemberBirthDate = moment(entity.MemberBirthDate).format('YYYY-MM-DD');
+        });
+        return response;
+      });
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
   }
@@ -128,7 +125,6 @@ export class MembersService extends PageService {
 
   async createMember(memberDto: CreateMemberDto, avatar: Express.Multer.File) {
     const { ...params } = memberDto;
-    console.log('params', params);
     const user = this.userRepository.create({
       ...params,
       role: RoleValue.MEMBER,
@@ -167,14 +163,19 @@ export class MembersService extends PageService {
       id: existingMember.user_id,
     });
 
+    console.log('avatar', avatar);
+
     if (avatar) {
       const image = await this.uploadAvatar(user.id, avatar);
       user.avatar = image.Location;
       await this.userRepository.save(user);
     }
 
-    await this.membersRepository.update(existingMember.id, params);
-    return this.getById(existingMember.id);
+    this.userRepository.merge(user, params);
+    await this.userRepository.save(user);
+
+    this.membersRepository.merge(existingMember, params);
+    await this.membersRepository.save(existingMember);
   }
 
   async getMember(memberId: number): Promise<PageResponseDto<Member>> {
@@ -205,7 +206,7 @@ export class MembersService extends PageService {
       .where('member.id = :memberId', { memberId })
       .getRawOne()
       .then((response) => {
-        response.MemberBirthDate = moment(response.MemberBirthDate).format('DD-MM-YYYY');
+        response.MemberBirthDate = moment(response.MemberBirthDate).format('YYYY-MM-DD');
         return new PageResponseDto(response);
       });
   }
@@ -215,9 +216,8 @@ export class MembersService extends PageService {
       id: memberId,
     });
 
-    const deletedmember = await this.membersRepository.remove(member);
-    this.membersRepository.save(deletedmember);
-    return new PageResponseDto(member);
+    await this.membersRepository.remove(member);
+    return { message: 'Delete member successfully' };
   }
 
 }

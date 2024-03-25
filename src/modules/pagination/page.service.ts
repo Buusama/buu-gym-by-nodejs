@@ -11,7 +11,7 @@ export class PageService {
     const queryBuilder = repository.createQueryBuilder('table');
 
     if (pageDto.sort_by && pageDto.sort_enum) {
-      queryBuilder.addOrderBy(`table.${pageDto.sort_by}`, pageDto.sort_enum);
+      queryBuilder.addOrderBy(`${pageDto.sort_by}`, pageDto.sort_enum);
     }
 
     if (pageDto.skip !== null && pageDto.take !== null) {

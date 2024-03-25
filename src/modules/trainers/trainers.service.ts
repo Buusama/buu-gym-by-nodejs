@@ -9,6 +9,7 @@ import { CreateTrainerDto, GetListTrainersDto, UpdateTrainerDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { User } from 'src/entities/user.entity';
 import { RoleValue } from 'src/commons/enums/role-enum';
+import * as moment from 'moment';
 
 @Injectable()
 export class TrainersService extends PageService {
@@ -38,11 +39,14 @@ export class TrainersService extends PageService {
       .select([
         'table.id AS TrainerId',
         'user.id AS UserId',
-        'user.email AS Email',
-        'user.name AS Name',
-        'user.phone AS Phone',
-        'user.avatar AS Avatar',
-        'user.address AS Address',
+        'user.email AS email',
+        'user.name AS name',
+        'user.phone AS phone',
+        'user.avatar AS avatar',
+        'user.address AS address',
+        'user.birth_date AS birth_date',
+        'user.gender AS gender',
+        'table.specialization AS specialization',
       ])
       .innerJoin('table.staff', 'staff')
       .leftJoin('staff.user', 'user');
@@ -66,7 +70,13 @@ export class TrainersService extends PageService {
       );
     }
     const itemCount = await queryBuilder.getCount();
-    const entities = await queryBuilder.getRawMany();
+    const entities = await queryBuilder.getRawMany()
+      .then((response) => {
+        response.forEach((entity) => {
+          entity.birth_date = moment(entity.birth_date).format('YYYY-MM-DD');
+        });
+        return response;
+      });
     const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
   }

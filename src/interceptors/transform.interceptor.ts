@@ -25,9 +25,9 @@ export class TransformInterceptor<T>
       map((data) => ({
         statusCode: context.switchToHttp().getResponse().statusCode,
         reqId: context.switchToHttp().getRequest().reqId,
-        message: data.message || '',
-        data: data.data,
-        meta: data.meta || [],
+        message: data?.message || '',
+        data: data?.data,
+        meta: data?.meta || [],
       })),
     );
   }

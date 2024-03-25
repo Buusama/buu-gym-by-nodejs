@@ -5,18 +5,15 @@ import {
   IsOptional,
   IsString
 } from 'class-validator';
-import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
+import { UpdateUserDto } from 'src/modules/users/dto/update-user.dto';
 
-export class UpdateMemberDto extends CreateUserDto {
-  @ApiProperty()
+export class UpdateMemberDto extends UpdateUserDto {
+  @ApiProperty({ required: false })
   @IsNotEmpty()
-  user_id: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   package_id: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsNotEmpty()
   @IsOptional()
   trainer_id: number;
@@ -24,11 +21,13 @@ export class UpdateMemberDto extends CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
+  @IsOptional()
   start_date: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsDateString()
+  @IsOptional()
   end_date: string;
 }
