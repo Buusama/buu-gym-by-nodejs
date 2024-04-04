@@ -8,7 +8,7 @@ export default class ServicesSeeder extends Seeder {
     const specialServices = [
       {
         name: 'Special Service 1',
-        categories: ['category 1', 'category 2'],
+        categories: [1, 2, 3],
         saleOff: 10,
         is_online: true,
         description: 'Description for special service 1',
@@ -23,7 +23,7 @@ export default class ServicesSeeder extends Seeder {
       },
       {
         name: 'Special Service 2',
-        categories: ['category 1', 'category 3'],
+        categories: [1, 3, 4],
         saleOff: 20,
         is_online: true,
         description: 'Description for special service 2',
@@ -38,7 +38,7 @@ export default class ServicesSeeder extends Seeder {
       },
       {
         name: 'Special Service 3',
-        categories: ['category 2', 'category 3'],
+        categories: [2, 3],
         saleOff: 30,
         is_online: true,
         description: 'Description for special service 3',
@@ -53,7 +53,7 @@ export default class ServicesSeeder extends Seeder {
       },
       {
         name: 'Special Service 4',
-        categories: ['category 1', 'category 4'],
+        categories: [1, 4],
         saleOff: 40,
         is_online: true,
         description: 'Description for special service 4',
@@ -68,7 +68,7 @@ export default class ServicesSeeder extends Seeder {
       },
       {
         name: 'Special Service 5',
-        categories: ['category 2', 'category 4'],
+        categories: [2, 4],
         saleOff: 50,
         is_online: true,
         description: 'Description for special service 5',

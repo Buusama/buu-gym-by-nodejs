@@ -26,6 +26,6 @@ export class PageMetaDto {
     this.itemCount = itemCount;
     this.pageCount = Math.ceil(this.itemCount / this.take);
     this.hasPreviousPage = this.page > GlobalEnum.PAGE_DEFAULT;
-    this.hasNextPage = this.page < this.pageCount;
+    this.hasNextPage = this.page < this.pageCount - 1;
   }
 }

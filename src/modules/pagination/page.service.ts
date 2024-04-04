@@ -13,9 +13,9 @@ export class PageService {
     if (pageDto.sort_by && pageDto.sort_enum) {
       queryBuilder.addOrderBy(`${pageDto.sort_by}`, pageDto.sort_enum);
     }
-
-    if (pageDto.skip !== null && pageDto.take !== null) {
-      queryBuilder.offset(pageDto.skip).limit(pageDto.take);
+    const skip = (pageDto.page) * pageDto.take <= 0 ? 0 : (pageDto.page) * pageDto.take;
+    if (pageDto.page !== null && pageDto.take !== null) {
+      queryBuilder.skip(skip).take(pageDto.take);
     }
 
     return queryBuilder;

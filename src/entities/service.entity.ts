@@ -6,7 +6,7 @@ export class Service {
   id: number;
 
   @Column({ type: 'json', nullable: true })
-  categories: string[];
+  categories: number[];
 
   @Column({ type: 'varchar', nullable: true })
   name: string;
@@ -42,5 +42,5 @@ export class Service {
   featured_image: string;
 
   @Column({ type: 'json', nullable: true })
-  gallery: string[];
+  gallery_images: string[];
 }

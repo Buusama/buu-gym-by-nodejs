@@ -12,7 +12,7 @@ export class PageDto {
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  public skip: number;
+  public page: number;
 
   @ApiProperty({ required: false })
   @Transform(({ value }) => parseInt(value))
