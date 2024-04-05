@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   UseFilters,
   UseGuards,
@@ -33,8 +34,9 @@ export class ServicesController {
 
   @Get(':id')
   @UseFilters(EntityNotFoundErrorFilter)
+  @PublicRoute()
   @ApiOkResponse({ description: 'Get service by id' })
-  async getService(@Query('id') id: number): Promise<PageResponseDto<Service>> {
+  async getService(@Param('id') id: number): Promise<PageResponseDto<Service>> {
     return this.servicesService.getService(id);
   }
 

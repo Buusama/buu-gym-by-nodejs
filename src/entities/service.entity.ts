@@ -20,7 +20,7 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   description: string;
   
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'int', nullable: true })
   price: number;
 
   @Column({ type: 'int', nullable: true })

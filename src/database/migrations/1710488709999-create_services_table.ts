@@ -41,9 +41,7 @@ export class CreateServicesTable1710488709999 implements MigrationInterface {
           },
           {
             name: 'price',
-            type: 'decimal',
-            precision: 10,
-            scale: 2,
+            type: 'int',
             isNullable: true,
           },
           {
