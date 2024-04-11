@@ -163,8 +163,6 @@ export class MembersService extends PageService {
       id: existingMember.user_id,
     });
 
-    console.log('avatar', avatar);
-
     if (avatar) {
       const image = await this.uploadAvatar(user.id, avatar);
       user.avatar = image.Location;

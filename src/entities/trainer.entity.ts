@@ -9,6 +9,9 @@ import { Staff } from './staff.entity';
 
 @Entity('trainers')
 export class Trainer {
+  birth_date(birth_date: any) {
+    throw new Error('Method not implemented.');
+  }
   @PrimaryGeneratedColumn()
   id: number;
 

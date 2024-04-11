@@ -23,23 +23,21 @@ import { TrainersService } from './trainers.service';
 import { User } from 'src/entities/user.entity';
 import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 
 @ApiTags('trainers')
 @UseInterceptors(TransformInterceptor)
-@ApiBearerAuth('access-token')
 @Controller('trainers')
-@UseGuards(RoleGuard)
 export class TrainersController {
   constructor(private readonly trainersService: TrainersService) { }
 
   @Get()
   @ApiOkResponse({ description: 'List all trainer' })
-  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @PublicRoute()
   getTrainers(
     @Query() getListTrainersDto: GetListTrainersDto,
-    @UserInRequest() user: User,
   ): Promise<PageResponseDto<Trainer>> {
-    return this.trainersService.getTrainers(getListTrainersDto, user);
+    return this.trainersService.getTrainers(getListTrainersDto);
   }
 
   // @ApiConsumes('multipart/form-data')
@@ -95,8 +93,8 @@ export class TrainersController {
   //   return this.trainersService.updateTrainer(Number(trainerID), dto, files);
   // }
   @Get(':id')
+  @PublicRoute()
   @UseFilters(EntityNotFoundErrorFilter)
-  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   async getTrainer(@Param('id') trainer_id: string) {
     return this.trainersService.getTrainer(Number(trainer_id));
   }

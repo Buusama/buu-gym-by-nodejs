@@ -15,10 +15,9 @@ import { PageDto } from 'src/modules/pagination/dto/page.dto';
 import { IsUnique } from 'src/validators/unique-column.validator';
 
 export class GetListTrainersDto extends PageDto {
-  @ApiProperty({ required: false, enum: MemberStatusValue, type: 'number' })
+  @ApiProperty({ required: false, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsOptional()
-  @IsEnum(MemberStatusValue)
   status: number;
 
   @ApiProperty({ required: false })
@@ -30,6 +29,7 @@ export class GetListTrainersDto extends PageDto {
   @ApiProperty({ required: false })
   value: string;
 }
+
 
 export class CreateTrainerDto {
   @ApiProperty({ type: 'string' })

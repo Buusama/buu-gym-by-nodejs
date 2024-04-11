@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PageService } from '../pagination/page.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Trainer } from 'src/entities/trainer.entity';
 import { Repository } from 'typeorm';
 import { AwsService } from '../aws/aws.service';
-import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { CreateTrainerDto, GetListTrainersDto, UpdateTrainerDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
-import { User } from 'src/entities/user.entity';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { PageResponseDto } from '../pagination/dto/page-response.dto';
+import { PageService } from '../pagination/page.service';
+import { GetListTrainersDto } from './dto';
 import * as moment from 'moment';
 
 @Injectable()
@@ -29,7 +27,6 @@ export class TrainersService extends PageService {
 
   async getTrainers(
     getListTrainersDto: GetListTrainersDto,
-    user: User,
   ): Promise<PageResponseDto<Trainer>> {
     const queryBuilder = await this.paginate(
       this.trainersRepository,
@@ -70,7 +67,7 @@ export class TrainersService extends PageService {
       );
     }
     const itemCount = await queryBuilder.getCount();
-    const entities = await queryBuilder.getRawMany()
+    let entities = await queryBuilder.getRawMany()
       .then((response) => {
         response.forEach((entity) => {
           entity.birth_date = moment(entity.birth_date).format('YYYY-MM-DD');
@@ -78,6 +75,10 @@ export class TrainersService extends PageService {
         return response;
       });
     const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
+
+    // PAGINATION
+    if (pageMeta.page >= 0 && pageMeta.take >= 0)
+      entities = entities.slice(pageMeta.take * pageMeta.page, pageMeta.take * (pageMeta.page + 1));
     return new PageResponseDto(entities, pageMeta);
   }
 
@@ -208,17 +209,23 @@ export class TrainersService extends PageService {
       .select([
         'trainer.id AS TrainerId',
         'user.id AS UserId',
-        'user.email AS Email',
-        'user.name AS Name',
-        'user.phone AS Phone',
-        'user.avatar AS Avatar',
-        'user.address AS Address',
+        'user.email AS email',
+        'user.name AS name',
+        'user.phone AS phone',
+        'user.avatar AS avatar',
+        'user.address AS address',
+        'user.birth_date AS birth_date',
+        'user.gender AS gender',
+        'trainer.specialization AS specialization',
       ])
       .innerJoin('trainer.staff', 'staff')
       .leftJoin('staff.user', 'user')
       .where('trainer.id = :trainerId', { trainerId })
       .getRawOne()
-      .then((response) => new PageResponseDto(response));
+      .then((response) => {
+        response.birth_date = moment(response.birth_date).format('YYYY-MM-DD');
+        return new PageResponseDto(response);
+      });
   }
 
   async destroyTrainer(trainer_id: number) {
