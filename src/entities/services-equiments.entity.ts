@@ -1,21 +1,21 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Workout } from './workout.entity';
+import { Service } from './service.entity';
 import { Equipment } from './equipment.entity';
 
 @Entity('services-equipments')
-export class WorkoutEquipment {
+export class ServiceEquipment {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    workout_id: number;
+    service_id: number;
 
     @Column()
     equipment_id: number;
 
-    @ManyToOne(() => Workout, workout => workout.workoutEquipment)
-    workout: Workout;
+    @ManyToOne(() => Service, service => service.serviceEquipment)
+    service: Service;
 
-    @ManyToOne(() => Equipment, equipment => equipment.workoutEquipment)
+    @ManyToOne(() => Equipment, equipment => equipment.serviceEquipment)
     equipment: Equipment;
 }

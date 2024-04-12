@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ServiceEquipment } from './services-equiments.entity';
 
 @Entity('services')
 export class Service {
@@ -43,4 +44,8 @@ export class Service {
 
   @Column({ type: 'json', nullable: true })
   gallery_images: string[];
+  
+  // relationship
+  @OneToMany(() => ServiceEquipment, serviceEquipment => serviceEquipment.service)
+  serviceEquipment: ServiceEquipment[];
 }

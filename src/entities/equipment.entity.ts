@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkoutEquipment } from './workout-equipment.entity';
+import { ServiceEquipment } from './services-equiments.entity';
 
 @Entity('equipments')
 export class Equipment {
@@ -12,6 +12,6 @@ export class Equipment {
     @Column()
     condition: string;
 
-    @OneToMany(() => WorkoutEquipment, workoutEquipment => workoutEquipment.equipment)
-    workoutEquipment: WorkoutEquipment[];
+    @OneToMany(() => ServiceEquipment, serviceEquipment => serviceEquipment.equipment)
+    serviceEquipment: ServiceEquipment[];
 }
