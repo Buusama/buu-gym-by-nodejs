@@ -14,7 +14,12 @@ import { UsersService } from './users.service';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
-import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GetListUsersDto } from './dto/get-list-users.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
@@ -27,7 +32,7 @@ import { imageFileFilter } from 'src/supports/helpers';
 @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @ApiOkResponse({ description: 'List all users' })
@@ -56,6 +61,6 @@ export class UsersController {
     @UploadedFile() avatar: Express.Multer.File,
     @Req() req: any,
   ): Promise<PageResponseDto<User>> {
-    return this.usersService.createUser(createUserDto,avatar);
+    return this.usersService.createUser(createUserDto, avatar);
   }
 }

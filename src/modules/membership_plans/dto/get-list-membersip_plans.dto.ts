@@ -4,7 +4,7 @@ import { IsEnum, IsOptional } from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
-export class GetListPackagesDto extends PageDto {
+export class GetListMembershipPlansDto extends PageDto {
   @ApiProperty({ required: false, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsOptional()

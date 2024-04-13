@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Package } from './package.entity';
+import { MembershipPlan } from './membership-plan.entity';
 import { Trainer } from './trainer.entity';
 
 @Entity('members')
@@ -18,10 +18,7 @@ export class Member {
   user_id: number;
 
   @Column()
-  package_id: number;
-
-  @Column()
-  trainer_id: number;
+  membership_plan_id: number;
 
   @Column()
   start_date: Date;
@@ -33,11 +30,8 @@ export class Member {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => Package, { eager: true })
-  @JoinColumn({ name: 'package_id' })
-  package: Package;
+  @OneToOne(() => MembershipPlan, { eager: true })
+  @JoinColumn({ name: 'membership_plan_id' })
+  membership_plan: MembershipPlan;
 
-  @OneToOne(() => Trainer, { eager: true })
-  @JoinColumn({ name: 'trainer_id' })
-  trainer: Trainer;
 }

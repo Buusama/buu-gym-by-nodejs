@@ -1,8 +1,7 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateWorkoutEquipmentsTable1710487444663
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -22,6 +21,11 @@ export class CreateWorkoutEquipmentsTable1710487444663
           {
             name: 'equipment_id',
             type: 'int',
+          },
+          {
+            name: 'quantity',
+            type: 'int',
+            default: 1,
           },
         ],
       }),

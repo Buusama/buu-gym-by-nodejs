@@ -23,6 +23,10 @@ export class CreateEquipmentsTable1710477443290 implements MigrationInterface {
             type: 'varchar',
             length: '50',
           },
+          {
+            name: 'quantity',
+            type: 'int',
+          },
         ],
       }),
       true,

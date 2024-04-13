@@ -1,17 +1,20 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ServiceEquipment } from './services-equiments.entity';
+import { WorkoutEquipment } from './workout-equipment.entity';
 
 @Entity('equipments')
 export class Equipment {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    condition: string;
+  @Column()
+  condition: string;
 
-    @OneToMany(() => ServiceEquipment, serviceEquipment => serviceEquipment.equipment)
-    serviceEquipment: ServiceEquipment[];
+  @OneToMany(
+    () => WorkoutEquipment,
+    (workoutEquipment) => workoutEquipment.equipment,
+  )
+  workoutEquipment: WorkoutEquipment[];
 }

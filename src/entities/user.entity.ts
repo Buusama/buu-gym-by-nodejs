@@ -9,9 +9,6 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ default: 0 })
-  role: number;
-
   @Column()
   gender: number;
 

@@ -31,7 +31,6 @@ export class UserFactory extends Factory<User> {
 
     return {
       name,
-      role,
       gender: gender,
       avatar: faker.image.avatar(),
       birth_date: birthday,

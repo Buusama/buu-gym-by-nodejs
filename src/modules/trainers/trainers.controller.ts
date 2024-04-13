@@ -5,13 +5,9 @@ import {
   Query,
   UseFilters,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiTags
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RequireRole } from 'src/commons/decorators/require-role.decorator';
 import { RoleValue } from 'src/commons/enums/role-enum';
 import { Trainer } from 'src/entities/trainer.entity';
@@ -29,7 +25,7 @@ import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 @UseInterceptors(TransformInterceptor)
 @Controller('trainers')
 export class TrainersController {
-  constructor(private readonly trainersService: TrainersService) { }
+  constructor(private readonly trainersService: TrainersService) {}
 
   @Get()
   @ApiOkResponse({ description: 'List all trainer' })

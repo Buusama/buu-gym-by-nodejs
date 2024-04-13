@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoleValue } from 'src/commons/enums/role-enum';
 import { Member } from 'src/entities/member.entity';
 import { Repository } from 'typeorm';
-import { Package } from '../../entities/package.entity';
+import { Package } from '../../entities/membership-plan.entity';
 import { Staff } from '../../entities/staff.entity';
 import { Trainer } from '../../entities/trainer.entity';
 import { User } from '../../entities/user.entity';
@@ -38,7 +38,10 @@ export class MembersService extends PageService {
     getListMembersDto: GetListMembersDto,
     user: User,
   ): Promise<PageResponseDto<Member>> {
-    const queryBuilder = await this.paginate(this.membersRepository, getListMembersDto);
+    const queryBuilder = await this.paginate(
+      this.membersRepository,
+      getListMembersDto,
+    );
     queryBuilder
       .select([
         'table.id AS MemberId',
@@ -95,13 +98,14 @@ export class MembersService extends PageService {
     }
 
     const itemCount = await queryBuilder.getCount();
-    const entities = await queryBuilder.getRawMany()
-      .then((response) => {
-        response.forEach((entity) => {
-          entity.MemberBirthDate = moment(entity.MemberBirthDate).format('YYYY-MM-DD');
-        });
-        return response;
+    const entities = await queryBuilder.getRawMany().then((response) => {
+      response.forEach((entity) => {
+        entity.MemberBirthDate = moment(entity.MemberBirthDate).format(
+          'YYYY-MM-DD',
+        );
       });
+      return response;
+    });
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
     return new PageResponseDto(entities, pageMeta);
   }
@@ -204,7 +208,9 @@ export class MembersService extends PageService {
       .where('member.id = :memberId', { memberId })
       .getRawOne()
       .then((response) => {
-        response.MemberBirthDate = moment(response.MemberBirthDate).format('YYYY-MM-DD');
+        response.MemberBirthDate = moment(response.MemberBirthDate).format(
+          'YYYY-MM-DD',
+        );
         return new PageResponseDto(response);
       });
   }
@@ -217,5 +223,4 @@ export class MembersService extends PageService {
     await this.membersRepository.remove(member);
     return { message: 'Delete member successfully' };
   }
-
 }

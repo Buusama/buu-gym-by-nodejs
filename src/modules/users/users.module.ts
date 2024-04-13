@@ -12,4 +12,4 @@ import { AwsModule } from '../aws/aws.module';
   providers: [UsersService, EmailUniqueValidator],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

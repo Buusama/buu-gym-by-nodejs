@@ -3,7 +3,7 @@ import {
   IsDateString,
   IsNotEmpty,
   IsOptional,
-  IsString
+  IsString,
 } from 'class-validator';
 import { UpdateUserDto } from 'src/modules/users/dto/update-user.dto';
 

@@ -11,4 +11,4 @@ import { UniqueColumnValidator } from 'src/validators/unique-column.validator';
   providers: [TrainersService, UniqueColumnValidator],
   exports: [TrainersService],
 })
-export class TrainerModule {}
+export class TrainersModule {}

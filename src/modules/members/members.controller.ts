@@ -11,7 +11,7 @@ import {
   UploadedFile,
   UseFilters,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -41,7 +41,7 @@ import { MembersService } from './members.service';
 @Controller('members')
 @UseGuards(RoleGuard)
 export class MembersController {
-  constructor(private readonly membersService: MembersService) { }
+  constructor(private readonly membersService: MembersService) {}
 
   @Get()
   @ApiOkResponse({ description: 'List all member' })

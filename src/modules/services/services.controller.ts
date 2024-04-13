@@ -5,7 +5,7 @@ import {
   Query,
   UseFilters,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
@@ -21,7 +21,7 @@ import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 @UseInterceptors(TransformInterceptor)
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) { }
+  constructor(private readonly servicesService: ServicesService) {}
   @Get()
   @PublicRoute()
   @ApiOkResponse({ description: 'List all services' })
@@ -31,7 +31,6 @@ export class ServicesController {
     return this.servicesService.getServices(getListServicesDto);
   }
 
-
   @Get(':id')
   @UseFilters(EntityNotFoundErrorFilter)
   @PublicRoute()
@@ -39,5 +38,4 @@ export class ServicesController {
   async getService(@Param('id') id: number): Promise<PageResponseDto<Service>> {
     return this.servicesService.getService(id);
   }
-
 }

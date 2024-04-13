@@ -30,7 +30,6 @@ export class GetListTrainersDto extends PageDto {
   value: string;
 }
 
-
 export class CreateTrainerDto {
   @ApiProperty({ type: 'string' })
   @IsString()

@@ -9,18 +9,16 @@ export default class StaffSeeder extends Seeder {
     const user = await dataSource.getRepository(User).find();
     const staffData = [];
 
-    user.map((user) => {
-      if (user.role === RoleValue.STAFF || user.role === RoleValue.TRAINER) {
-        staffData.push({
-          user_id: user.id,
-          salary_amount: faker.number.int({ min: 5000000, max: 20000000 }),
-          start_date: faker.date.between({
-            from: '2020-01-01',
-            to: '2021-01-01',
-          }),
-        });
-      }
-    });
+    for (let i = 10; i < 50; i++) {
+      staffData.push({
+        user_id: user[i].id,
+        salary_amount: faker.number.int({ min: 1000000, max: 20000000 }),
+        start_date: faker.date.between({
+          from: new Date('2020-01-01'),
+          to: new Date('2021-01-01'),
+        }),
+      });
+    }
 
     try {
       await dataSource

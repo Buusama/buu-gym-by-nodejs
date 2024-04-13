@@ -18,11 +18,7 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
             type: 'int',
           },
           {
-            name: 'package_id',
-            type: 'int',
-          },
-          {
-            name: 'trainer_id',
+            name: 'membership_plan_id',
             type: 'int',
           },
           {
@@ -32,6 +28,10 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
           {
             name: 'end_date',
             type: 'datetime',
+          },
+          {
+            name: 'status',
+            type: 'smallint',
           },
         ],
       }),

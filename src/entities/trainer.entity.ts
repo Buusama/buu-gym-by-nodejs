@@ -19,10 +19,13 @@ export class Trainer {
   staff_id: number;
 
   @Column()
-  certificate: string;
+  experience: string;
 
   @Column()
-  specialization: string;
+  specialty: string;
+
+  @Column()
+  rating: number;
 
   @OneToOne(() => Staff, { eager: true }) // Đảm bảo mối quan hệ user được tải ngay
   @JoinColumn({ name: 'staff_id' }) // Chỉ định tên cột cho việc kết nối

@@ -6,11 +6,11 @@ export enum GlobalEnum {
 }
 
 export interface RoleInterface {
-  Admin: 'Admin',
-  Staff: 'Staff',
-  Trainer: 'Trainer',
-  Member: 'Member',
-};
+  Admin: 'Admin';
+  Staff: 'Staff';
+  Trainer: 'Trainer';
+  Member: 'Member';
+}
 
 export type Role = keyof RoleInterface;
 

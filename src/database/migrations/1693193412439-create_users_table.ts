@@ -19,15 +19,9 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             length: '255',
           },
           {
-            name: 'role',
-            type: 'smallint',
-            unsigned: true,
-          },
-          {
             name: 'gender',
             type: 'smallint',
           },
-
           {
             name: 'avatar',
             type: 'varchar',
@@ -63,6 +57,20 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
             name: 'address',
             type: 'varchar',
             length: '255',
+          },
+          {
+            name: 'status',
+            type: 'smallint',
+          },
+          {
+            name: 'created_at',
+            type: 'timestamp',
+            default: 'now()',
+          },
+          {
+            name: 'updated_at',
+            type: 'timestamp',
+            default: 'now()',
           },
         ],
       }),

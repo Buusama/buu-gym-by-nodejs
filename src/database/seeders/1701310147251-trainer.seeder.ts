@@ -9,15 +9,13 @@ export default class TrainerSeeder extends Seeder {
     const staff = await dataSource.getRepository(Staff).find();
     const trainerData = [];
 
-    staff.forEach((staff) => {
-      if (staff.user.role === RoleValue.TRAINER) {
-        trainerData.push({
-          staff_id: staff.id,
-          certificate: faker.lorem.sentence(),
-          specialization: faker.lorem.sentence(),
-        });
-      }
-    });
+    for (let i = 0; i < 20; i++) {
+      trainerData.push({
+        staff_id: staff[i].id,
+        experience: faker.number.int({ min: 1, max: 10 }),
+        speciality: faker.lorem.sentence(),
+      });
+    }
 
     try {
       await dataSource

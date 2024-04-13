@@ -43,10 +43,7 @@ export class UsersService extends PageService {
     return this.usersRepository.findOneBy({ email });
   }
 
-  async uploadAvatar(
-    user_id: number,
-    file: Express.Multer.File,
-  ): Promise<any> {
+  async uploadAvatar(user_id: number, file: Express.Multer.File): Promise<any> {
     try {
       const uploadResult = await this.s3Service.uploadFile(
         file.originalname,

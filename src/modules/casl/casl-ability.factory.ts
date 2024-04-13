@@ -1,4 +1,10 @@
-import { Ability, AbilityBuilder, AbilityClass, ForcedSubject, InferSubjects } from '@casl/ability';
+import {
+  Ability,
+  AbilityBuilder,
+  AbilityClass,
+  ForcedSubject,
+  InferSubjects,
+} from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { Action } from 'src/commons/enums/global-enum';
 import { RoleValue } from 'src/commons/enums/role-enum';
@@ -22,7 +28,10 @@ export class CaslAbilityFactory {
       this.defineAdminPermissions(can);
     } else if (user.role === RoleValue.MEMBER) {
       this.defineUserPermissions(user, can);
-    } else if (user.role === RoleValue.TRAINER || user.role === RoleValue.STAFF) {
+    } else if (
+      user.role === RoleValue.TRAINER ||
+      user.role === RoleValue.STAFF
+    ) {
       this.defineTrainerStaffPermissions(user, can);
     } else {
       // No permissions for other roles

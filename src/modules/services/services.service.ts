@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Package } from 'src/entities/package.entity';
+import { Package } from 'src/entities/membership-plan.entity';
 import { Service } from 'src/entities/service.entity';
 import { Repository } from 'typeorm';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
@@ -36,5 +36,4 @@ export class ServicesService extends PageService {
       .findOneByOrFail({ id: id })
       .then((response) => new PageResponseDto(response));
   }
-
 }

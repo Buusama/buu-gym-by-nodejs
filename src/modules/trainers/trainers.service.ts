@@ -67,18 +67,20 @@ export class TrainersService extends PageService {
       );
     }
     const itemCount = await queryBuilder.getCount();
-    let entities = await queryBuilder.getRawMany()
-      .then((response) => {
-        response.forEach((entity) => {
-          entity.birth_date = moment(entity.birth_date).format('YYYY-MM-DD');
-        });
-        return response;
+    let entities = await queryBuilder.getRawMany().then((response) => {
+      response.forEach((entity) => {
+        entity.birth_date = moment(entity.birth_date).format('YYYY-MM-DD');
       });
+      return response;
+    });
     const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
 
     // PAGINATION
     if (pageMeta.page >= 0 && pageMeta.take >= 0)
-      entities = entities.slice(pageMeta.take * pageMeta.page, pageMeta.take * (pageMeta.page + 1));
+      entities = entities.slice(
+        pageMeta.take * pageMeta.page,
+        pageMeta.take * (pageMeta.page + 1),
+      );
     return new PageResponseDto(entities, pageMeta);
   }
 
@@ -229,7 +231,9 @@ export class TrainersService extends PageService {
   }
 
   async destroyTrainer(trainer_id: number) {
-    const trainer = await this.trainersRepository.findOneByOrFail({ id: trainer_id });
+    const trainer = await this.trainersRepository.findOneByOrFail({
+      id: trainer_id,
+    });
 
     const deleteTrainer = await this.trainersRepository.remove(trainer);
     this.trainersRepository.save(deleteTrainer);

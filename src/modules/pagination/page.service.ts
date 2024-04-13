@@ -21,15 +21,21 @@ export class PageService {
     return queryBuilder;
   }
 
-  private applySorting<T>(queryBuilder: SelectQueryBuilder<T>, pageDto: PageDto): void {
+  private applySorting<T>(
+    queryBuilder: SelectQueryBuilder<T>,
+    pageDto: PageDto,
+  ): void {
     if (pageDto.sort_by && pageDto.sort_enum) {
       queryBuilder.addOrderBy(pageDto.sort_by, pageDto.sort_enum);
     }
   }
 
-  private applyPagination<T>(queryBuilder: SelectQueryBuilder<T>, pageDto: PageDto): void {
+  private applyPagination<T>(
+    queryBuilder: SelectQueryBuilder<T>,
+    pageDto: PageDto,
+  ): void {
     if (pageDto.page !== null && pageDto.take !== null) {
-      let skip = Math.max(0, (pageDto.page) * pageDto.take);
+      let skip = Math.max(0, pageDto.page * pageDto.take);
       skip = isNaN(skip) ? 0 : skip;
       queryBuilder.skip(skip).take(pageDto.take);
     }

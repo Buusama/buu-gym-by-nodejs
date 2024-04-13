@@ -1,38 +1,29 @@
 import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { Package } from '../../entities/package.entity';
-import { Trainer } from '../../entities/trainer.entity';
-import { User } from '../../entities/user.entity';
 import { DataSource } from 'typeorm';
-import { RoleValue } from '../../commons/enums/role-enum';
+import { MembershipPlan } from '../../entities/membership-plan.entity';
+import { User } from '../../entities/user.entity';
 
 export default class MemberSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
-    const users = await dataSource.getRepository(User).find();
-    const packages = await dataSource.getRepository(Package).find();
-    const trainers = await dataSource.getRepository(Trainer).find();
+    const user = await dataSource.getRepository(User).find();
     const memberData = [];
 
-    users.map((user) => {
-      if (user.role === RoleValue.MEMBER) {
-        memberData.push({
-          user_id: user.id,
-          package_id:
-            packages[faker.number.int({ min: 0, max: packages.length - 1 })].id,
-          trainer_id:
-            trainers[faker.number.int({ min: 0, max: trainers.length - 1 })].id,
-          start_date: faker.date.between({
-            from: '2020-01-01',
-            to: '2021-01-01',
-          }),
-          end_date: faker.date.between({
-            from: '2021-01-01',
-            to: '2022-01-01',
-          }),
-        });
-      }
-    });
-
+    for (let i = 50; i < 100; i++) {
+      const start_date = faker.date.between({
+        from: new Date('2021-01-01'),
+        to: new Date('2021-05-01'),
+      });
+      const membership_plan_id = faker.number.int({ min: 1, max: 4 });
+      const duration = membership_plan_id == 1 ? 30 : membership_plan_id == 2 ? 90 : membership_plan_id == 3 ? 180 : 365
+      memberData.push({
+        user_id: user[i].id,
+        membership_plan_id,
+        start_date,
+        end_date: new Date(start_date.getDate() + duration),
+        status: faker.number.int({ min: 1, max: 2 }),
+      });
+    }
     try {
       await dataSource
         .createQueryBuilder()
