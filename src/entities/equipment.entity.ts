@@ -15,6 +15,7 @@ export class Equipment {
   @OneToMany(
     () => WorkoutEquipment,
     (workoutEquipment) => workoutEquipment.equipment_id,
+    { eager: true },
   )
   workoutEquipment: WorkoutEquipment[];
 }

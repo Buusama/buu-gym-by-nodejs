@@ -29,8 +29,9 @@ export class CreateWorkoutsTable1710477210022 implements MigrationInterface {
             unsigned: true,
           },
           {
-            name: 'gallary_images',
-            type: 'json',
+            name: 'thumbnail',
+            type: 'varchar',
+            length: '255',
             isNullable: true,
           },
         ],

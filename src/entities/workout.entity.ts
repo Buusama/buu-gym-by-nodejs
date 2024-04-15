@@ -16,18 +16,20 @@ export class Workout {
   @Column()
   duration: number;
 
-  @Column({ type: 'json', nullable: true })
-  gallary_images: string[];
+  @Column({ type: 'text', nullable: true })
+  thumbnail: string;
 
   @OneToMany(
     () => WorkoutEquipment,
     (workoutEquipment) => workoutEquipment.workout,
+    { eager: true },
   )
   workoutEquipment: WorkoutEquipment[];
 
   @OneToMany(
     () => ServiceWorkout,
     (serviceWorkout) => serviceWorkout.workout,
+    { eager: true },
   )
   serviceWorkout: ServiceWorkout[];
 }

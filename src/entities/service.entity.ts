@@ -29,6 +29,7 @@ export class Service {
   @OneToMany(
     () => ServiceWorkout,
     (serviceWorkout) => serviceWorkout.service,
+    { eager: true },
   )
   serviceWorkout: ServiceWorkout[];
 }
