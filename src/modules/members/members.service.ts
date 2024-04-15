@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoleValue } from 'src/commons/enums/role-enum';
 import { Member } from 'src/entities/member.entity';
 import { Repository } from 'typeorm';
-import { Package } from '../../entities/membership-plan.entity';
+import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { Staff } from '../../entities/staff.entity';
 import { Trainer } from '../../entities/trainer.entity';
 import { User } from '../../entities/user.entity';
@@ -53,21 +53,10 @@ export class MembersService extends PageService {
         'P.birth_date AS MemberBirthDate',
         'P.gender AS MemberGender',
         'MP.name AS PackageName',
-        'PT.id AS TrainerId',
-        'TR.name AS TrainerName',
-        'TR.id AS TrainerId',
       ])
       .innerJoin(User, 'P', 'table.user_id = P.id')
-      .innerJoin(Package, 'MP', 'table.package_id = MP.id')
-
-      .innerJoin(Trainer, 'PT', 'table.trainer_id = PT.id')
-      .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
-      .leftJoin(User, 'TR', 'ST.user_id = TR.id');
+      .innerJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id')
     // .orderBy('table.id', 'DESC');
-
-    if (user.role === RoleValue.TRAINER) {
-      queryBuilder.andWhere('TR.id = :userId', { userId: user.id });
-    }
 
     // if (getListMembersDto.status) {
     //   queryBuilder.andWhere('table.status = :status', {
@@ -98,7 +87,7 @@ export class MembersService extends PageService {
     }
 
     const itemCount = await queryBuilder.getCount();
-    const entities = await queryBuilder.getRawMany().then((response) => {
+    let entities = await queryBuilder.getRawMany().then((response) => {
       response.forEach((entity) => {
         entity.MemberBirthDate = moment(entity.MemberBirthDate).format(
           'YYYY-MM-DD',
@@ -107,6 +96,13 @@ export class MembersService extends PageService {
       return response;
     });
     const pageMeta = new PageMetaDto(getListMembersDto, itemCount);
+
+    // PAGINATION
+    if (pageMeta.page >= 0 && pageMeta.take >= 0)
+      entities = entities.slice(
+        pageMeta.take * pageMeta.page,
+        pageMeta.take * (pageMeta.page + 1),
+      );
     return new PageResponseDto(entities, pageMeta);
   }
 
@@ -131,7 +127,6 @@ export class MembersService extends PageService {
     const { ...params } = memberDto;
     const user = this.userRepository.create({
       ...params,
-      role: RoleValue.MEMBER,
     });
     await this.userRepository.save(user);
 
@@ -193,17 +188,12 @@ export class MembersService extends PageService {
         'P.avatar AS MemberAvatar',
         'P.birth_date AS MemberBirthDate',
         'MP.name AS PackageName',
-        'PT.specialization AS TrainerSpecialization',
-        'TR.name AS TrainerName',
         'BM.measurement_date',
         'BM.height',
         'BM.weight',
       ])
       .innerJoin(User, 'P', 'member.user_id = P.id')
-      .innerJoin(Package, 'MP', 'member.package_id = MP.id')
-      .leftJoin(Trainer, 'PT', 'member.trainer_id = PT.id')
-      .leftJoin(Staff, 'ST', 'PT.staff_id = ST.id')
-      .leftJoin(User, 'TR', 'ST.user_id = TR.id')
+      .innerJoin(MembershipPlan, 'MP', 'member.membership_plan_id = MP.id')
       .leftJoin(BodyMeasurement, 'BM', 'BM.member_id = member.id')
       .where('member.id = :memberId', { memberId })
       .getRawOne()

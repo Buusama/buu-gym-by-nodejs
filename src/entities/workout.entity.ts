@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { WorkoutEquipment } from './workout-equipment.entity';
+import { ServiceWorkout } from './service-workout.entity';
 
 @Entity('workouts')
 export class Workout {
@@ -15,12 +16,18 @@ export class Workout {
   @Column()
   duration: number;
 
-  @Column({ default: 1 })
-  status: number;
+  @Column({ type: 'json', nullable: true })
+  gallary_images: string[];
 
   @OneToMany(
     () => WorkoutEquipment,
     (workoutEquipment) => workoutEquipment.workout,
   )
   workoutEquipment: WorkoutEquipment[];
+
+  @OneToMany(
+    () => ServiceWorkout,
+    (serviceWorkout) => serviceWorkout.workout,
+  )
+  serviceWorkout: ServiceWorkout[];
 }

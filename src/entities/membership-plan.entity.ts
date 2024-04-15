@@ -16,7 +16,7 @@ export class MembershipPlan {
 
   @Column({ type: 'json', nullable: true })
   free_service: number[];
-  
+
   @Column({ type: 'text', nullable: true })
   description: string;
 }

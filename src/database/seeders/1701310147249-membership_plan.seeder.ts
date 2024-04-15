@@ -41,7 +41,9 @@ export default class MembershipPlanSeeder extends Seeder {
     ];
 
     try {
-      await dataSource.createEntityManager().save(MembershipPlan, specialMembershipPlan);
+      await dataSource
+        .createEntityManager()
+        .save(MembershipPlan, specialMembershipPlan);
     } catch (error) {
       console.error(
         'Error occurred while seeding special MembershipPlan:',

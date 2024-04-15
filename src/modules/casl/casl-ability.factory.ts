@@ -24,19 +24,30 @@ export class CaslAbilityFactory {
   defineAbilityForUser(user: User) {
     const { can, build } = new AbilityBuilder(AppAbility);
 
-    if (user.role === RoleValue.ADMIN) {
+    let role: RoleValue;
+    const member = user.member;
+    const staff = user.staff;
+    const trainer = staff ? staff.trainer : null;
+
+    if (member) {
+      role = RoleValue.MEMBER;
+    } else if (trainer) {
+      role = RoleValue.TRAINER;
+    } else if (staff) {
+      role = RoleValue.STAFF;
+    } else {
+      role = RoleValue.ADMIN;
+    }
+
+    if (role === RoleValue.ADMIN) {
       this.defineAdminPermissions(can);
-    } else if (user.role === RoleValue.MEMBER) {
+    } else if (role === RoleValue.MEMBER) {
       this.defineUserPermissions(user, can);
-    } else if (
-      user.role === RoleValue.TRAINER ||
-      user.role === RoleValue.STAFF
-    ) {
+    } else if (role === RoleValue.TRAINER || role === RoleValue.STAFF) {
       this.defineTrainerStaffPermissions(user, can);
     } else {
       // No permissions for other roles
     }
-
     return build();
   }
 

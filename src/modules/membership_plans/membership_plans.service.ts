@@ -41,7 +41,9 @@ export class MembershipPlansService extends PageService {
     return new PageResponseDto(newMembershipPlan);
   }
 
-  async getMembershipPlan(id: number): Promise<PageResponseDto<MembershipPlan>> {
+  async getMembershipPlan(
+    id: number,
+  ): Promise<PageResponseDto<MembershipPlan>> {
     return this.membershipPlansRepository
       .findOneByOrFail({ id: id })
       .then((response) => new PageResponseDto(response));
@@ -51,9 +53,10 @@ export class MembershipPlansService extends PageService {
     id: number,
     updateMembershipPlanDto: CreateMembershipPlanDto,
   ): Promise<PageResponseDto<MembershipPlan>> {
-    const existingMembershipPlan = await this.membershipPlansRepository.findOneByOrFail({
-      id: id,
-    });
+    const existingMembershipPlan =
+      await this.membershipPlansRepository.findOneByOrFail({
+        id: id,
+      });
     const { ...params } = updateMembershipPlanDto;
 
     this.membershipPlansRepository.merge(existingMembershipPlan, params);
@@ -61,13 +64,17 @@ export class MembershipPlansService extends PageService {
     return this.getMembershipPlan(id);
   }
 
-  async deleteMembershipPlan(id: number): Promise<PageResponseDto<MembershipPlan>> {
-    const existingMembershipPlan = await this.membershipPlansRepository.findOneByOrFail({
-      id: id,
-    });
+  async deleteMembershipPlan(
+    id: number,
+  ): Promise<PageResponseDto<MembershipPlan>> {
+    const existingMembershipPlan =
+      await this.membershipPlansRepository.findOneByOrFail({
+        id: id,
+      });
 
-    const deletedMembershipPlan =
-      await this.membershipPlansRepository.remove(existingMembershipPlan);
+    const deletedMembershipPlan = await this.membershipPlansRepository.remove(
+      existingMembershipPlan,
+    );
     this.membershipPlansRepository.save(deletedMembershipPlan);
     return new PageResponseDto(existingMembershipPlan);
   }

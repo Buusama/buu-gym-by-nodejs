@@ -23,7 +23,7 @@ export class AuthService {
     @InjectRepository(Trainer)
     private trainerRepository: Repository<Trainer>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,

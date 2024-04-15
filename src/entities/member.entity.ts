@@ -33,5 +33,4 @@ export class Member {
   @OneToOne(() => MembershipPlan, { eager: true })
   @JoinColumn({ name: 'membership_plan_id' })
   membership_plan: MembershipPlan;
-
 }

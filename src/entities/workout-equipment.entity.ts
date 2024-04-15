@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Workout } from './workout.entity';
 import { Equipment } from './equipment.entity';
 
@@ -14,8 +20,10 @@ export class WorkoutEquipment {
   equipment_id: number;
 
   @ManyToOne(() => Workout, (workout) => workout.workoutEquipment)
+  @JoinColumn({ name: 'workout_id' })
   workout: Workout;
 
   @ManyToOne(() => Equipment, (equipment) => equipment.workoutEquipment)
+  @JoinColumn({ name: 'equipment_id' })
   equipment: Equipment;
 }

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Trainer } from './trainer.entity';
 
 @Entity('staffs')
 export class Staff {
@@ -24,4 +25,7 @@ export class Staff {
   @OneToOne(() => User, { eager: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToOne(() => Trainer, trainer => trainer.staff)
+  trainer: Trainer;
 }

@@ -10,7 +10,7 @@ import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 export class CreateMemberDto extends CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
-  package_id: number;
+  membership_plan_id: number;
 
   @ApiProperty({ required: false })
   @IsNotEmpty()

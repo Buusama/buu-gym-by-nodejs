@@ -1,5 +1,7 @@
-import { Column, PrimaryGeneratedColumn, Entity, BeforeInsert } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { BeforeInsert, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Member } from './member.entity';
+import { Staff } from './staff.entity';
 
 @Entity('users')
 export class User {
@@ -37,4 +39,10 @@ export class User {
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
+
+  @OneToOne(() => Member, member => member.user)
+  member: Member;
+
+  @OneToOne(() => Staff, staff => staff.user)
+  staff: Staff;
 }

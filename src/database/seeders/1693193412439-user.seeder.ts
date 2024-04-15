@@ -1,9 +1,8 @@
-import { fa, faker, fakerVI } from '@faker-js/faker';
+import { faker, fakerVI } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
 import { User } from '../../entities/user.entity';
-import { UserFactory } from '../factories/user.factory';
 
 export default class UserSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -18,8 +17,8 @@ export default class UserSeeder extends Seeder {
           to: new Date('2003-01-01'),
         }),
         phone: fakerVI.phone.number().replace(/\s/g, ''),
-        email:  `user${i}.gmail.com`,
-        password: 'password',
+        email: `user${i}@gmail.com`,
+        password: await bcrypt.hash('password', 10),
         facebook: faker.internet.url(),
         address: fakerVI.location.streetAddress(),
       });

@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ServiceWorkout } from './service-workout.entity';
 @Entity('services')
 export class Service {
   @PrimaryGeneratedColumn()
@@ -25,4 +26,9 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   thumbnail: string;
 
+  @OneToMany(
+    () => ServiceWorkout,
+    (serviceWorkout) => serviceWorkout.service,
+  )
+  serviceWorkout: ServiceWorkout[];
 }

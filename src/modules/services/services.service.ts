@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Package } from 'src/entities/membership-plan.entity';
 import { Service } from 'src/entities/service.entity';
 import { Repository } from 'typeorm';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';

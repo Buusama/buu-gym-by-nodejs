@@ -14,7 +14,7 @@ export class Equipment {
 
   @OneToMany(
     () => WorkoutEquipment,
-    (workoutEquipment) => workoutEquipment.equipment,
+    (workoutEquipment) => workoutEquipment.equipment_id,
   )
   workoutEquipment: WorkoutEquipment[];
 }

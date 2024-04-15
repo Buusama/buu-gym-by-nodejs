@@ -6,11 +6,11 @@ import { Member } from 'src/entities/member.entity';
 import { AwsModule } from '../aws/aws.module';
 import { UniqueColumnValidator } from 'src/validators/unique-column.validator';
 import { User } from '../../entities/user.entity';
-import { Package } from '../../entities/membership-plan.entity';
+import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { Trainer } from '../../entities/trainer.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Member, User, Package, Trainer]),
+    TypeOrmModule.forFeature([Member, User, MembershipPlan, Trainer]),
     AwsModule,
   ],
   controllers: [MembersController],

@@ -15,7 +15,14 @@ export default class MemberSeeder extends Seeder {
         to: new Date('2021-05-01'),
       });
       const membership_plan_id = faker.number.int({ min: 1, max: 4 });
-      const duration = membership_plan_id == 1 ? 30 : membership_plan_id == 2 ? 90 : membership_plan_id == 3 ? 180 : 365
+      const duration =
+        membership_plan_id == 1
+          ? 30
+          : membership_plan_id == 2
+            ? 90
+            : membership_plan_id == 3
+              ? 180
+              : 365;
       memberData.push({
         user_id: user[i].id,
         membership_plan_id,

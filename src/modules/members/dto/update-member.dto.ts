@@ -11,7 +11,7 @@ export class UpdateMemberDto extends UpdateUserDto {
   @ApiProperty({ required: false })
   @IsNotEmpty()
   @IsOptional()
-  package_id: number;
+  membership_plan_id: number;
 
   @ApiProperty({ required: false })
   @IsNotEmpty()
