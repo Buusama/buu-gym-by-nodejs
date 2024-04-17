@@ -1,4 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Schedule } from './schedule.entity';
 import { ServiceWorkout } from './service-workout.entity';
 @Entity('services')
 export class Service {
@@ -26,10 +27,11 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   thumbnail: string;
 
-  @OneToMany(
-    () => ServiceWorkout,
-    (serviceWorkout) => serviceWorkout.service,
-    { eager: true },
-  )
+  @OneToMany(() => ServiceWorkout, (serviceWorkout) => serviceWorkout.service, {
+    eager: true,
+  })
   serviceWorkout: ServiceWorkout[];
+
+  @OneToMany(() => Schedule, (schedule) => schedule.service)
+  schedules: Schedule[];
 }

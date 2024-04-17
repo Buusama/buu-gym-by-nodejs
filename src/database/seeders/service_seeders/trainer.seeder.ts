@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { Staff } from '../../entities/staff.entity';
+import { Staff } from '../../../entities/staff.entity';
 import { DataSource } from 'typeorm';
-import { RoleValue } from '../../commons/enums/role-enum';
+import { RoleValue } from '../../../commons/enums/role-enum';
 
 export default class TrainerSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {

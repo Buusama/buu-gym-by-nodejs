@@ -1,6 +1,6 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import { DataSource } from 'typeorm';
-import { Equipment } from './../../entities/equipment.entity';
+import { Equipment } from '../../../entities/equipment.entity';
 
 export default class EquipmentSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {

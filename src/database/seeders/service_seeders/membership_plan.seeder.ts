@@ -1,6 +1,6 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import { DataSource } from 'typeorm';
-import { MembershipPlan } from '../../entities/membership-plan.entity';
+import { MembershipPlan } from '../../../entities/membership-plan.entity';
 import { duration } from 'moment';
 
 export default class MembershipPlanSeeder extends Seeder {

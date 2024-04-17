@@ -2,13 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { MembershipPlan } from './membership-plan.entity';
 import { Trainer } from './trainer.entity';
-
+import { Booking } from './booking.entity';
 @Entity('members')
 export class Member {
   @PrimaryGeneratedColumn()
@@ -33,4 +34,7 @@ export class Member {
   @OneToOne(() => MembershipPlan, { eager: true })
   @JoinColumn({ name: 'membership_plan_id' })
   membership_plan: MembershipPlan;
+
+  @OneToMany(() => Booking, (booking) => booking.member)
+  bookings: Booking[];
 }

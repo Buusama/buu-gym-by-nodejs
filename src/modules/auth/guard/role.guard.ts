@@ -10,7 +10,7 @@ import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector) { }
+  constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.getAllAndOverride<RoleValue[]>(
@@ -34,7 +34,6 @@ export class RoleGuard implements CanActivate {
     } else {
       userRole = RoleValue.ADMIN;
     }
-
 
     if (!user) {
       throw new UnauthorizedException('User not found');

@@ -7,6 +7,7 @@ import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import { GetListServicesDto } from './dto/get-list-services.dto';
+import { GetListServiceSchedulesByDayDto } from './dto/get-list-services-schedule.dto';
 
 @Injectable()
 export class ServicesService extends PageService {
@@ -44,7 +45,9 @@ export class ServicesService extends PageService {
       .getRawMany();
     // Reorganize the data structure
     const servicesWithWorkouts = result.reduce((accumulator, currentValue) => {
-      const existingService = accumulator.find(service => service.id === currentValue.serviceId);
+      const existingService = accumulator.find(
+        (service) => service.id === currentValue.serviceId,
+      );
       if (!existingService) {
         accumulator.push({
           id: currentValue.serviceId,
@@ -53,13 +56,15 @@ export class ServicesService extends PageService {
           duration: currentValue.serviceDuration,
           maxParticipants: currentValue.serviceMaxParticipants,
           serviceGallaryImages: [currentValue.workoutGallaryImages], // Start with an array containing the current workout's thumbnail
-          workouts: [{
-            id: currentValue.workoutId,
-            name: currentValue.workoutName,
-            description: currentValue.workoutDescription,
-            duration: currentValue.workoutDuration,
-            thumbnail: currentValue.workoutGallaryImages,
-          }]
+          workouts: [
+            {
+              id: currentValue.workoutId,
+              name: currentValue.workoutName,
+              description: currentValue.workoutDescription,
+              duration: currentValue.workoutDuration,
+              thumbnail: currentValue.workoutGallaryImages,
+            },
+          ],
         });
       } else {
         existingService.workouts.push({
@@ -69,14 +74,18 @@ export class ServicesService extends PageService {
           duration: currentValue.workoutDuration,
           thumbnail: currentValue.workoutGallaryImages,
         });
-        existingService.serviceGallaryImages.push(currentValue.workoutGallaryImages); // Add the current workout's thumbnail to the gallery
+        existingService.serviceGallaryImages.push(
+          currentValue.workoutGallaryImages,
+        ); // Add the current workout's thumbnail to the gallery
       }
       return accumulator;
     }, []);
 
     // Convert the serviceGallaryImages to an array of URLs
-    servicesWithWorkouts.forEach(service => {
-      service.serviceGallaryImages = service.serviceGallaryImages.map(thumbnail => thumbnail);
+    servicesWithWorkouts.forEach((service) => {
+      service.serviceGallaryImages = service.serviceGallaryImages.map(
+        (thumbnail) => thumbnail,
+      );
     });
 
     const itemCount = servicesWithWorkouts.length;
@@ -94,7 +103,8 @@ export class ServicesService extends PageService {
   }
 
   async getService(id: number): Promise<PageResponseDto<any>> {
-    const result = await this.servicesRepository.createQueryBuilder('table')
+    const result = await this.servicesRepository
+      .createQueryBuilder('table')
       .select([
         'table.id AS serviceId',
         'table.name AS serviceName',
@@ -115,7 +125,9 @@ export class ServicesService extends PageService {
 
     // Reorganize the data structure
     const service = result.reduce((accumulator, currentValue) => {
-      const existingService = accumulator.find(service => service.id === currentValue.serviceId);
+      const existingService = accumulator.find(
+        (service) => service.id === currentValue.serviceId,
+      );
       if (!existingService) {
         accumulator.push({
           id: currentValue.serviceId,
@@ -125,13 +137,15 @@ export class ServicesService extends PageService {
           description: currentValue.serviceDescription,
           maxParticipants: currentValue.serviceMaxParticipants,
           serviceGallaryImages: [currentValue.workoutGallaryImages], // Start with an array containing the current workout's thumbnail
-          workouts: [{
-            id: currentValue.workoutId,
-            name: currentValue.workoutName,
-            description: currentValue.workoutDescription,
-            duration: currentValue.workoutDuration,
-            thumbnail: currentValue.workoutGallaryImages,
-          }]
+          workouts: [
+            {
+              id: currentValue.workoutId,
+              name: currentValue.workoutName,
+              description: currentValue.workoutDescription,
+              duration: currentValue.workoutDuration,
+              thumbnail: currentValue.workoutGallaryImages,
+            },
+          ],
         });
       } else {
         existingService.workouts.push({
@@ -141,17 +155,45 @@ export class ServicesService extends PageService {
           duration: currentValue.workoutDuration,
           thumbnail: currentValue.workoutGallaryImages,
         });
-        existingService.serviceGallaryImages.push(currentValue.workoutGallaryImages); // Add the current workout's thumbnail to the gallery
+        existingService.serviceGallaryImages.push(
+          currentValue.workoutGallaryImages,
+        ); // Add the current workout's thumbnail to the gallery
       }
       return accumulator;
     }, []);
 
-
     // Convert the serviceGallaryImages to an array of URLs
-    service.forEach(service => {
-      service.serviceGallaryImages = service.serviceGallaryImages.map(thumbnail => thumbnail);
+    service.forEach((service) => {
+      service.serviceGallaryImages = service.serviceGallaryImages.map(
+        (thumbnail) => thumbnail,
+      );
     });
 
     return new PageResponseDto(service[0]);
+  }
+
+  async getServiceSchedulesByDay(service_id: number, dto: GetListServiceSchedulesByDayDto): Promise<PageResponseDto<any>> {
+    const schedules = await this.servicesRepository
+      .createQueryBuilder('service')
+      .select([
+        'schedule.id AS id',
+        'schedule.date AS date',
+        'schedule.time AS time',
+        'service.name AS serviceName',
+      ])
+      .leftJoin('service.schedules', 'schedule')
+      .where('service.id = :service_id', { service_id })
+      .andWhere('schedule.date = :date', { date: dto.date })
+      .orderBy('schedule.time', 'ASC')
+      .getRawMany();
+
+    const itemCount = schedules.length;
+    const pageMeta = new PageMetaDto(dto, itemCount);
+
+    return new PageResponseDto(schedules, pageMeta);
+  }
+
+  async findOneById(id: number): Promise<Service> {
+    return this.servicesRepository.findOneByOrFail({ id });
   }
 }

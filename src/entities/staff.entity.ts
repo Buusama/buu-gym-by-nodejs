@@ -26,6 +26,6 @@ export class Staff {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => Trainer, trainer => trainer.staff)
+  @OneToOne(() => Trainer, (trainer) => trainer.staff)
   trainer: Trainer;
 }

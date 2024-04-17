@@ -16,12 +16,13 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { GetListServicesDto } from './dto/get-list-services.dto';
 import { ServicesService } from './services.service';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
+import { GetListServiceSchedulesByDayDto } from './dto/get-list-services-schedule.dto';
 
 @ApiTags('services')
 @UseInterceptors(TransformInterceptor)
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(private readonly servicesService: ServicesService) { }
   @Get()
   @PublicRoute()
   @ApiOkResponse({ description: 'List all services' })
@@ -37,5 +38,16 @@ export class ServicesController {
   @ApiOkResponse({ description: 'Get service by id' })
   async getService(@Param('id') id: number): Promise<PageResponseDto<Service>> {
     return this.servicesService.getService(id);
+  }
+
+  @Get(':id/schedules')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Get service schedules' })
+  async getServiceSchedulesByDay(
+    @Param('id') id: number,
+    @Query() dto: GetListServiceSchedulesByDayDto,
+  ): Promise<PageResponseDto<Service>> {
+    return this.servicesService.getServiceSchedulesByDay(id, dto);
   }
 }

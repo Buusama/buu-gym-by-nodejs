@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import { DataSource } from 'typeorm';
-import { MembershipPlan } from '../../entities/membership-plan.entity';
-import { User } from '../../entities/user.entity';
+import { MembershipPlan } from '../../../entities/membership-plan.entity';
+import { User } from '../../../entities/user.entity';
 
 export default class MemberSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {

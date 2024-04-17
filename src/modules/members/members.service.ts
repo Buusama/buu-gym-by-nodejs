@@ -55,7 +55,7 @@ export class MembersService extends PageService {
         'MP.name AS PackageName',
       ])
       .innerJoin(User, 'P', 'table.user_id = P.id')
-      .innerJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id')
+      .innerJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id');
     // .orderBy('table.id', 'DESC');
 
     // if (getListMembersDto.status) {

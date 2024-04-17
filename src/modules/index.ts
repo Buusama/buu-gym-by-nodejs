@@ -6,6 +6,8 @@ import { AwsModule } from './aws/aws.module';
 import { MembershipPlansModule } from './membership_plans/membership_plans.module';
 import { TrainersModule } from './trainers/trainers.module';
 import { ServicesModule } from './services/services.module';
+import { SchedulesModule } from './schedules/schedules.module';
+import { BookingsModule } from './booking/bookings.module';
 class ApplicationModular {
   public static register() {
     return [
@@ -17,6 +19,8 @@ class ApplicationModular {
       MembershipPlansModule,
       AwsModule,
       ServicesModule,
+      SchedulesModule,
+      BookingsModule,
     ];
   }
 }

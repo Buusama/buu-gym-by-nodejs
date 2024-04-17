@@ -1,7 +1,7 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { ServiceWorkout } from '../../entities/service-workout.entity';
-import { Service } from '../../entities/service.entity';
-import { Workout } from '../../entities/workout.entity';
+import { ServiceWorkout } from '../../../entities/service-workout.entity';
+import { Service } from '../../../entities/service.entity';
+import { Workout } from '../../../entities/workout.entity';
 import { DataSource } from 'typeorm';
 import { faker } from '@faker-js/faker';
 

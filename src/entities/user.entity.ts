@@ -1,5 +1,11 @@
 import * as bcrypt from 'bcrypt';
-import { BeforeInsert, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Member } from './member.entity';
 import { Staff } from './staff.entity';
 
@@ -40,9 +46,9 @@ export class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  @OneToOne(() => Member, member => member.user)
+  @OneToOne(() => Member, (member) => member.user)
   member: Member;
 
-  @OneToOne(() => Staff, staff => staff.user)
+  @OneToOne(() => Staff, (staff) => staff.user)
   staff: Staff;
 }

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { Member } from '../../entities/member.entity';
+import { Member } from '../../../entities/member.entity';
 import { DataSource } from 'typeorm';
 
 export default class BodyMeasurementSeeder extends Seeder {

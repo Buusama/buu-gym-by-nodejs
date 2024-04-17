@@ -26,10 +26,8 @@ export class Workout {
   )
   workoutEquipment: WorkoutEquipment[];
 
-  @OneToMany(
-    () => ServiceWorkout,
-    (serviceWorkout) => serviceWorkout.workout,
-    { eager: true },
-  )
+  @OneToMany(() => ServiceWorkout, (serviceWorkout) => serviceWorkout.workout, {
+    eager: true,
+  })
   serviceWorkout: ServiceWorkout[];
 }

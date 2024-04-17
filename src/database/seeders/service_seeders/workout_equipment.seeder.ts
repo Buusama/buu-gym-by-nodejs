@@ -1,5 +1,5 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { WorkoutEquipment } from '../../entities/workout-equipment.entity';
+import { WorkoutEquipment } from '../../../entities/workout-equipment.entity';
 import { DataSource } from 'typeorm';
 
 export default class WorkoutEquipmentSeeder extends Seeder {

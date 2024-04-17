@@ -2,7 +2,7 @@ import { faker, fakerVI } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
 import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
-import { User } from '../../entities/user.entity';
+import { User } from '../../../entities/user.entity';
 
 export default class UserSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {

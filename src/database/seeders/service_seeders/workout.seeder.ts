@@ -1,5 +1,5 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { Workout } from '../../entities/workout.entity';
+import { Workout } from '../../../entities/workout.entity';
 import { DataSource } from 'typeorm';
 
 export default class WorkoutSeeder extends Seeder {
@@ -13,13 +13,15 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'Strength Training',
-        description: 'Tập trung vào việc tăng cường sức mạnh cơ bắp bằng cách sử dụng tạ.',
+        description:
+          'Tập trung vào việc tăng cường sức mạnh cơ bắp bằng cách sử dụng tạ.',
         duration: 45,
         thumbnail: 'https://source.unsplash.com/featured/?strength',
       },
       {
         name: 'Yoga Flow',
-        description: 'Các chuỗi yoga nhẹ nhàng để tăng tính linh hoạt và thư giãn.',
+        description:
+          'Các chuỗi yoga nhẹ nhàng để tăng tính linh hoạt và thư giãn.',
         duration: 60,
         thumbnail: 'https://source.unsplash.com/featured/?yoga',
       },
@@ -31,7 +33,8 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'CrossFit WOD',
-        description: 'Tập thể dục CrossFit của ngày với các động tác chức năng đa dạng.',
+        description:
+          'Tập thể dục CrossFit của ngày với các động tác chức năng đa dạng.',
         duration: 60,
         thumbnail: 'https://source.unsplash.com/featured/?crossfit',
       },
@@ -43,7 +46,8 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'Kickboxing Fitness',
-        description: 'Tập thể dục cardio và sức mạnh với các động tác kickboxing.',
+        description:
+          'Tập thể dục cardio và sức mạnh với các động tác kickboxing.',
         duration: 50,
         thumbnail: 'https://source.unsplash.com/featured/?kickboxing',
       },
@@ -61,31 +65,36 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'Bodyweight Burn',
-        description: 'Các bài tập vận động bằng cân nặng cơ thể cho sức mạnh và sức bền.',
+        description:
+          'Các bài tập vận động bằng cân nặng cơ thể cho sức mạnh và sức bền.',
         duration: 30,
         thumbnail: 'https://source.unsplash.com/featured/?bodyweight',
       },
       {
         name: 'Zumba Dance',
-        description: 'Tập thể dục dựa trên nhảy múa để vui vẻ và tăng cường cardio.',
+        description:
+          'Tập thể dục dựa trên nhảy múa để vui vẻ và tăng cường cardio.',
         duration: 55,
         thumbnail: 'https://source.unsplash.com/featured/?zumba',
       },
       {
         name: 'Powerlifting Focus',
-        description: 'Nhấn mạnh vào các động tác powerlifting để tăng cường sức mạnh.',
+        description:
+          'Nhấn mạnh vào các động tác powerlifting để tăng cường sức mạnh.',
         duration: 60,
         thumbnail: 'https://source.unsplash.com/featured/?powerlifting',
       },
       {
         name: 'Barre Sculpt',
-        description: 'Sự kết hợp của các động tác lấy cảm hứng từ ballet để săn chắc cơ bắp.',
+        description:
+          'Sự kết hợp của các động tác lấy cảm hứng từ ballet để săn chắc cơ bắp.',
         duration: 45,
         thumbnail: 'https://source.unsplash.com/featured/?barre',
       },
       {
         name: 'Bootcamp Challenge',
-        description: 'Tập thể dục kiểu bootcamp ngoài trời với nhiều bài tập khác nhau.',
+        description:
+          'Tập thể dục kiểu bootcamp ngoài trời với nhiều bài tập khác nhau.',
         duration: 50,
         thumbnail: 'https://source.unsplash.com/featured/?bootcamp',
       },
@@ -103,7 +112,8 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'MMA Conditioning',
-        description: 'Tập thể dục lấy cảm hứng từ MMA để tăng cường sức mạnh và sức bền.',
+        description:
+          'Tập thể dục lấy cảm hứng từ MMA để tăng cường sức mạnh và sức bền.',
         duration: 55,
         thumbnail: 'https://source.unsplash.com/featured/?mma',
       },
@@ -115,31 +125,36 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'Functional Mobility',
-        description: 'Nâng cao tính linh hoạt và di động thông qua các bài tập chức năng.',
+        description:
+          'Nâng cao tính linh hoạt và di động thông qua các bài tập chức năng.',
         duration: 40,
         thumbnail: 'https://source.unsplash.com/featured/?mobility',
       },
       {
         name: 'Kettlebell Fusion',
-        description: 'Kết hợp các bài tập với quả cân để tăng cường sức mạnh và sự nhanh nhẹn.',
+        description:
+          'Kết hợp các bài tập với quả cân để tăng cường sức mạnh và sự nhanh nhẹn.',
         duration: 45,
         thumbnail: 'https://source.unsplash.com/featured/?kettlebell',
       },
       {
         name: 'Barbell Complex',
-        description: 'Một loạt các bài tập thanh tạ phức tạp cho bài tập toàn thân.',
+        description:
+          'Một loạt các bài tập thanh tạ phức tạp cho bài tập toàn thân.',
         duration: 55,
         thumbnail: 'https://source.unsplash.com/featured/?barbell',
       },
       {
         name: 'Outdoor Jogging',
-        description: 'Chạy bộ và jogging ngoài trời để tăng cường sức khỏe cardio.',
+        description:
+          'Chạy bộ và jogging ngoài trời để tăng cường sức khỏe cardio.',
         duration: 45,
         thumbnail: 'https://source.unsplash.com/featured/?jogging',
       },
       {
         name: 'Rowing Intervals',
-        description: 'Các khoảng cách đạp thuyền để tăng cường sức mạnh cardio và cơ bắp.',
+        description:
+          'Các khoảng cách đạp thuyền để tăng cường sức mạnh cardio và cơ bắp.',
         duration: 40,
         thumbnail: 'https://source.unsplash.com/featured/?rowing',
       },
@@ -151,7 +166,8 @@ export default class WorkoutSeeder extends Seeder {
       },
       {
         name: 'Boxing Conditioning',
-        description: 'Tập thể dục lấy cảm hứng từ boxing để tăng cường sức mạnh và sức bền',
+        description:
+          'Tập thể dục lấy cảm hứng từ boxing để tăng cường sức mạnh và sức bền',
         duration: 50,
         thumbnail: 'https://source.unsplash.com/featured/?boxing',
       },
