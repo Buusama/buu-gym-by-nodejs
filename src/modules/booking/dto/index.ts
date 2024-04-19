@@ -15,6 +15,11 @@ export class CreateBookingDto {
     member_id: number;
 
     @ApiProperty()
+    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value))
+    participants: number;
+
+    @ApiProperty()
     @IsString()
     note: string;
 }
@@ -24,6 +29,11 @@ export class MemberCreateBookingDto {
     @IsNotEmpty()
     @Transform(({ value }) => parseInt(value))
     schedule_id: number;
+    
+    @ApiProperty()
+    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value))
+    participants: number;
 
     @ApiProperty()
     @IsString()
@@ -39,6 +49,11 @@ export class UpdateBookingDto {
     @ApiProperty()
     @IsNotEmpty()
     member_id: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value))
+    participants: number;
 
     @ApiProperty()
     @IsString()

@@ -27,6 +27,10 @@ export class CreateBookingsTable1713277418989 implements MigrationInterface {
                         type: 'int',
                     },
                     {
+                        name: 'payment_method',
+                        type: 'int',
+                    },
+                    {
                         name: 'note',
                         type: 'text',
                     },

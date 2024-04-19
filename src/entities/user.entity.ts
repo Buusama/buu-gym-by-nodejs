@@ -40,6 +40,8 @@ export class User {
 
   @Column()
   address: string;
+  
+  role: number;
 
   @BeforeInsert()
   async hashPassword() {
@@ -51,4 +53,5 @@ export class User {
 
   @OneToOne(() => Staff, (staff) => staff.user)
   staff: Staff;
+
 }

@@ -13,6 +13,12 @@ export class Booking {
     member_id: number;
 
     @Column()
+    participants: number;;
+
+    @Column()
+    payment_method: number;
+
+    @Column()
     note: string;
 
     @ManyToOne(() => Member, (member) => member.bookings)

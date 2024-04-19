@@ -48,4 +48,28 @@ export class BookingsService extends PageService {
         return new PageResponseDto(booking);
     }
 
+    async getBooking(user: User, id: number): Promise<PageResponseDto<any>> {
+        const booking = await this.bookingRepository.createQueryBuilder('booking')
+            .leftJoin('booking.schedule', 'schedule')
+            .leftJoin('schedule.service', 'service')
+            .where('booking.id = :id', { id })
+            .select([
+                'service.name AS serviceName',
+                'schedule.date AS scheduleDate',
+                'schedule.time AS scheduleTime',
+                'service.price AS servicePrice',
+                'booking.id AS bookingId',
+                'booking.member_id AS memberId',
+                'booking.participant AS participant',
+                'booking.payment_method AS payment_method',
+                'booking.note AS notes',
+            ])
+            .getRawOne();
+        console.log('user', user);
+        console.log('booking', booking);
+        if (booking.memberId !== user.member.id) {
+            throw new Error('Unauthorized');
+        }
+        return new PageResponseDto(booking);
+    }
 }
