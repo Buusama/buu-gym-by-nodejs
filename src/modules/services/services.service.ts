@@ -17,6 +17,9 @@ export class ServicesService extends PageService {
   ) {
     super();
   }
+  async findOneById(id: number): Promise<Service> {
+    return this.servicesRepository.findOneByOrFail({ id });
+  }
 
   async getServices(
     getListServicesDto: GetListServicesDto,
@@ -193,7 +196,52 @@ export class ServicesService extends PageService {
     return new PageResponseDto(schedules, pageMeta);
   }
 
-  async findOneById(id: number): Promise<Service> {
-    return this.servicesRepository.findOneByOrFail({ id });
+
+
+  async getTopServices(limit: number): Promise<PageResponseDto<any>> {
+    const services = await this.servicesRepository
+      .createQueryBuilder("service")
+      .select([
+        "service.id AS id",
+        "service.name AS name",
+        "service.price AS price",
+        "service.duration AS duration",
+        "service.description AS description",
+        "service.max_participants AS maxParticipants",
+        "service.thumbnail AS thumbnail",
+        "COUNT(booking.id) AS bookingCount",
+      ])
+      .leftJoin("service.schedules", "schedule")
+      .leftJoin("schedule.bookings", "booking")
+      .groupBy("service.id")
+      .orderBy("bookingCount", "DESC")
+      .limit(limit)
+      .getRawMany();
+
+    // Reorganize the data structure
+    const servicesWithWorkouts = [];
+
+    for (const currentValue of services) {
+      const existingService = servicesWithWorkouts.find(
+        (service) => service.id === currentValue.id,
+      );
+
+      if (!existingService) {
+        const serviceWithThumbnail = {
+          id: currentValue.id,
+          name: currentValue.name,
+          price: currentValue.price,
+          duration: currentValue.duration,
+          description: currentValue.description,
+          maxParticipants: currentValue.maxParticipants,
+          bookingCount: currentValue.bookingCount ? parseInt(currentValue.bookingCount) : 0,
+          thumbnail: currentValue.thumbnail,
+        };
+        servicesWithWorkouts.push(serviceWithThumbnail);
+      }
+    }
+
+    return new PageResponseDto(servicesWithWorkouts);
   }
+
 }

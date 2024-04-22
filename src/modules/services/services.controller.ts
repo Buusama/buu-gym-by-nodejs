@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -30,6 +31,15 @@ export class ServicesController {
     @Query() getListServicesDto: GetListServicesDto,
   ): Promise<PageResponseDto<Service>> {
     return this.servicesService.getServices(getListServicesDto);
+  }
+
+  @Get('top')
+  @PublicRoute()
+  @ApiOkResponse({ description: 'Get top services' })
+  async getTop10Services(
+    @Query('limit') limit: number,
+  ): Promise<PageResponseDto<Service>> {
+    return this.servicesService.getTopServices(limit);
   }
 
   @Get(':id')

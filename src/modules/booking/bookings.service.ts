@@ -65,8 +65,8 @@ export class BookingsService extends PageService {
                 'booking.note AS notes',
             ])
             .getRawOne();
-        console.log('user', user);
-        console.log('booking', booking);
+        // console.log('user', user);
+        // console.log('booking', booking);
         if (booking.memberId !== user.member.id) {
             throw new Error('Unauthorized');
         }
