@@ -72,4 +72,44 @@ export class BookingsService extends PageService {
         }
         return new PageResponseDto(booking);
     }
+
+    async getBookings(user: User): Promise<PageResponseDto<any>> {
+        const bookings = await this.bookingRepository.createQueryBuilder('booking')
+            .leftJoin('booking.schedule', 'schedule')
+            .leftJoin('schedule.service', 'service')
+            .where('booking.member_id = :memberId', { memberId: user.member.id })
+            .select([
+                'service.name AS serviceName',
+                'schedule.date AS scheduleDate',
+                'schedule.time AS scheduleTime',
+                'service.price AS servicePrice',
+                'booking.id AS bookingId',
+                'booking.member_id AS memberId',
+                'booking.participants AS participants',
+                'booking.payment_method AS payment_method',
+                'booking.note AS notes',
+            ])
+            .getRawMany();
+        return new PageResponseDto(bookings);
+    }
+
+    async adminGetAllBookings(): Promise<PageResponseDto<any>> {
+        const bookings = await this.bookingRepository.createQueryBuilder('booking')
+            .leftJoin('booking.schedule', 'schedule')
+            .leftJoin('schedule.service', 'service')
+            .select([
+                'service.name AS serviceName',
+                'schedule.date AS scheduleDate',
+                'schedule.time AS scheduleTime',
+                'service.price AS servicePrice',
+                'booking.id AS bookingId',
+                'booking.member_id AS memberId',
+                'booking.participants AS participants',
+                'booking.payment_method AS payment_method',
+                'booking.note AS notes',
+            ])
+            .getRawMany();
+        return new PageResponseDto(bookings);
+    }
+
 }

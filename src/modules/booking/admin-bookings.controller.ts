@@ -23,10 +23,10 @@ export class AdminBookingsController {
         return this.bookingsService.adminCreateBooking(createBookingDto);
     }
 
-    // @Get()
-    // async findAllBookings() {
-    //     return this.bookingsService.adminGetAllBookings();
-    // }
+    @Get()
+    async findAllBookings() {
+        return this.bookingsService.adminGetAllBookings();
+    }
 
 
 }

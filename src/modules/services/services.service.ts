@@ -27,9 +27,7 @@ export class ServicesService extends PageService {
     const queryBuilder = await this.paginate(
       this.servicesRepository,
       getListServicesDto,
-    );
-
-    const result = await queryBuilder
+    )
       .select([
         'table.id AS serviceId',
         'table.name AS serviceName',
@@ -37,6 +35,7 @@ export class ServicesService extends PageService {
         'table.duration AS serviceDuration',
         'table.description AS serviceDescription',
         'table.max_participants AS serviceMaxParticipants',
+        'table.service_type AS serviceType',
         'workout.id AS workoutId',
         'workout.name AS workoutName',
         'workout.description AS workoutDescription',
@@ -44,8 +43,26 @@ export class ServicesService extends PageService {
         'workout.thumbnail AS workoutGallaryImages',
       ])
       .leftJoin('table.serviceWorkout', 'serviceWorkout')
-      .leftJoin('serviceWorkout.workout', 'workout')
-      .getRawMany();
+      .leftJoin('serviceWorkout.workout', 'workout');
+
+    if (getListServicesDto.categories) {
+      queryBuilder.andWhere('table.service_type IN (:...categories)', { categories: getListServicesDto.categories });
+    }
+
+    if (getListServicesDto.rangePrices) {
+      queryBuilder.andWhere('table.price >= :minPrice', { minPrice: getListServicesDto.rangePrices[0] });
+      queryBuilder.andWhere('table.price <= :maxPrice', { maxPrice: getListServicesDto.rangePrices[1] });
+    }
+    if (getListServicesDto.durationTime) {
+      queryBuilder.andWhere('table.duration <= :duration', { duration: getListServicesDto.durationTime });
+    }
+
+    if (getListServicesDto.workouts) {
+      queryBuilder.andWhere('table.id IN (SELECT DISTINCT service_id FROM service_workouts WHERE workout_id IN (:...workouts))', { workouts: getListServicesDto.workouts });
+    }
+
+    const result = await queryBuilder.getRawMany();
+
     // Reorganize the data structure
     const servicesWithWorkouts = result.reduce((accumulator, currentValue) => {
       const existingService = accumulator.find(
@@ -57,7 +74,9 @@ export class ServicesService extends PageService {
           name: currentValue.serviceName,
           price: currentValue.servicePrice,
           duration: currentValue.serviceDuration,
+          description: currentValue.serviceDescription,
           maxParticipants: currentValue.serviceMaxParticipants,
+          serviceType: currentValue.serviceType,
           serviceGallaryImages: [currentValue.workoutGallaryImages], // Start with an array containing the current workout's thumbnail
           workouts: [
             {
@@ -76,6 +95,7 @@ export class ServicesService extends PageService {
           description: currentValue.workoutDescription,
           duration: currentValue.workoutDuration,
           thumbnail: currentValue.workoutGallaryImages,
+          serviceType: currentValue.serviceType,
         });
         existingService.serviceGallaryImages.push(
           currentValue.workoutGallaryImages,

@@ -16,11 +16,10 @@ import { PublicRoute } from "src/commons/decorators/public-route.decorator";
 @UseInterceptors(TransformInterceptor)
 @ApiBearerAuth('access-token')
 @Controller('bookings')
-@RequireRole(RoleValue.MEMBER, RoleValue.TRAINER)
+@RequireRole(RoleValue.MEMBER)
 @UseGuards(RoleGuard)
 export class BookingsController {
     constructor(private readonly bookingsService: BookingsService) { }
-
     @Post()
     async createBooking(@UserInRequest() user: User, @Body() dto: MemberCreateBookingDto): Promise<PageResponseDto<any>> {
         console.log('user', user);
@@ -30,6 +29,11 @@ export class BookingsController {
     @Get(':id')
     async getBooking(@UserInRequest() user: User, @Query('id') id: number): Promise<PageResponseDto<any>> {
         return this.bookingsService.getBooking(user, id);
+    }
+
+    @Get()
+    async getBookings(@UserInRequest() user: User): Promise<PageResponseDto<any>> {
+        return this.bookingsService.getBookings(user);
     }
 
 }

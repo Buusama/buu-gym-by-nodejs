@@ -1,8 +1,7 @@
-import { SortEnum } from 'src/commons/enums/sort/sort-enum';
-import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional, Min } from 'class-validator';
-import { GlobalEnum } from 'src/commons/enums/global-enum';
+import { SortEnum } from 'src/commons/enums/sort/sort-enum';
 
 export class PageDto {
   @ApiProperty({ required: false })
