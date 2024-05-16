@@ -25,7 +25,8 @@ export default class ServiceWorkoutSeeder extends Seeder {
       await dataSource
         .createEntityManager()
         .save(ServiceWorkout, specialServiceWorkout);
-    } catch (error) {
+      console.log('ServiceWorkout seeding successful!');
+      } catch (error) {
       console.error(
         'Error occurred while seeding workout equipments',
         error.message,

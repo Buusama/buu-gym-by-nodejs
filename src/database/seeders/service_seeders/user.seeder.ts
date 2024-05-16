@@ -26,6 +26,7 @@ export default class UserSeeder extends Seeder {
 
     try {
       await dataSource.createEntityManager().save(User, specialUsers);
+      console.log('User seeding successful!');
     } catch (error) {
       console.error(
         'Error occurred while seeding special users:',

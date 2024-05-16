@@ -16,6 +16,7 @@ import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { BodyMeasurement } from 'src/entities/body-measurement.entity';
 import * as moment from 'moment';
+import { MemberStatusValue } from 'src/commons/enums/members/member-status';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -45,6 +46,8 @@ export class MembersService extends PageService {
     queryBuilder
       .select([
         'table.id AS MemberId',
+        'table.start_date AS StartDate',
+        'table.end_date AS EndDate',
         'P.name AS MemberName',
         'P.email AS MemberEmail',
         'P.phone AS MemberPhone',
@@ -56,18 +59,23 @@ export class MembersService extends PageService {
       ])
       .innerJoin(User, 'P', 'table.user_id = P.id')
       .innerJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id');
-    // .orderBy('table.id', 'DESC');
 
-    // if (getListMembersDto.status) {
-    //   queryBuilder.andWhere('table.status = :status', {
-    //     status: getListMembersDto.status,
-    //   });
-    // }
-    if (getListMembersDto.status === 1) {
-      queryBuilder.andWhere('table.end_date > CURRENT_DATE');
+    if (getListMembersDto.status === MemberStatusValue.ACTIVE) {
+      queryBuilder.andWhere('table.end_date > :currentDate', {
+        currentDate: new Date(),
+      });
+    } else if (getListMembersDto.status === MemberStatusValue.INACTIVE) {
+      queryBuilder.andWhere('table.end_date < :currentDate', {
+        currentDate: new Date(),
+      });
     }
-    if (getListMembersDto.status === 2) {
-      queryBuilder.andWhere('table.end_date < CURRENT_DATE');
+    else if (getListMembersDto.status === MemberStatusValue.EXPIRING) {
+      queryBuilder.andWhere('table.end_date > :currentDate', {
+        currentDate: new Date(),
+      });
+      queryBuilder.andWhere('table.end_date < :expiringDate', {
+        expiringDate: new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000),
+      });
     }
 
     if (
@@ -89,9 +97,16 @@ export class MembersService extends PageService {
     const itemCount = await queryBuilder.getCount();
     let entities = await queryBuilder.getRawMany().then((response) => {
       response.forEach((entity) => {
+        if(entity.EndDate < new Date()) entity.Status = MemberStatusValue.INACTIVE;
+        else if(entity.EndDate < new Date(new Date().getTime() + 10 * 24 * 60 * 60 * 1000)) entity.Status = MemberStatusValue.EXPIRING;
+        else entity.Status = MemberStatusValue.ACTIVE;
         entity.MemberBirthDate = moment(entity.MemberBirthDate).format(
           'YYYY-MM-DD',
         );
+        entity.EndDate = moment(entity.EndDate).format(
+          'YYYY-MM-DD',
+        );
+
       });
       return response;
     });

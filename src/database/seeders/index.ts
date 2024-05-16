@@ -10,6 +10,7 @@ import WorkoutEquipmentSeeder from "./service_seeders/workout_equipment.seeder";
 import ServiceSeeder from "./service_seeders/service.seeder";
 import ServiceWorkoutSeeder from "./service_seeders/service_workout.seeder";
 import ScheduleSeeder from "./service_seeders/schedule.seeder";
+import BookingSeeder from "./service_seeders/booking.seeder";
 import { DataSource } from "typeorm";
 import { Seeder } from "@jorgebodega/typeorm-seeding";
 
@@ -27,5 +28,6 @@ export default class SeederManager extends Seeder {
         await new ServiceSeeder().run(dataSource);
         await new ServiceWorkoutSeeder().run(dataSource);
         await new ScheduleSeeder().run(dataSource);
+        await new BookingSeeder().run(dataSource);
     }
 }

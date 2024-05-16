@@ -43,7 +43,9 @@ export class TrainersService extends PageService {
         'user.address AS address',
         'user.birth_date AS birth_date',
         'user.gender AS gender',
-        'table.specialization AS specialization',
+        'table.specialty AS specialty',
+        'table.rating AS rating',
+        'table.experience AS experience',
       ])
       .innerJoin('table.staff', 'staff')
       .leftJoin('staff.user', 'user');

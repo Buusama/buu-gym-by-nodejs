@@ -27,6 +27,7 @@ export default class StaffSeeder extends Seeder {
         .into('staffs')
         .values(staffData)
         .execute();
+      console.log('Staffs seeding successful!');
     } catch (error) {
       console.error('Error occurred while seeding staffs', error.message);
     }

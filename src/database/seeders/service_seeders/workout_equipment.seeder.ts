@@ -111,7 +111,8 @@ export default class WorkoutEquipmentSeeder extends Seeder {
       await dataSource
         .createEntityManager()
         .save(WorkoutEquipment, specialWorkoutEquipment);
-    } catch (error) {
+        console.log('Workout equipments seeded successfully');
+      } catch (error) {
       console.error(
         'Error occurred while seeding workout equipments',
         error.message,

@@ -13,7 +13,7 @@ export default class TrainerSeeder extends Seeder {
       trainerData.push({
         staff_id: staff[i].id,
         experience: faker.number.int({ min: 1, max: 10 }),
-        speciality: faker.lorem.sentence(),
+        specialty: faker.lorem.sentence(),
       });
     }
 
@@ -24,6 +24,7 @@ export default class TrainerSeeder extends Seeder {
         .into('trainers')
         .values(trainerData)
         .execute();
+        console.log('Trainers seeding successful!');
     } catch (error) {
       console.error('Error occurred while seeding staffs', error.message);
     }

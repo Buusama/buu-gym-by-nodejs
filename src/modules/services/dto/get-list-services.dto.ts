@@ -19,12 +19,16 @@ export class GetListServicesDto extends PageDto {
   @ApiProperty({ required: false })
   value: string;
 
-  @ApiProperty({ required: false, type: [Number] })
-  @Transform(({ value }) => value.map((v) => parseInt(v)))
+  @ApiProperty({ required: false, type: 'number' })
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      value = [value];
+    }
+    return value.map((v) => parseInt(v));
+  })
   @IsNumber({}, { each: true })
-  @IsArray()
   @IsOptional()
-  categories: number[];
+  categories: number;
 
   @ApiProperty({ required: false, type: [Number] })
   @Transform(({ value }) => value.map((v) => parseInt(v)))
@@ -47,14 +51,14 @@ export class GetListServicesDto extends PageDto {
   trainers: number[];
 
   @ApiProperty({ required: false })
-@Transform(({ value }) => {
-  if (!Array.isArray(value)) {
-    value = [value]; 
-  }
-  return value.map((v) => parseInt(v)); 
-})
-@IsNumber({}, { each: true })
-@IsArray()
-@IsOptional()
-workouts: number[];
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      value = [value];
+    }
+    return value.map((v) => parseInt(v));
+  })
+  @IsNumber({}, { each: true })
+  @IsArray()
+  @IsOptional()
+  workouts: number[];
 }

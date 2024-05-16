@@ -175,6 +175,7 @@ export default class WorkoutSeeder extends Seeder {
 
     try {
       await dataSource.createEntityManager().save(Workout, specialWorkOut);
+      console.log('Workouts have been seeded successfully');
     } catch (error) {
       console.error('Error occurred while seeding workouts', error.message);
     }

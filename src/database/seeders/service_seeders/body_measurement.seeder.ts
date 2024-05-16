@@ -57,6 +57,7 @@ export default class BodyMeasurementSeeder extends Seeder {
         .into('body_measurements')
         .values(bodyMeasurementData)
         .execute();
+      console.log('Body measurements seeding successful!');
     } catch (error) {
       console.error(
         'Error occurred while seeding body measurements',

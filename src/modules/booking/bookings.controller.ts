@@ -22,7 +22,6 @@ export class BookingsController {
     constructor(private readonly bookingsService: BookingsService) { }
     @Post()
     async createBooking(@UserInRequest() user: User, @Body() dto: MemberCreateBookingDto): Promise<PageResponseDto<any>> {
-        console.log('user', user);
         return this.bookingsService.memberCreateBooking(user, dto);
     }
 

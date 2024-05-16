@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Service } from './service.entity';
 import { Booking } from './booking.entity';
+import { Trainer } from './trainer.entity';
 @Entity('schedules')
 export class Schedule {
   @PrimaryGeneratedColumn()
@@ -24,4 +25,8 @@ export class Schedule {
 
   @OneToMany(() => Booking, (booking) => booking.schedule)
   bookings: Booking[];
+
+  @ManyToOne(() => Trainer, (trainer) => trainer.schedules)
+  @JoinColumn({ name: 'trainer_id' })
+  trainer: Trainer;
 }

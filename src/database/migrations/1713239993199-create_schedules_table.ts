@@ -23,7 +23,7 @@ export class CreateSchedulesTable1713239993199 implements MigrationInterface {
           },
           {
             name: 'date',
-            type: 'date',
+            type: 'varchar',
           },
           {
             name: 'time',
