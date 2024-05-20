@@ -19,6 +19,12 @@ export class Workout {
   @Column({ type: 'text', nullable: true })
   thumbnail: string;
 
+  @Column()
+  room_id: number;
+
+  @Column()
+  capacity: number;
+  
   @OneToMany(
     () => WorkoutEquipment,
     (workoutEquipment) => workoutEquipment.workout,
@@ -30,4 +36,5 @@ export class Workout {
     eager: true,
   })
   serviceWorkout: ServiceWorkout[];
+
 }

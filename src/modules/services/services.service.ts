@@ -47,19 +47,30 @@ export class ServicesService extends PageService {
       .leftJoin('serviceWorkout.workout', 'workout');
 
     if (getListServicesDto.categories) {
-      queryBuilder.andWhere('table.service_type IN (:...categories)', { categories: getListServicesDto.categories });
+      queryBuilder.andWhere('table.service_type IN (:...categories)', {
+        categories: getListServicesDto.categories,
+      });
     }
 
     if (getListServicesDto.rangePrices) {
-      queryBuilder.andWhere('table.price >= :minPrice', { minPrice: getListServicesDto.rangePrices[0] });
-      queryBuilder.andWhere('table.price <= :maxPrice', { maxPrice: getListServicesDto.rangePrices[1] });
+      queryBuilder.andWhere('table.price >= :minPrice', {
+        minPrice: getListServicesDto.rangePrices[0],
+      });
+      queryBuilder.andWhere('table.price <= :maxPrice', {
+        maxPrice: getListServicesDto.rangePrices[1],
+      });
     }
     if (getListServicesDto.durationTime) {
-      queryBuilder.andWhere('table.duration <= :duration', { duration: getListServicesDto.durationTime });
+      queryBuilder.andWhere('table.duration <= :duration', {
+        duration: getListServicesDto.durationTime,
+      });
     }
 
     if (getListServicesDto.workouts) {
-      queryBuilder.andWhere('table.id IN (SELECT DISTINCT service_id FROM service_workouts WHERE workout_id IN (:...workouts))', { workouts: getListServicesDto.workouts });
+      queryBuilder.andWhere(
+        'table.id IN (SELECT DISTINCT service_id FROM service_workouts WHERE workout_id IN (:...workouts))',
+        { workouts: getListServicesDto.workouts },
+      );
     }
 
     const result = await queryBuilder.getRawMany();
@@ -197,7 +208,10 @@ export class ServicesService extends PageService {
     return new PageResponseDto(service[0]);
   }
 
-  async getServiceSchedulesByDay(service_id: number, dto: GetListServiceSchedulesByDayDto): Promise<PageResponseDto<any>> {
+  async getServiceSchedulesByDay(
+    service_id: number,
+    dto: GetListServiceSchedulesByDayDto,
+  ): Promise<PageResponseDto<any>> {
     const schedules = await this.servicesRepository
       .createQueryBuilder('service')
       .select([
@@ -218,25 +232,23 @@ export class ServicesService extends PageService {
     return new PageResponseDto(schedules, pageMeta);
   }
 
-
-
   async getTopServices(limit: number): Promise<PageResponseDto<any>> {
     const services = await this.servicesRepository
-      .createQueryBuilder("service")
+      .createQueryBuilder('service')
       .select([
-        "service.id AS id",
-        "service.name AS name",
-        "service.price AS price",
-        "service.duration AS duration",
-        "service.description AS description",
-        "service.max_participants AS maxParticipants",
-        "service.thumbnail AS thumbnail",
-        "COUNT(booking.id) AS bookingCount",
+        'service.id AS id',
+        'service.name AS name',
+        'service.price AS price',
+        'service.duration AS duration',
+        'service.description AS description',
+        'service.max_participants AS maxParticipants',
+        'service.thumbnail AS thumbnail',
+        'COUNT(booking.id) AS bookingCount',
       ])
-      .leftJoin("service.schedules", "schedule")
-      .leftJoin("schedule.bookings", "booking")
-      .groupBy("service.id")
-      .orderBy("bookingCount", "DESC")
+      .leftJoin('service.schedules', 'schedule')
+      .leftJoin('schedule.bookings', 'booking')
+      .groupBy('service.id')
+      .orderBy('bookingCount', 'DESC')
       .limit(limit)
       .getRawMany();
 
@@ -256,7 +268,9 @@ export class ServicesService extends PageService {
           duration: currentValue.duration,
           description: currentValue.description,
           maxParticipants: currentValue.maxParticipants,
-          bookingCount: currentValue.bookingCount ? parseInt(currentValue.bookingCount) : 0,
+          bookingCount: currentValue.bookingCount
+            ? parseInt(currentValue.bookingCount)
+            : 0,
           thumbnail: currentValue.thumbnail,
         };
         servicesWithWorkouts.push(serviceWithThumbnail);
@@ -265,5 +279,4 @@ export class ServicesService extends PageService {
 
     return new PageResponseDto(servicesWithWorkouts);
   }
-
 }

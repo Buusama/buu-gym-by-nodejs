@@ -23,7 +23,7 @@ import { GetListServiceSchedulesByDayDto } from './dto/get-list-services-schedul
 @UseInterceptors(TransformInterceptor)
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) { }
+  constructor(private readonly servicesService: ServicesService) {}
   @Get()
   @PublicRoute()
   @ApiOkResponse({ description: 'List all services' })

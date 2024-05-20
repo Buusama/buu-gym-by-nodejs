@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsArray, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
 

@@ -24,7 +24,7 @@ export default class TrainerSeeder extends Seeder {
         .into('trainers')
         .values(trainerData)
         .execute();
-        console.log('Trainers seeding successful!');
+      console.log('Trainers seeding successful!');
     } catch (error) {
       console.error('Error occurred while seeding staffs', error.message);
     }

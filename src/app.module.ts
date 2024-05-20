@@ -6,6 +6,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserInterceptor } from 'src/interceptors/user-interceptor.interceptor';
 import { TrimValueInterceptor } from './interceptors/trim-value.interceptor';
 import { JwtAuthGuard } from './modules/auth/guard/jwt-auth.guard';
+import { RoomsModule } from './modules/rooms/rooms.module';
 
 @Module({
   imports: [

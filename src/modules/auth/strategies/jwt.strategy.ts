@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'at-jwt') {
     const user: User = await this.usersRepository.findOne({
       where: { email },
       relations: ['member', 'staff', 'staff.trainer'],
-    })
+    });
     const member = user.member;
     const staff = user.staff;
     const trainer = staff ? staff.trainer : null;

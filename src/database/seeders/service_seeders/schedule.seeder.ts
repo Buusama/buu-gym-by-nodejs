@@ -13,14 +13,20 @@ export default class ScheduleSeeder extends Seeder {
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
     // Lấy ngày cuối cùng của tháng hiện tại
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0,
+    );
 
     // Thiết lập thời gian bắt đầu và kết thúc trong một ngày
     const startTime = 7; // 7 giờ sáng
     const endTime = 19; // 7 giờ tối
 
     const timeSlotsPerDay = 3; // Số lớp dịch vụ tối đa trong một ngày
-    const totalDays = (lastDayOfMonth.getTime() - firstDayOfMonth.getTime()) / (1000 * 3600 * 24); // Tổng số ngày trong tháng
+    const totalDays =
+      (lastDayOfMonth.getTime() - firstDayOfMonth.getTime()) /
+      (1000 * 3600 * 24); // Tổng số ngày trong tháng
     const totalSlots = totalDays * timeSlotsPerDay; // Tổng số khe thời gian cần tạo
 
     const specialSchedules = [];
@@ -32,8 +38,13 @@ export default class ScheduleSeeder extends Seeder {
           // Tạo thời gian bắt đầu cho khe thời gian hiện tại
           const startTimeForSlot = new Date(firstDayOfMonth);
           startTimeForSlot.setDate(startTimeForSlot.getDate() + day);
-          startTimeForSlot.setHours(startTime + Math.floor(i * ((endTime - startTime) / timeSlotsPerDay)));
-          startTimeForSlot.setMinutes((i * ((endTime - startTime) / timeSlotsPerDay)) % 60);
+          startTimeForSlot.setHours(
+            startTime +
+              Math.floor(i * ((endTime - startTime) / timeSlotsPerDay)),
+          );
+          startTimeForSlot.setMinutes(
+            (i * ((endTime - startTime) / timeSlotsPerDay)) % 60,
+          );
 
           // Chuyển đổi ngày thành chuỗi theo định dạng 'yyyy-mm-dd'
           const formattedDate = startTimeForSlot.toISOString().split('T')[0];

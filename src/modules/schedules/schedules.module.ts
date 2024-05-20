@@ -6,9 +6,9 @@ import { SchedulesService } from './schedules.service';
 import { Service } from 'src/entities/service.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Schedule, Service])],
-    controllers: [SchedulesController],
-    providers: [SchedulesService],
-    exports: [SchedulesService],
+  imports: [TypeOrmModule.forFeature([Schedule, Service])],
+  controllers: [SchedulesController],
+  providers: [SchedulesService],
+  exports: [SchedulesService],
 })
-export class SchedulesModule { }
+export class SchedulesModule {}

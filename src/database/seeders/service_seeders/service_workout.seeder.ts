@@ -26,7 +26,7 @@ export default class ServiceWorkoutSeeder extends Seeder {
         .createEntityManager()
         .save(ServiceWorkout, specialServiceWorkout);
       console.log('ServiceWorkout seeding successful!');
-      } catch (error) {
+    } catch (error) {
       console.error(
         'Error occurred while seeding workout equipments',
         error.message,

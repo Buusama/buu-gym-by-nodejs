@@ -40,7 +40,7 @@ export class User {
 
   @Column()
   address: string;
-  
+
   role: number;
 
   @BeforeInsert()
@@ -53,5 +53,4 @@ export class User {
 
   @OneToOne(() => Staff, (staff) => staff.user)
   staff: Staff;
-
 }

@@ -14,7 +14,8 @@ export default class MemberSeeder extends Seeder {
 
     for (let i = 50; i < 100; i++) {
       const start_date = new Date(
-        startDate.getTime() + Math.random() * (currentDate.getTime() - startDate.getTime())
+        startDate.getTime() +
+          Math.random() * (currentDate.getTime() - startDate.getTime()),
       );
 
       const membership_plan_id = faker.number.int({ min: 1, max: 4 });
@@ -27,8 +28,9 @@ export default class MemberSeeder extends Seeder {
               ? 180
               : 365;
 
-      let end_date = new Date(start_date.getTime() + duration * 24 * 60 * 60 * 1000); // Convert duration thành số mili giây và cộng vào start_date
-
+      const end_date = new Date(
+        start_date.getTime() + duration * 24 * 60 * 60 * 1000,
+      ); // Convert duration thành số mili giây và cộng vào start_date
 
       memberData.push({
         user_id: user[i].id,

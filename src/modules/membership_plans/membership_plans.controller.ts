@@ -5,6 +5,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -29,7 +30,7 @@ import { RoleValue } from 'src/commons/enums/role-enum';
 @UseGuards(RoleGuard)
 @Controller('membership_plans')
 export class MembershipPlansController {
-  constructor(private readonly membershipPlanService: MembershipPlansService) {}
+  constructor(private readonly membershipPlanService: MembershipPlansService) { }
   @Get()
   @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   @ApiOkResponse({ description: 'List all package' })
@@ -55,20 +56,20 @@ export class MembershipPlansController {
   @UseFilters(EntityNotFoundErrorFilter)
   @ApiOkResponse({ description: 'Get membership plan by id' })
   async getMembershipPlan(
-    @Query('id') id: number,
+    @Param('id') id: string,
   ): Promise<PageResponseDto<MembershipPlan>> {
-    return this.membershipPlanService.getMembershipPlan(id);
+    return this.membershipPlanService.getMembershipPlan(+id);
   }
 
   @Put(':id')
   @UseFilters(EntityNotFoundErrorFilter)
   @ApiOkResponse({ description: 'Update membership plan by id' })
   async updateMembershipPlan(
-    @Query('id') id: number,
+    @Param('id') id: string,
     @Body() updateMembershipPlanDto: CreateMembershipPlanDto,
   ): Promise<PageResponseDto<MembershipPlan>> {
     return this.membershipPlanService.updateMembershipPlan(
-      id,
+      +id,
       updateMembershipPlanDto,
     );
   }
@@ -77,8 +78,8 @@ export class MembershipPlansController {
   @UseFilters(EntityNotFoundErrorFilter)
   @ApiOkResponse({ description: 'Delete membership plan by id' })
   async deleteMembershipPlan(
-    @Query('id') id: number,
+    @Param('id') id: string,
   ): Promise<PageResponseDto<MembershipPlan>> {
-    return this.membershipPlanService.deleteMembershipPlan(id);
+    return this.membershipPlanService.deleteMembershipPlan(+id);
   }
 }
