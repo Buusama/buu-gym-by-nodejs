@@ -1,18 +1,20 @@
-import UserSeeder from './service_seeders/user.seeder';
-import MembershipPlanSeeder from './service_seeders/membership_plan.seeder';
-import StaffSeeder from './service_seeders/staff.seeder';
-import TrainerSeeder from './service_seeders/trainer.seeder';
-import MemberSeeder from './service_seeders/member.seeder';
+import { Seeder } from '@jorgebodega/typeorm-seeding';
+import { DataSource } from 'typeorm';
 import BodyMeasurementSeeder from './service_seeders/body_measurement.seeder';
-import WorkoutSeeder from './service_seeders/workout.seeder';
+import BookingSeeder from './service_seeders/booking.seeder';
 import EquipmentSeeder from './service_seeders/equipment.seeder';
-import WorkoutEquipmentSeeder from './service_seeders/workout_equipment.seeder';
+import EquipmentDetailSeeder from './service_seeders/equipment_detail.seeder';
+import MemberSeeder from './service_seeders/member.seeder';
+import MembershipPlanSeeder from './service_seeders/membership_plan.seeder';
+import RoomSeeder from './service_seeders/room.seeder';
+import ScheduleSeeder from './service_seeders/schedule.seeder';
 import ServiceSeeder from './service_seeders/service.seeder';
 import ServiceWorkoutSeeder from './service_seeders/service_workout.seeder';
-import ScheduleSeeder from './service_seeders/schedule.seeder';
-import BookingSeeder from './service_seeders/booking.seeder';
-import { DataSource } from 'typeorm';
-import { Seeder } from '@jorgebodega/typeorm-seeding';
+import StaffSeeder from './service_seeders/staff.seeder';
+import TrainerSeeder from './service_seeders/trainer.seeder';
+import UserSeeder from './service_seeders/user.seeder';
+import WorkoutSeeder from './service_seeders/workout.seeder';
+import WorkoutEquipmentSeeder from './service_seeders/workout_equipment.seeder';
 
 export default class SeederManager extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -29,5 +31,7 @@ export default class SeederManager extends Seeder {
     await new ServiceWorkoutSeeder().run(dataSource);
     await new ScheduleSeeder().run(dataSource);
     await new BookingSeeder().run(dataSource);
+    await new RoomSeeder().run(dataSource);
+    await new EquipmentDetailSeeder().run(dataSource);
   }
 }

@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { RoomEquipment } from './room-equipment.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('rooms')
 export class Room {
@@ -9,10 +8,12 @@ export class Room {
   @Column()
   name: string;
 
+  @Column()
+  floor: number;
+
+  @Column()
+  max_capacity: number;
+
   @Column({ nullable: true })
   description: string;
-
-  @OneToMany(() => RoomEquipment, (roomEquipment) => roomEquipment.room, { eager: true })
-  roomEquipments: RoomEquipment[];
-  
 }

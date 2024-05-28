@@ -59,4 +59,11 @@ export class RoomsController {
   remove(@Param('id') id: string) {
     return this.roomsService.remove(+id);
   }
+
+  @Get(':id/equipments')
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Get equipment by room id' })
+  getEquipmentByRoomId(@Param('id') id: string) {
+    return this.roomsService.getEquipmentsByRoomId(+id);
+  }
 }

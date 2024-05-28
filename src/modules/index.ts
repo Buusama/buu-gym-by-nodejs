@@ -9,6 +9,7 @@ import { ServicesModule } from './services/services.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { BookingsModule } from './booking/bookings.module';
 import { RoomsModule } from './rooms/rooms.module';
+import { EquipmentModule } from './equipment/equipment.module';
 class ApplicationModular {
   public static register() {
     return [
@@ -23,6 +24,7 @@ class ApplicationModular {
       SchedulesModule,
       BookingsModule,
       RoomsModule,
+      EquipmentModule,
     ];
   }
 }

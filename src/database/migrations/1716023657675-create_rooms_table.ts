@@ -19,6 +19,14 @@ export class CreateRoomsTable1716023657675 implements MigrationInterface {
             length: '255',
           },
           {
+            name: 'floor',
+            type: 'int',
+          },
+          {
+            name: 'max_capacity',
+            type: 'int',
+          },
+          {
             name: 'description',
             type: 'text',
             isNullable: true,

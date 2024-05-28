@@ -1,5 +1,5 @@
 import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { AuthCredentialsDto, AuthMatchingCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -21,7 +21,7 @@ export class AuthController {
   @Post('/login-matching')
   @PublicRoute()
   signInMachingSite(
-    @Body() authCredentialsDto: AuthCredentialsDto,
+    @Body() authCredentialsDto: AuthMatchingCredentialsDto,
   ): Promise<{ access_token: string }> {
     return this.authService.signInMachingSite(authCredentialsDto);
   }

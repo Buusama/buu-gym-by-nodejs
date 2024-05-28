@@ -30,7 +30,7 @@ import { RoleValue } from 'src/commons/enums/role-enum';
 @UseGuards(RoleGuard)
 @Controller('membership_plans')
 export class MembershipPlansController {
-  constructor(private readonly membershipPlanService: MembershipPlansService) { }
+  constructor(private readonly membershipPlanService: MembershipPlansService) {}
   @Get()
   @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
   @ApiOkResponse({ description: 'List all package' })

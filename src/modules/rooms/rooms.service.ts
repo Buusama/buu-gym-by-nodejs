@@ -6,12 +6,16 @@ import { Repository } from 'typeorm';
 import { GetListRoomDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
+import { EquipmentDetail } from 'src/entities/equipment_detail.entity';
+import { Equipment } from 'src/entities/equipment.entity';
 
 @Injectable()
 export class RoomsService extends PageService {
   constructor(
     @InjectRepository(Room)
     private roomsRepository: Repository<Room>,
+    @InjectRepository(EquipmentDetail)
+    private equipmentRepository: Repository<EquipmentDetail>,
   ) {
     super();
   }
@@ -58,4 +62,16 @@ export class RoomsService extends PageService {
     return new PageResponseDto(existingRoom);
   }
 
+  async getEquipmentsByRoomId(roomId: number) {
+    const queryBuilder = this.equipmentRepository.createQueryBuilder('equipmentDetail')
+      .select('equipment.name', 'name')
+      .addSelect('COUNT(equipmentDetail.id)', 'quantity')
+      .innerJoin(Equipment, 'equipment', 'equipment.id = equipmentDetail.equipment_id')
+      .where('equipmentDetail.room_id = :roomId', { roomId })
+      .groupBy('equipment.name')
+      .orderBy('quantity', 'DESC');
+
+    const equipments = await queryBuilder.getRawMany();
+    return new PageResponseDto(equipments);
+  }
 }
