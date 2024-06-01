@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Schedule } from './schedule.entity';
+import { ServiceClass } from './service-class.entity';
 import { ServiceWorkout } from './service-workout.entity';
 @Entity('services')
 export class Service {
@@ -32,6 +32,6 @@ export class Service {
   })
   serviceWorkout: ServiceWorkout[];
 
-  @OneToMany(() => Schedule, (schedule) => schedule.service)
-  schedules: Schedule[];
+  @OneToMany(() => ServiceClass, (service_class) => service_class.service)
+  serviceClasses: ServiceClass[];
 }

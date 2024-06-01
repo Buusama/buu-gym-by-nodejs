@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty } from 'class-validator';
 
-export class GetListServiceSchedulesByDayDto {
+export class GetListServiceServiceClassesByDayDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsDateString()

@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PageService } from '../pagination/page.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equipment } from 'src/entities/equipment.entity';
+import { Room } from 'src/entities/room.entity';
 import { Repository } from 'typeorm';
-import { CreateEquipmentDto, GetListEquipmentDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { EquipmentDetail } from 'src/entities/equipment_detail.entity';
-import { Room } from 'src/entities/room.entity';
-import { response } from 'express';
+import { PageService } from '../pagination/page.service';
+import { CreateEquipmentDto, GetListEquipmentDto } from './dto';
+import { EquipmentCategory } from 'src/entities/equipment-category.entity';
 
 @Injectable()
 export class EquipmentService extends PageService {
   constructor(
-    @InjectRepository(EquipmentDetail)
+    @InjectRepository(Equipment)
     private equipmentRepository: Repository<Equipment>,
   ) {
     super();
@@ -28,22 +27,19 @@ export class EquipmentService extends PageService {
   }
 
   async findAll(dto: GetListEquipmentDto) {
-    const queryBuilder = await this.paginate(
-      this.equipmentRepository, 
-      dto,
-    );
-  queryBuilder
-  .select([
-    'table.id AS EquipmentId',
-    'table.serial_id AS EquipmentSerialId',
-    'table.condition AS EquipmentCondition',
-    'R.name AS RoomName',
-    'E.name AS EquipmentName',
-  ])
-  .innerJoin(Room, 'R', 'table.room_id = R.id')
-  .innerJoin(Equipment, 'E', 'table.equipment_id = E.id');
-  
-    if(dto.field && dto.type && dto.value) {
+    const queryBuilder = await this.paginate(this.equipmentRepository, dto);
+    queryBuilder
+      .select([
+        'table.id AS EquipmentId',
+        'table.serial_id AS EquipmentSerialId',
+        'table.condition AS EquipmentCondition',
+        'R.name AS RoomName',
+        'E.name AS EquipmentName',
+      ])
+      .innerJoin(Room, 'R', 'table.room_id = R.id')
+      .innerJoin(EquipmentCategory, 'E', 'table.equipment_category_id = E.id');
+
+    if (dto.field && dto.type && dto.value) {
       queryBuilder.andWhere(`${dto.field} = :value`, { value: dto.value });
     }
     const itemCount = await queryBuilder.getCount();
@@ -56,8 +52,6 @@ export class EquipmentService extends PageService {
         pageMeta.take * (pageMeta.page + 1),
       );
     return new PageResponseDto(entities, pageMeta);
-
-    
   }
 
   async findOne(id: number) {

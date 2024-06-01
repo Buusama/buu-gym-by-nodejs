@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Workout } from './workout.entity';
-import { Equipment } from './equipment.entity';
+import { EquipmentCategory } from './equipment-category.entity';
 
 @Entity('workout_equipments')
 export class WorkoutEquipment {
@@ -23,7 +23,7 @@ export class WorkoutEquipment {
   @JoinColumn({ name: 'workout_id' })
   workout: Workout;
 
-  @ManyToOne(() => Equipment, (equipment) => equipment.workoutEquipment)
+  @ManyToOne(() => EquipmentCategory, (equipment) => equipment.workoutEquipment)
   @JoinColumn({ name: 'equipment_id' })
-  equipment: Equipment;
+  equipment: EquipmentCategory;
 }

@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkoutEquipment } from './workout-equipment.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { EquipmentCategory } from './equipment-category.entity';
+import { Room } from './room.entity';
 
 @Entity('equipments')
 export class Equipment {
@@ -7,12 +14,22 @@ export class Equipment {
   id: number;
 
   @Column()
-  name: string;
+  condition: string;
 
-  @OneToMany(
-    () => WorkoutEquipment,
-    (workoutEquipment) => workoutEquipment.equipment_id,
-    { eager: true },
-  )
-  workoutEquipment: WorkoutEquipment[];
+  @Column()
+  serial_id: string;
+
+  @Column()
+  room_id: number;
+
+  @Column()
+  equipment_category_id: number;
+
+  @OneToOne(() => EquipmentCategory, { eager: true })
+  @JoinColumn({ name: 'equipment_category_id' })
+  equipment_category: EquipmentCategory;
+
+  @OneToOne(() => Room, { eager: true })
+  @JoinColumn({ name: 'room_id' })
+  room: Room;
 }

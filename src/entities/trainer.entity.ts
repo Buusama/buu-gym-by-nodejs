@@ -7,7 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Staff } from './staff.entity';
-import { Schedule } from './schedule.entity';
+import { ServiceClass } from './service-class.entity';
+import { PersonalWorkout } from './personal-workout.entity';
 
 @Entity('trainers')
 export class Trainer {
@@ -33,6 +34,12 @@ export class Trainer {
   @JoinColumn({ name: 'staff_id' }) // Chỉ định tên cột cho việc kết nối
   staff: Staff;
 
-  @OneToMany(() => Schedule, (schedule) => schedule.trainer)
-  schedules: Schedule[];
+  @OneToMany(() => ServiceClass, (service_class) => service_class.trainer)
+  serviceClasses: ServiceClass[];
+
+  @OneToMany(
+    () => PersonalWorkout,
+    (personal_workout) => personal_workout.trainer,
+  )
+  personalWorkouts: PersonalWorkout[];
 }

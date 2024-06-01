@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import applicationProvider from './providers';
-import applicationModular from './modules';
-import { UserSubscriber } from 'src/subcribers/user-subcriber.subcriber';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserInterceptor } from 'src/interceptors/user-interceptor.interceptor';
+import { UserSubscriber } from 'src/subcribers/user-subcriber.subcriber';
 import { TrimValueInterceptor } from './interceptors/trim-value.interceptor';
+import applicationModular from './modules';
 import { JwtAuthGuard } from './modules/auth/guard/jwt-auth.guard';
-import { RoomsModule } from './modules/rooms/rooms.module';
+import applicationProvider from './providers';
 
 @Module({
   imports: [

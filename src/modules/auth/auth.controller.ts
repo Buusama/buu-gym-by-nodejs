@@ -1,5 +1,8 @@
 import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
-import { AuthCredentialsDto, AuthMatchingCredentialsDto } from './dto/auth-credentials.dto';
+import {
+  AuthCredentialsDto,
+  AuthMatchingCredentialsDto,
+} from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';

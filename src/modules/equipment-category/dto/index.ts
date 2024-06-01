@@ -4,7 +4,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
-export class GetListEquipmentDto extends PageDto {
+export class GetListEquipmentCategoryDto extends PageDto {
   @ApiProperty({ required: false, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsOptional()
@@ -20,7 +20,7 @@ export class GetListEquipmentDto extends PageDto {
   value: string;
 }
 
-export class CreateEquipmentDto {
+export class CreateEquipmentCategoryDto {
   @ApiProperty({ type: 'string' })
   @IsString()
   @IsNotEmpty()

@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { WorkoutEquipment } from './workout-equipment.entity';
 import { ServiceWorkout } from './service-workout.entity';
+import { PersonalWorkout } from './personal-workout.entity';
 
 @Entity('workouts')
 export class Workout {
@@ -24,7 +25,7 @@ export class Workout {
 
   @Column()
   capacity: number;
-  
+
   @OneToMany(
     () => WorkoutEquipment,
     (workoutEquipment) => workoutEquipment.workout,
@@ -37,4 +38,9 @@ export class Workout {
   })
   serviceWorkout: ServiceWorkout[];
 
+  @OneToMany(
+    () => PersonalWorkout,
+    (personalWorkout) => personalWorkout.workout,
+  )
+  personalWorkouts: PersonalWorkout[];
 }

@@ -6,11 +6,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Service } from './service.entity';
 import { Booking } from './booking.entity';
 import { Trainer } from './trainer.entity';
-@Entity('schedules')
-export class Schedule {
+import { Workout } from './workout.entity';
+@Entity('personal_workouts')
+export class PersonalWorkout {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,7 +18,7 @@ export class Schedule {
   trainer_id: number;
 
   @Column({ type: 'int', nullable: true })
-  service_id: number;
+  workout_id: number;
 
   @Column({ type: 'date', nullable: true })
   date: string;
@@ -26,14 +26,14 @@ export class Schedule {
   @Column({ type: 'time', nullable: true })
   time: string;
 
-  @ManyToOne(() => Service, (service) => service.schedules)
-  @JoinColumn({ name: 'service_id' })
-  service: Service;
+  @ManyToOne(() => Workout, (workout) => workout.personalWorkouts)
+  @JoinColumn({ name: 'workout_id' })
+  workout: Workout;
 
-  @OneToMany(() => Booking, (booking) => booking.schedule)
+  @OneToMany(() => Booking, (booking) => booking.serviceClass)
   bookings: Booking[];
 
-  @ManyToOne(() => Trainer, (trainer) => trainer.schedules)
+  @ManyToOne(() => Trainer, (trainer) => trainer.serviceClasses)
   @JoinColumn({ name: 'trainer_id' })
   trainer: Trainer;
 }

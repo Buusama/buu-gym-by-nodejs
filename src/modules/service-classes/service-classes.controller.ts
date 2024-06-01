@@ -8,30 +8,31 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
-import { SchedulesService } from './schedules.service';
+import { ServiceClassesService } from './service-classes.service';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
-import { GetSchedulesByServiceIdAndDayDto } from './dto';
+import { GetServiceClassesByServiceIdAndDayDto } from './dto';
 import { RequireRole } from 'src/commons/decorators/require-role.decorator';
 import { RoleValue } from 'src/commons/enums/role-enum';
 import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
 import { User } from 'src/entities/user.entity';
 import { RoleGuard } from '../auth/guard/role.guard';
 
-@ApiTags('schedules')
+@ApiTags('service-classes')
 @UseInterceptors(TransformInterceptor)
-@Controller('schedules')
-export class SchedulesController {
-  constructor(private readonly schedulesService: SchedulesService) {}
+@Controller('service-classes')
+export class ServiceClassesController {
+  constructor(private readonly serviceClassesService: ServiceClassesService) {}
   @Get('/service/:id')
   @PublicRoute()
-  @ApiOkResponse({ description: 'Get schedules by service id' })
-  getSchedulesByServiceIdAndDay(
+  @ApiOkResponse({ description: 'Get service-classes by service id' })
+  getServiceClassesByServiceIdAndDay(
     @Param('id') id: number,
-    @Query() getSchedulesByServiceIdAndDayDto: GetSchedulesByServiceIdAndDayDto,
+    @Query()
+    getServiceClassesByServiceIdAndDayDto: GetServiceClassesByServiceIdAndDayDto,
   ): Promise<any> {
-    return this.schedulesService.getSchedulesByServiceIdAndDay(
+    return this.serviceClassesService.getServiceClassesByServiceIdAndDay(
       id,
-      getSchedulesByServiceIdAndDayDto,
+      getServiceClassesByServiceIdAndDayDto,
     );
   }
 
@@ -39,20 +40,20 @@ export class SchedulesController {
   @ApiBearerAuth('access-token')
   @UseGuards(RoleGuard)
   @RequireRole(RoleValue.MEMBER)
-  @ApiOkResponse({ description: 'Get schedules by member' })
-  getSchedulesByMember(@UserInRequest() user: User): Promise<any> {
-    return this.schedulesService.getSchedulesByMember(user);
+  @ApiOkResponse({ description: 'Get service-classes by member' })
+  getServiceClassesByMember(@UserInRequest() user: User): Promise<any> {
+    return this.serviceClassesService.getServiceClassesByMember(user);
   }
 
   @Get(':id')
   @ApiBearerAuth('access-token')
   @UseGuards(RoleGuard)
   @RequireRole(RoleValue.MEMBER, RoleValue.TRAINER, RoleValue.ADMIN)
-  @ApiOkResponse({ description: 'Get schedule by id' })
-  getScheduleById(
+  @ApiOkResponse({ description: 'Get service class by id' })
+  getServiceClassById(
     @UserInRequest() user: User,
     @Param('id') id: number,
   ): Promise<any> {
-    return this.schedulesService.getScheduleById(user, id);
+    return this.serviceClassesService.getServiceClassById(user, id);
   }
 }

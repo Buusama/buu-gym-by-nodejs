@@ -28,7 +28,7 @@ import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-foun
 @RequireRole(RoleValue.ADMIN)
 @Controller('equipments')
 export class EquipmentController {
-  constructor(private readonly equipmentService: EquipmentService) {}
+  constructor(private readonly equipmentService: EquipmentService) { }
   @Post()
   @ApiOkResponse({ description: 'Create Equipment' })
   create(@Body() createEquipmentDto: CreateEquipmentDto) {

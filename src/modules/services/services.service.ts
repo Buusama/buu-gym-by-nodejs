@@ -7,7 +7,7 @@ import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import { GetListServicesDto } from './dto/get-list-services.dto';
-import { GetListServiceSchedulesByDayDto } from './dto/get-list-services-schedule.dto';
+import { GetListServiceServiceClassesByDayDto } from './dto/get-list-services-service-classes.dto';
 
 @Injectable()
 export class ServicesService extends PageService {
@@ -208,28 +208,27 @@ export class ServicesService extends PageService {
     return new PageResponseDto(service[0]);
   }
 
-  async getServiceSchedulesByDay(
+  async getServiceServiceClassesByDay(
     service_id: number,
-    dto: GetListServiceSchedulesByDayDto,
+    dto: GetListServiceServiceClassesByDayDto,
   ): Promise<PageResponseDto<any>> {
-    const schedules = await this.servicesRepository
+    const serviceClasses = await this.servicesRepository
       .createQueryBuilder('service')
       .select([
-        'schedule.id AS id',
-        'schedule.date AS date',
-        'schedule.time AS time',
+        'serviceClass.id AS id',
+        'serviceClass.date AS date',
+        'serviceClass.time AS time',
         'service.name AS serviceName',
       ])
-      .leftJoin('service.schedules', 'schedule')
+      .leftJoin('service.serviceClasses', 'serviceClass')
       .where('service.id = :service_id', { service_id })
-      .andWhere('schedule.date = :date', { date: dto.date })
-      .orderBy('schedule.time', 'ASC')
+      .andWhere('serviceClass.date = :date', { date: dto.date })
+      .orderBy('serviceClass.time', 'ASC')
       .getRawMany();
-
-    const itemCount = schedules.length;
+    const itemCount = serviceClasses.length;
     const pageMeta = new PageMetaDto(dto, itemCount);
 
-    return new PageResponseDto(schedules, pageMeta);
+    return new PageResponseDto(serviceClasses, pageMeta);
   }
 
   async getTopServices(limit: number): Promise<PageResponseDto<any>> {
@@ -245,8 +244,8 @@ export class ServicesService extends PageService {
         'service.thumbnail AS thumbnail',
         'COUNT(booking.id) AS bookingCount',
       ])
-      .leftJoin('service.schedules', 'schedule')
-      .leftJoin('schedule.bookings', 'booking')
+      .leftJoin('service.serviceClasses', 'serviceClass')
+      .leftJoin('serviceClass.bookings', 'booking')
       .groupBy('service.id')
       .orderBy('bookingCount', 'DESC')
       .limit(limit)

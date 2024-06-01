@@ -5,9 +5,13 @@ import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
 export class CreateBookingDto {
   @ApiProperty()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
-  schedule_id: number;
+  service_class_id: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  personal_workout_id: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -28,7 +32,11 @@ export class MemberCreateBookingDto {
   @ApiProperty()
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
-  schedule_id: number;
+  service_class_id: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  personal_workout_id: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -43,7 +51,11 @@ export class MemberCreateBookingDto {
 export class UpdateBookingDto {
   @ApiProperty()
   @IsNotEmpty()
-  schedule_id: number;
+  service_class_id: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  personal_workout_id: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -61,7 +73,11 @@ export class UpdateBookingDto {
 export class FindBookingDto {
   @ApiProperty()
   @IsNotEmpty()
-  schedule_id: number;
+  service_class_id: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  personal_workout_id: number;
 
   @ApiProperty()
   @IsNotEmpty()

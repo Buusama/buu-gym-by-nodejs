@@ -6,16 +6,16 @@ import { Repository } from 'typeorm';
 import { GetListRoomDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { EquipmentDetail } from 'src/entities/equipment_detail.entity';
 import { Equipment } from 'src/entities/equipment.entity';
+import { EquipmentCategory } from 'src/entities/equipment-category.entity';
 
 @Injectable()
 export class RoomsService extends PageService {
   constructor(
     @InjectRepository(Room)
     private roomsRepository: Repository<Room>,
-    @InjectRepository(EquipmentDetail)
-    private equipmentRepository: Repository<EquipmentDetail>,
+    @InjectRepository(Equipment)
+    private equipmentRepository: Repository<Equipment>,
   ) {
     super();
   }
@@ -63,13 +63,18 @@ export class RoomsService extends PageService {
   }
 
   async getEquipmentsByRoomId(roomId: number) {
-    const queryBuilder = this.equipmentRepository.createQueryBuilder('equipmentDetail')
-      .select('equipment.name', 'name')
-      .addSelect('COUNT(equipmentDetail.id)', 'quantity')
-      .innerJoin(Equipment, 'equipment', 'equipment.id = equipmentDetail.equipment_id')
-      .where('equipmentDetail.room_id = :roomId', { roomId })
-      .groupBy('equipment.name')
-      .orderBy('quantity', 'DESC');
+    const queryBuilder = this.equipmentRepository
+    .createQueryBuilder('equipment')
+    .select('equipmentCategory.name', 'name')
+    .addSelect('COUNT(equipment.id)', 'quantity')
+    .innerJoin(
+      EquipmentCategory,
+      'equipmentCategory',
+      'equipmentCategory.id = equipment.equipment_category_id',
+    )
+    .where('equipment.room_id = :roomId', { roomId })
+    .groupBy('equipmentCategory.name')
+    .orderBy('quantity', 'DESC');
 
     const equipments = await queryBuilder.getRawMany();
     return new PageResponseDto(equipments);

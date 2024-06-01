@@ -6,14 +6,17 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Member } from './member.entity';
-import { Schedule } from './schedule.entity';
+import { ServiceClass } from './service-class.entity';
 @Entity('bookings')
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  schedule_id: number;
+  service_class_id: number;
+
+  @Column()
+  personal_workout_id: number;
 
   @Column()
   member_id: number;
@@ -31,7 +34,7 @@ export class Booking {
   @JoinColumn({ name: 'member_id' })
   member: Member;
 
-  @ManyToOne(() => Schedule, (schedule) => schedule.bookings)
-  @JoinColumn({ name: 'schedule_id' })
-  schedule: Schedule;
+  @ManyToOne(() => ServiceClass, (service_class) => service_class.bookings)
+  @JoinColumn({ name: 'service_class_id' })
+  serviceClass: ServiceClass;
 }
