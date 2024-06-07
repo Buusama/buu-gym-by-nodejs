@@ -18,11 +18,15 @@ export class CreateBookingsTable1713277418989 implements MigrationInterface {
             type: 'int',
           },
           {
-            name: 'personal_workout_id',
+            name: 'trainer_id',
             type: 'int',
           },
           {
             name: 'member_id',
+            type: 'int',
+          },
+          {
+            name: 'workout_id',
             type: 'int',
           },
           {
@@ -36,6 +40,18 @@ export class CreateBookingsTable1713277418989 implements MigrationInterface {
           {
             name: 'note',
             type: 'text',
+          },
+          {
+            name: 'date',
+            type: 'varchar',
+          },
+          {
+            name: 'time',
+            type: 'time',
+          },
+          {
+            name: 'status',
+            type: 'int',
           },
           {
             name: 'created_at',

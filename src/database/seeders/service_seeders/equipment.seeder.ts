@@ -17,9 +17,7 @@ export default class EquipmentSeeder extends Seeder {
     }));
 
     try {
-      await dataSource
-        .createEntityManager()
-        .save(Equipment, equipments);
+      await dataSource.createEntityManager().save(Equipment, equipments);
       console.log('Equipment details seeding successful!');
     } catch (error) {
       console.error('Failed to seed equipment details:', error);

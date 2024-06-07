@@ -9,6 +9,7 @@ import {
 import { Staff } from './staff.entity';
 import { ServiceClass } from './service-class.entity';
 import { PersonalWorkout } from './personal-workout.entity';
+import { Booking } from './booking.entity';
 
 @Entity('trainers')
 export class Trainer {
@@ -42,4 +43,7 @@ export class Trainer {
     (personal_workout) => personal_workout.trainer,
   )
   personalWorkouts: PersonalWorkout[];
+
+  @OneToMany(() => Booking, (booking) => booking.trainer)
+  bookings: Booking[];
 }

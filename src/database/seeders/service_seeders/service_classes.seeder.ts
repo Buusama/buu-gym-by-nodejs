@@ -11,7 +11,11 @@ export default class ServiceClassSeeder extends Seeder {
     // Define constants
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0,
+    );
     const startTime = 7; // 7 AM
     const endTime = 19; // 7 PM
     const timeSlotsPerDay = 3; // Maximum number of service classes in a day
@@ -19,7 +23,7 @@ export default class ServiceClassSeeder extends Seeder {
 
     const specialServiceClasses = [];
 
-    services.forEach(service => {
+    services.forEach((service) => {
       if (Math.random() > 0.5) {
         // Create special service class
         const specialClass = createServiceClass(
@@ -27,7 +31,7 @@ export default class ServiceClassSeeder extends Seeder {
           firstDayOfMonth.toISOString().slice(0, 10),
           lastDayOfMonth.toISOString().slice(0, 10),
           faker.helpers.shuffle(repeatDays).slice(0, 3).join(','),
-          `${startTime}:00:00`
+          `${startTime}:00:00`,
         );
         specialServiceClasses.push(specialClass);
       }
@@ -35,29 +39,42 @@ export default class ServiceClassSeeder extends Seeder {
       // Create 10 regular service classes
       for (let i = 0; i < 10; i++) {
         const randomDate = new Date(firstDayOfMonth);
-        randomDate.setDate(randomDate.getDate() + faker.number.int({ min: 0, max: 30 }));
+        randomDate.setDate(
+          randomDate.getDate() + faker.number.int({ min: 0, max: 30 }),
+        );
 
         const regularClass = createServiceClass(
           service.id,
           randomDate.toISOString().slice(0, 10),
           randomDate.toISOString().slice(0, 10),
           '',
-          `${faker.number.int({ min: startTime, max: endTime })}:00:00`
+          `${faker.number.int({ min: startTime, max: endTime })}:00:00`,
         );
         specialServiceClasses.push(regularClass);
       }
     });
 
     try {
-      await dataSource.createEntityManager().save(ServiceClass, specialServiceClasses);
+      await dataSource
+        .createEntityManager()
+        .save(ServiceClass, specialServiceClasses);
       console.log('ServiceClasses have been seeded successfully.');
     } catch (error) {
-      console.error('Error occurred while seeding ServiceClasses:', error.message);
+      console.error(
+        'Error occurred while seeding ServiceClasses:',
+        error.message,
+      );
     }
   }
 }
 
-function createServiceClass(serviceId: number, startDate: string, endDate: string, repeatDays: string, time: string): ServiceClass {
+function createServiceClass(
+  serviceId: number,
+  startDate: string,
+  endDate: string,
+  repeatDays: string,
+  time: string,
+): ServiceClass {
   const serviceClass = new ServiceClass();
   serviceClass.service_id = serviceId;
   serviceClass.start_date = startDate;

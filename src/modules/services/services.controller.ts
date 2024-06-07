@@ -50,7 +50,7 @@ export class ServicesController {
     return this.servicesService.getService(id);
   }
 
-  @Get(':id/service-classes')
+  @Get(':id/service_classes')
   @PublicRoute()
   @UseFilters(EntityNotFoundErrorFilter)
   @ApiOkResponse({ description: 'Get service service-classes' })

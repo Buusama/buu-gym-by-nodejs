@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import * as moment from 'moment';
+import { MemberStatusValue } from 'src/commons/enums/members/member-status';
+import { BodyMeasurement } from 'src/entities/body-measurement.entity';
+import { MemberMembership } from 'src/entities/member-membership.entity';
 import { Member } from 'src/entities/member.entity';
 import { Repository } from 'typeorm';
 import { MembershipPlan } from '../../entities/membership-plan.entity';
-import { Staff } from '../../entities/staff.entity';
-import { Trainer } from '../../entities/trainer.entity';
 import { User } from '../../entities/user.entity';
 import { AwsService } from '../aws/aws.service';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
+import { CreateMemberMembershipsDto, createMemberMembershipPaymentDto } from './dto';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { BodyMeasurement } from 'src/entities/body-measurement.entity';
-import * as moment from 'moment';
-import { MemberStatusValue } from 'src/commons/enums/members/member-status';
+import { MembershipPayment } from 'src/entities/membership-payment.entity';
+import { Transaction } from 'src/entities/transaction.entity';
+import { TransactionValue } from 'src/commons/enums/payments/transaction';
 
 @Injectable()
 export class MembersService extends PageService {
@@ -26,6 +28,12 @@ export class MembersService extends PageService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private s3Service: AwsService,
+    @InjectRepository(MemberMembership)
+    private memberMembershipRepository: Repository<MemberMembership>,
+    @InjectRepository(MembershipPayment)
+    private membershipPaymentRepository: Repository<MembershipPayment>,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
   ) {
     super();
   }
@@ -196,6 +204,8 @@ export class MembersService extends PageService {
       .createQueryBuilder('member')
       .select([
         'member.id AS MemberId',
+        'member.start_date AS StartDate',
+        'member.end_date AS EndDate',
         'P.name AS MemberName',
         'P.gender AS MemberGender',
         'P.email AS MemberEmail',
@@ -217,6 +227,8 @@ export class MembersService extends PageService {
         response.MemberBirthDate = moment(response.MemberBirthDate).format(
           'YYYY-MM-DD',
         );
+        response.EndDate = moment(response.EndDate).format('YYYY-MM-DD');
+        response.StartDate = moment(response.StartDate).format('YYYY-MM-DD');
         return new PageResponseDto(response);
       });
   }
@@ -228,5 +240,181 @@ export class MembersService extends PageService {
 
     await this.membersRepository.remove(member);
     return { message: 'Delete member successfully' };
+  }
+
+  async getMemberMembershipPlans(memberId: number) {
+    return this.memberMembershipRepository
+      .createQueryBuilder('member_membership')
+      .select([
+        'member_membership.id AS  id',
+        'MP.name AS name',
+        'MP.price AS price',
+        'member_membership.start_date AS date',
+        'member_membership.note AS note',
+      ])
+      .innerJoin(
+        MembershipPlan,
+        'MP',
+        'member_membership.membership_plan_id = MP.id',
+      )
+      .where('member_membership.member_id = :memberId', { memberId })
+      .getRawMany()
+      .then((response) => {
+        response.forEach((entity) => {
+          entity.date = moment(entity.date).format('YYYY-MM-DD');
+        });
+        return new PageResponseDto(response);
+      });
+  }
+
+  async createMemberMembershipPlan(
+    memberId: number,
+    membershipPlan: CreateMemberMembershipsDto,
+  ) {
+    const member = await this.membersRepository.findOneByOrFail({
+      id: memberId,
+    });
+    const membership = this.memberMembershipRepository.create({
+      member_id: member.id,
+      ...membershipPlan,
+    });
+
+    await this.memberMembershipRepository.save(membership);
+
+    member.end_date = this.calculateEndDate(
+      membership.start_date,
+      membership.membership_plan_id,
+    );
+    member.membership_plan_id = membership.membership_plan_id;
+    await this.membersRepository.save(member);
+
+    return this.getMemberMembershipPlans(memberId);
+  }
+
+  private calculateEndDate(startDate: Date, membership_plan_id: number): Date {
+    const endDate = new Date(startDate);
+    const monthsToAdd = this.getMonthsToAddForPlan(membership_plan_id);
+    endDate.setMonth(endDate.getMonth() + monthsToAdd);
+    return endDate;
+  }
+
+  private getMonthsToAddForPlan(planId: number): number {
+    switch (planId) {
+      case 1:
+        return 1;
+      case 2:
+        return 3;
+      case 3:
+        return 6;
+      case 4:
+        return 12;
+      default:
+        return 0;
+    }
+  }
+
+  async getMemberMembershipPayments(memberId: number) {
+    return this.membershipPaymentRepository
+      .createQueryBuilder('membership_payment')
+      .select([
+        'membership_payment.id AS id',
+        'membership_payment.payment_date AS payment_date',
+        'membership_payment.payment_amount AS payment_amount',
+        'membership_payment.payment_type AS payment_type',
+      ])
+      .where('membership_payment.member_id = :memberId', { memberId })
+      .getRawMany()
+      .then((response) => {
+        response.forEach((entity) => {
+          entity.payment_date = moment(entity.payment_date).format('YYYY-MM-DD');
+        });
+        return new PageResponseDto(response);
+      });
+  }
+
+  async createMemberMembershipPayment(
+    memberId: number,
+    membershipPayment: createMemberMembershipPaymentDto,
+  ) {
+    try {
+      const member = await this.membersRepository.findOneByOrFail({
+        id: memberId,
+      });
+      // create transaction with type = 'payment'
+      const transaction = this.transactionRepository.create({
+        type: TransactionValue.MEMBERSHIP,
+        date: membershipPayment.payment_date,
+        amount: membershipPayment.payment_amount,
+      });
+      await this.transactionRepository.save(transaction);
+
+      const payment = this.membershipPaymentRepository.create({
+        member_id: member.id,
+        transaction_id: transaction.id,
+        ...membershipPayment,
+      });
+
+      await this.membershipPaymentRepository.save(payment);
+      return this.getMemberMembershipPayments(memberId);
+    } catch (error) {
+      throw Error('Error occurred while creating payment');
+    }
+  }
+
+  async getMemberFinancials(memberId: number) {
+    // get Sales: doanh số, Revenue: doanh thu,  Receivable: phải thu
+    // sales = revenue + receivable
+   const sales = await this.memberMembershipRepository
+    .createQueryBuilder('member_membership')
+    .select([
+      'SUM(MP.price) AS sales',
+    ])
+    .innerJoin(MembershipPlan, 'MP', 'member_membership.membership_plan_id = MP.id')
+    .where('member_membership.member_id = :memberId', { memberId })
+    .getRawOne();
+
+    const revenue = await this.membershipPaymentRepository
+    .createQueryBuilder('membership_payment')
+    .select([
+      'SUM(membership_payment.payment_amount) AS revenue',
+    ])
+    .where('membership_payment.member_id = :memberId', { memberId })
+    .getRawOne();
+
+    const receivable = sales.sales - revenue.revenue;
+
+    return new PageResponseDto({
+      total_sales: sales.sales,
+      total_revenue: revenue.revenue,
+      total_receivable: receivable,
+    });
+  }
+
+  async getMemberBodyMeasurements(memberId: number) {
+    return this.membersRepository
+      .createQueryBuilder('member')
+      .select([
+        'BM.id AS id',
+        'BM.measurement_date AS measurement_date',
+        'BM.height AS height',
+        'BM.weight AS weight',
+        'BM.fat AS fat',
+        'BM.muscle AS muscle',
+        'BM.bone AS bone',
+        'BM.waist AS waist',
+        'BM.hip AS hip',
+        'BM.chest AS chest',
+      ])
+      .innerJoin(BodyMeasurement, 'BM', 'BM.member_id = member.id')
+      .where('member.id = :memberId', { memberId })
+      .getRawMany()
+      .then((response) => {
+        response.forEach((entity) => {
+          entity.measurement_date = moment(entity.measurement_date).format(
+            'YYYY-MM-DD',
+          );
+        });
+        return new PageResponseDto(response);
+      });
   }
 }

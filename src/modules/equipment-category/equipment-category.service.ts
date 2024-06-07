@@ -26,11 +26,10 @@ export class EquipmentCategoriesService extends PageService {
   }
 
   async findAll(dto: GetListEquipmentCategoryDto) {
-    const queryBuilder = await this.paginate(this.equipmentCategoryRepository, dto)
-      .select([
-        'table.id,table.name,table.max_capacity'
-      ]);
-
+    const queryBuilder = await this.paginate(
+      this.equipmentCategoryRepository,
+      dto,
+    ).select(['table.id,table.name,table.max_capacity']);
 
     const itemCount = await queryBuilder.getCount();
     let entities = await queryBuilder.getRawMany();
@@ -50,10 +49,14 @@ export class EquipmentCategoriesService extends PageService {
       .then((response) => response);
   }
 
-  async update(id: number, updateEquipmentCategoryDto: CreateEquipmentCategoryDto) {
-    const existingEquipmentCategory = await this.equipmentCategoryRepository.findOneByOrFail({
-      id: id,
-    });
+  async update(
+    id: number,
+    updateEquipmentCategoryDto: CreateEquipmentCategoryDto,
+  ) {
+    const existingEquipmentCategory =
+      await this.equipmentCategoryRepository.findOneByOrFail({
+        id: id,
+      });
     const { ...params } = updateEquipmentCategoryDto;
 
     Object.assign(existingEquipmentCategory, params);
@@ -62,9 +65,10 @@ export class EquipmentCategoriesService extends PageService {
   }
 
   async remove(id: number) {
-    const existingEquipmentCategory = await this.equipmentCategoryRepository.findOneByOrFail({
-      id: id,
-    });
+    const existingEquipmentCategory =
+      await this.equipmentCategoryRepository.findOneByOrFail({
+        id: id,
+      });
     await this.equipmentCategoryRepository.remove(existingEquipmentCategory);
     return existingEquipmentCategory;
   }

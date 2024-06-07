@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { WorkoutEquipment } from './workout-equipment.entity';
 import { ServiceWorkout } from './service-workout.entity';
 import { PersonalWorkout } from './personal-workout.entity';
+import { Booking } from './booking.entity';
 
 @Entity('workouts')
 export class Workout {
@@ -43,4 +44,7 @@ export class Workout {
     (personalWorkout) => personalWorkout.workout,
   )
   personalWorkouts: PersonalWorkout[];
+
+  @OneToMany(() => Booking, (booking) => booking.workout)
+  bookings: Booking[];
 }

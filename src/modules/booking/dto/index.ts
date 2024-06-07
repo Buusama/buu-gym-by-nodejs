@@ -5,83 +5,125 @@ import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
 export class CreateBookingDto {
   @ApiProperty()
-  // @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   service_class_id: number;
 
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
-  personal_workout_id: number;
+  workout_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   member_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  trainer_id: number;
+
+  @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   participants: number;
 
   @ApiProperty()
   @IsString()
   note: string;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  payment_method: number;
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty()
+  time: string;
 }
 
 export class MemberCreateBookingDto {
   @ApiProperty()
-  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   service_class_id: number;
 
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
-  personal_workout_id: number;
+  workout_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  trainer_id: number;
+
+  @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   participants: number;
 
   @ApiProperty()
-  @IsString()
   note: string;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  payment_method: number;
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty()
+  time: string;
 }
 
 export class UpdateBookingDto {
   @ApiProperty()
-  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   service_class_id: number;
 
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
-  personal_workout_id: number;
+  workout_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   member_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
-  participants: number;
-
-  @ApiProperty()
-  @IsString()
-  note: string;
+  trainer_id: number;
 }
+
 export class FindBookingDto {
   @ApiProperty()
-  @IsNotEmpty()
   service_class_id: number;
 
   @ApiProperty()
-  @Transform(({ value }) => parseInt(value))
-  personal_workout_id: number;
+  member_id: number;
 
   @ApiProperty()
-  @IsNotEmpty()
-  member_id: number;
+  trainer_id: number;
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty()
+  time: string;
+
+  @ApiProperty()
+  workout_id: number;
 }
 
-export class FindAllBookingDto extends PageDto {}
+export class FindAllBookingDto extends PageDto {
+  @ApiProperty({ required: false })
+  service_class_id: number;
+
+  @ApiProperty({ required: false })
+  member_id: number;
+
+  @ApiProperty({ required: false })
+  trainer_id: number;
+
+  @ApiProperty({ required: false })
+  date: string;
+
+  @ApiProperty({ required: false })
+  time: string;
+
+  @ApiProperty({ required: false })
+  workout_id: number;
+}

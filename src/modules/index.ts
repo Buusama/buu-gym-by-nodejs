@@ -6,6 +6,7 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { MembersModule } from './members/members.module';
 import { MembershipPlansModule } from './membership_plans/membership_plans.module';
 import { AuditObserverModule } from './observers/audit-observer.module';
+import { PaymentsModule } from './payments/payments.module';
 import { PersonalWorkoutModule } from './personal-workout/personal-workout.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { ServiceClassesModule } from './service-classes/service-classes.module';
@@ -29,6 +30,7 @@ class ApplicationModular {
       EquipmentModule,
       EquipmentCategoryModule,
       PersonalWorkoutModule,
+      // PaymentsModule,
     ];
   }
 }

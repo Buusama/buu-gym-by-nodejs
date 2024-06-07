@@ -64,17 +64,17 @@ export class RoomsService extends PageService {
 
   async getEquipmentsByRoomId(roomId: number) {
     const queryBuilder = this.equipmentRepository
-    .createQueryBuilder('equipment')
-    .select('equipmentCategory.name', 'name')
-    .addSelect('COUNT(equipment.id)', 'quantity')
-    .innerJoin(
-      EquipmentCategory,
-      'equipmentCategory',
-      'equipmentCategory.id = equipment.equipment_category_id',
-    )
-    .where('equipment.room_id = :roomId', { roomId })
-    .groupBy('equipmentCategory.name')
-    .orderBy('quantity', 'DESC');
+      .createQueryBuilder('equipment')
+      .select('equipmentCategory.name', 'name')
+      .addSelect('COUNT(equipment.id)', 'quantity')
+      .innerJoin(
+        EquipmentCategory,
+        'equipmentCategory',
+        'equipmentCategory.id = equipment.equipment_category_id',
+      )
+      .where('equipment.room_id = :roomId', { roomId })
+      .groupBy('equipmentCategory.name')
+      .orderBy('quantity', 'DESC');
 
     const equipments = await queryBuilder.getRawMany();
     return new PageResponseDto(equipments);

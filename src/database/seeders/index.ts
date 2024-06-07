@@ -15,6 +15,7 @@ import TrainerSeeder from './service_seeders/trainer.seeder';
 import UserSeeder from './service_seeders/user.seeder';
 import WorkoutSeeder from './service_seeders/workout.seeder';
 import WorkoutEquipmentSeeder from './service_seeders/workout_equipment.seeder';
+import MemberMembershipSeeder from './service_seeders/member_membership.seeder';
 
 export default class SeederManager extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -33,5 +34,6 @@ export default class SeederManager extends Seeder {
     await new BookingSeeder().run(dataSource);
     await new RoomSeeder().run(dataSource);
     await new EquipmentSeeder().run(dataSource);
+    await new MemberMembershipSeeder().run(dataSource);
   }
 }

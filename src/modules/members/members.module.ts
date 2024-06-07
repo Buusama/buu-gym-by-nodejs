@@ -8,9 +8,20 @@ import { UniqueColumnValidator } from 'src/validators/unique-column.validator';
 import { User } from '../../entities/user.entity';
 import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { Trainer } from '../../entities/trainer.entity';
+import { MemberMembership } from '../../entities/member-membership.entity';
+import { MembershipPayment } from '../../entities/membership-payment.entity';
+import { Transaction } from 'src/entities/transaction.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Member, User, MembershipPlan, Trainer]),
+    TypeOrmModule.forFeature([
+      Member,
+      User,
+      MembershipPlan,
+      Trainer,
+      MemberMembership,
+      MembershipPayment,
+      Transaction,
+    ]),
     AwsModule,
   ],
   controllers: [MembersController],

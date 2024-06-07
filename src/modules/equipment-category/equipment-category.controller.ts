@@ -28,7 +28,9 @@ import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-foun
 @RequireRole(RoleValue.ADMIN)
 @Controller('equipment_categories')
 export class EquipmentCategoriesController {
-  constructor(private readonly equipmentCategoriesService: EquipmentCategoriesService) { }
+  constructor(
+    private readonly equipmentCategoriesService: EquipmentCategoriesService,
+  ) {}
 
   @Post()
   @ApiOkResponse({ description: 'Create EquipmentCategory' })
@@ -55,7 +57,10 @@ export class EquipmentCategoriesController {
     @Param('id') id: string,
     @Body() updateEquipmentCategoryDto: CreateEquipmentCategoryDto,
   ) {
-    return this.equipmentCategoriesService.update(+id, updateEquipmentCategoryDto);
+    return this.equipmentCategoriesService.update(
+      +id,
+      updateEquipmentCategoryDto,
+    );
   }
 
   @Delete(':id')

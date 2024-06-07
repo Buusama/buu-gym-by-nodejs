@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MembershipPlan } from 'src/entities/membership-plan.entity';
 import { Service } from 'src/entities/service.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
@@ -216,13 +216,24 @@ export class ServicesService extends PageService {
       .createQueryBuilder('service')
       .select([
         'serviceClass.id AS id',
-        'serviceClass.date AS date',
+        'serviceClass.start_date AS date',
         'serviceClass.time AS time',
         'service.name AS serviceName',
       ])
       .leftJoin('service.serviceClasses', 'serviceClass')
       .where('service.id = :service_id', { service_id })
-      .andWhere('serviceClass.date = :date', { date: dto.date })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('serviceClass.start_date = :date', {
+            date: dto.date,
+          }).orWhere(
+            'FIND_IN_SET(DAYOFWEEK(:date), serviceClass.repeat_days) AND serviceClass.end_date >= :date',
+            {
+              date: dto.date,
+            },
+          );
+        }),
+      )
       .orderBy('serviceClass.time', 'ASC')
       .getRawMany();
     const itemCount = serviceClasses.length;

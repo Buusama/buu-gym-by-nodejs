@@ -32,14 +32,14 @@ export class BookingsController {
   async createBooking(
     @UserInRequest() user: User,
     @Body() dto: MemberCreateBookingDto,
-  ): Promise<PageResponseDto<any>> {
+  ) {
     return this.bookingsService.memberCreateBooking(user, dto);
   }
 
   @Get(':id')
   async getBooking(
     @UserInRequest() user: User,
-    @Query('id') id: number,
+    @Param('id') id: number,
   ): Promise<PageResponseDto<any>> {
     return this.bookingsService.getBooking(user, id);
   }

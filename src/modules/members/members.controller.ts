@@ -34,6 +34,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { MembersService } from './members.service';
+import { CreateMemberMembershipsDto, createMemberMembershipPaymentDto } from './dto';
 
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)
@@ -105,5 +106,59 @@ export class MembersController {
   @UseFilters(EntityNotFoundErrorFilter)
   async destroyMember(@Param('id') member_id: string) {
     return this.membersService.destroyMember(Number(member_id));
+  }
+
+  @Get(':id/membership-plans')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getMembershipPlans(@Param('id') member_id: string) {
+    return this.membersService.getMemberMembershipPlans(Number(member_id));
+  }
+
+  @Post(':id/membership-plans')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async createMembershipPlan(
+    @Param('id') member_id: string,
+    @Body() membershipPlan: CreateMemberMembershipsDto,
+  ) {
+    return this.membersService.createMemberMembershipPlan(
+      Number(member_id),
+      membershipPlan,
+    );
+  }
+
+  @Get(':id/membership-payments')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getMembershipPayments(@Param('id') member_id: string) {
+    return this.membersService.getMemberMembershipPayments(Number(member_id));
+  }
+
+  @Post(':id/membership-payments')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async createMembershipPayment(
+    @Param('id') member_id: string,
+    @Body() membershipPayment: createMemberMembershipPaymentDto,
+  ) {
+    return this.membersService.createMemberMembershipPayment(
+      Number(member_id),
+      membershipPayment,
+    );
+  }
+
+  @Get(':id/financials')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getFinancials(@Param('id') member_id: string) {
+    return this.membersService.getMemberFinancials(Number(member_id));
+  }
+
+  @Get(':id/measurements')
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getBodyMeasurements(@Param('id') member_id: string) {
+    return this.membersService.getMemberBodyMeasurements(Number(member_id));
   }
 }

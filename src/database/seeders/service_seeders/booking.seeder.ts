@@ -44,20 +44,75 @@ export default class BookingSeeder extends Seeder {
     count: number,
   ) {
     return Array.from({ length: count }, () => {
-      const randomServiceClass =
-        serviceClasses[
-          faker.number.int({ min: 0, max: serviceClasses.length - 1 })
-        ];
+      const useServiceClass = faker.datatype.boolean();
+      let bookingEntry: any = {};
+
+      if (useServiceClass) {
+        const randomServiceClass =
+          serviceClasses[
+            faker.number.int({ min: 0, max: serviceClasses.length - 1 })
+          ];
+        const randomDate =
+          this.getRandomDateForServiceClass(randomServiceClass);
+
+        bookingEntry = {
+          service_class_id: randomServiceClass.id,
+          trainer_id: null,
+          workout_id: null,
+          date: randomDate,
+          time: randomServiceClass.time,
+        };
+      } else {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        const randomDate = this.getRandomDateInCurrentMonth(
+          currentMonth,
+          currentYear,
+        );
+
+        bookingEntry = {
+          service_class_id: null,
+          trainer_id: faker.number.int({ min: 1, max: 20 }), // Assuming trainer IDs range from 1 to 20
+          workout_id: faker.number.int({ min: 1, max: 21 }), // Assuming workout IDs range from 1 to 21
+          date: randomDate.toISOString().split('T')[0],
+          time: randomDate.toISOString().split('T')[1].split('.')[0],
+        };
+      }
+
       const randomMember =
         members[faker.number.int({ min: 0, max: members.length - 1 })];
 
       return {
-        service_class_id: randomServiceClass.id,
+        ...bookingEntry,
         member_id: randomMember.id,
         participants: faker.number.int({ min: 1, max: 10 }),
         payment_method: faker.number.int({ min: 0, max: 2 }),
         note: faker.lorem.sentence(),
+        status: faker.number.int({ min: 0, max: 1 }),
       };
     });
+  }
+
+  private getRandomDateForServiceClass(serviceClass: ServiceClass): string {
+    if (serviceClass.repeat_days) {
+      const startDate = new Date(serviceClass.start_date);
+      const endDate = new Date(serviceClass.end_date);
+      const randomDate = new Date(
+        startDate.getTime() +
+          Math.random() * (endDate.getTime() - startDate.getTime()),
+      );
+      return randomDate.toISOString().split('T')[0];
+    } else {
+      return serviceClass.start_date;
+    }
+  }
+
+  private getRandomDateInCurrentMonth(month: number, year: number): Date {
+    const start = new Date(year, month, 1);
+    const end = new Date(year, month + 1, 0); // Last day of the month
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+    );
   }
 }

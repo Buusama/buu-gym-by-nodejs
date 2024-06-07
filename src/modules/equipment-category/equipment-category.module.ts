@@ -9,4 +9,4 @@ import { EquipmentCategoriesService } from './equipment-category.service';
   controllers: [EquipmentCategoriesController],
   providers: [EquipmentCategoriesService],
 })
-export class EquipmentCategoryModule { }
+export class EquipmentCategoryModule {}

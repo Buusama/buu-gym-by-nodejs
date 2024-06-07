@@ -29,13 +29,12 @@ export class ServiceClassesService {
     if (!service) {
       throw new Error(`Service with id ${service_id} not found`);
     }
-  
+
     const serviceClasses = await this.serviceClassesRepository
       .createQueryBuilder('serviceClass')
       .select([
         'serviceClass.id AS id',
-        'serviceClass.start_date AS startDate',
-        'serviceClass.end_date AS endDate',
+        'serviceClass.start_date AS date',
         'serviceClass.time AS time',
         'service.name AS serviceName',
       ])
@@ -43,22 +42,25 @@ export class ServiceClassesService {
       .where('serviceClass.service_id = :service_id', { service_id })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('serviceClass.start_date = :date', { date: dto.date })
-            .orWhere('FIND_IN_SET(DAYOFWEEK(:date), serviceClass.repeat_days) AND serviceClass.end_date >= :date', {
+          qb.where('serviceClass.start_date = :date', {
+            date: dto.date,
+          }).orWhere(
+            'FIND_IN_SET(DAYOFWEEK(:date), serviceClass.repeat_days) AND serviceClass.end_date >= :date',
+            {
               date: dto.date,
-            });
+            },
+          );
         }),
       )
       .orderBy('serviceClass.time', 'ASC')
       .getRawMany();
-  
+
     // PAGE RESPONSE DTO
     const itemCount = serviceClasses.length;
     const pageMeta = new PageMetaDto(dto, itemCount);
-  
+
     return new PageResponseDto(serviceClasses, pageMeta);
   }
-  
 
   async getServiceClassesByMember(user: User): Promise<any> {
     const serviceClasses = await this.serviceClassesRepository
