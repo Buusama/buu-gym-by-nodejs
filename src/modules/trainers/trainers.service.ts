@@ -32,29 +32,41 @@ export class TrainersService extends PageService {
       this.trainersRepository,
       getListTrainersDto,
     );
-    queryBuilder
-      .select([
-        'table.id AS TrainerId',
-        'user.id AS UserId',
-        'user.email AS email',
-        'user.name AS name',
-        'user.phone AS phone',
-        'user.avatar AS avatar',
-        'user.address AS address',
-        'user.birth_date AS birth_date',
-        'user.gender AS gender',
-        'table.specialty AS specialty',
-        'table.rating AS rating',
-        'table.experience AS experience',
-      ])
-      .innerJoin('table.staff', 'staff')
-      .leftJoin('staff.user', 'user');
 
+    queryBuilder
+      .leftJoinAndSelect('table.staff', 'staff')
+      .leftJoinAndSelect('staff.user', 'user')
+      .leftJoinAndSelect('table.trainerWorkouts', 'trainerWorkouts')
+      .leftJoinAndSelect('trainerWorkouts.workout', 'workout');
+
+    this.applyFilters(queryBuilder, getListTrainersDto);
+
+    const itemCount = await queryBuilder.getCount();
+    const rawEntities = await queryBuilder.getMany();
+
+    // Process raw entities into a structured format
+    let entities = this.structureData(rawEntities);
+
+    const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
+
+    // PAGINATION
+    if (pageMeta.page >= 0 && pageMeta.take >= 0) {
+      entities = entities.slice(
+        pageMeta.take * pageMeta.page,
+        pageMeta.take * (pageMeta.page + 1),
+      );
+    }
+
+    return new PageResponseDto(entities, pageMeta);
+  }
+
+  private applyFilters(queryBuilder, getListTrainersDto: GetListTrainersDto) {
     if (getListTrainersDto.status) {
-      queryBuilder.andWhere('table.status = :status', {
+      queryBuilder.andWhere('trainer.status = :status', {
         status: getListTrainersDto.status,
       });
     }
+
     if (
       getListTrainersDto.field &&
       getListTrainersDto.type &&
@@ -64,26 +76,31 @@ export class TrainersService extends PageService {
         getListTrainersDto.value = `%${getListTrainersDto.value}%`;
       }
       queryBuilder.andWhere(
-        `table.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
+        `trainer.${getListTrainersDto.field} ${getListTrainersDto.type} :value`,
         { value: getListTrainersDto.value },
       );
     }
-    const itemCount = await queryBuilder.getCount();
-    let entities = await queryBuilder.getRawMany().then((response) => {
-      response.forEach((entity) => {
-        entity.birth_date = moment(entity.birth_date).format('YYYY-MM-DD');
-      });
-      return response;
-    });
-    const pageMeta = new PageMetaDto(getListTrainersDto, itemCount);
+  }
 
-    // PAGINATION
-    if (pageMeta.page >= 0 && pageMeta.take >= 0)
-      entities = entities.slice(
-        pageMeta.take * pageMeta.page,
-        pageMeta.take * (pageMeta.page + 1),
-      );
-    return new PageResponseDto(entities, pageMeta);
+  private structureData(rawEntities: Trainer[]): any[] {
+    return rawEntities.map((trainer) => ({
+      TrainerId: trainer.id,
+      UserId: trainer.staff.user.id,
+      email: trainer.staff.user.email,
+      name: trainer.staff.user.name,
+      phone: trainer.staff.user.phone,
+      avatar: trainer.staff.user.avatar,
+      address: trainer.staff.user.address,
+      birth_date: moment(trainer.staff.user.birth_date).format('YYYY-MM-DD'),
+      gender: trainer.staff.user.gender,
+      specialty: trainer.specialty,
+      rating: trainer.rating,
+      experience: trainer.experience,
+      trainerWorkouts: trainer.trainerWorkouts.map((workout) => ({
+        id: workout.workout.id,
+        name: workout.workout.name,
+      })),
+    }));
   }
 
   // async uploadAvatar(
@@ -208,28 +225,17 @@ export class TrainersService extends PageService {
   //   return this.getById(existingTrainer.id);
   // }
   async getTrainer(trainerId: number): Promise<PageResponseDto<Trainer>> {
-    return this.trainersRepository
+    const queryBuilder = this.trainersRepository
       .createQueryBuilder('trainer')
-      .select([
-        'trainer.id AS TrainerId',
-        'user.id AS UserId',
-        'user.email AS email',
-        'user.name AS name',
-        'user.phone AS phone',
-        'user.avatar AS avatar',
-        'user.address AS address',
-        'user.birth_date AS birth_date',
-        'user.gender AS gender',
-        'trainer.specialization AS specialization',
-      ])
-      .innerJoin('trainer.staff', 'staff')
-      .leftJoin('staff.user', 'user')
-      .where('trainer.id = :trainerId', { trainerId })
-      .getRawOne()
-      .then((response) => {
-        response.birth_date = moment(response.birth_date).format('YYYY-MM-DD');
-        return new PageResponseDto(response);
-      });
+      .leftJoinAndSelect('trainer.staff', 'staff')
+      .leftJoinAndSelect('staff.user', 'user')
+      .leftJoinAndSelect('trainer.trainerWorkouts', 'trainerWorkouts')
+      .leftJoinAndSelect('trainerWorkouts.workout', 'workout')
+      .where('trainer.id = :trainerId', { trainerId });
+
+    const rawEntities = await queryBuilder.getMany();
+    const entities = this.structureData(rawEntities);
+    return new PageResponseDto(entities[0]);
   }
 
   async destroyTrainer(trainer_id: number) {
@@ -239,6 +245,48 @@ export class TrainersService extends PageService {
 
     const deleteTrainer = await this.trainersRepository.remove(trainer);
     this.trainersRepository.save(deleteTrainer);
+    return new PageResponseDto(trainer);
+  }
+
+  async getAvailableWorkouts(trainer_id: number) {
+    return this.trainersRepository
+      .createQueryBuilder('trainer')
+      .select([
+        // 'trainer.id AS TrainerId',
+        'workout.id AS workoutId',
+        'workout.name AS workoutName',
+        // 'workout.description AS WorkoutDescription',
+        // 'workout.duration AS WorkoutDuration',
+      ])
+      .innerJoin('trainer.trainerWorkouts', 'trainerWorkouts')
+      .innerJoin('trainerWorkouts.workout', 'workout')
+      .where('trainer.id = :trainer_id', { trainer_id })
+      .getRawMany()
+      .then((response) => new PageResponseDto(response));
+  }
+
+  async getWorkSchedules(trainer_id: number) {
+    return this.trainersRepository
+      .createQueryBuilder('trainer')
+      .select([
+        'trainer.id AS TrainerId',
+        'trainer.work_schedule AS WorkSchedules',
+      ])
+      .where('trainer.id = :trainer_id', { trainer_id })
+      .getRawMany()
+      .then((response) => new PageResponseDto(response));
+  }
+
+  async updateWorkSchedules(
+    trainer_id: number,
+    work_schedule: { day: number; shift: number; isSelected: boolean }[],
+  ) {
+    const trainer = await this.trainersRepository.findOneByOrFail({
+      id: trainer_id,
+    });
+
+    trainer.work_schedule = work_schedule;
+    await this.trainersRepository.save(trainer);
     return new PageResponseDto(trainer);
   }
 }

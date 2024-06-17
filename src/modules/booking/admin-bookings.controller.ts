@@ -32,9 +32,17 @@ export class AdminBookingsController {
   }
 
   @Get()
-  async findAllBookings(
-    @Query() dto: FindAllBookingDto,
-  ) {
+  async findAllBookings(@Query() dto: FindAllBookingDto) {
     return this.bookingsService.adminGetAllBookings(dto);
+  }
+
+  // @Post(':id/approve')
+  // async approveBooking(@Body() booking: Booking) {
+  //   return this.bookingsService.approveBooking(booking);
+  // }
+
+  @Post('/solver-schedule')
+  async solverSchedule(@Body() data: any) {
+    return this.bookingsService.solverSchedule();
   }
 }

@@ -6,16 +6,14 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Staff } from './staff.entity';
-import { ServiceClass } from './service-class.entity';
-import { PersonalWorkout } from './personal-workout.entity';
 import { Booking } from './booking.entity';
+import { ServiceClass } from './service-class.entity';
+import { Staff } from './staff.entity';
+import { TrainerWorkout } from './trainer-workout.entity';
+import { DaysOffRequest } from './days-off-requests.entity';
 
 @Entity('trainers')
 export class Trainer {
-  birth_date(birth_date: any) {
-    throw new Error('Method not implemented.');
-  }
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,6 +29,9 @@ export class Trainer {
   @Column()
   rating: number;
 
+  @Column({ type: 'json', nullable: true })
+  work_schedule: { day: number; shift: number; isSelected: boolean }[];
+
   @OneToOne(() => Staff, { eager: true }) // Đảm bảo mối quan hệ user được tải ngay
   @JoinColumn({ name: 'staff_id' }) // Chỉ định tên cột cho việc kết nối
   staff: Staff;
@@ -38,12 +39,14 @@ export class Trainer {
   @OneToMany(() => ServiceClass, (service_class) => service_class.trainer)
   serviceClasses: ServiceClass[];
 
-  @OneToMany(
-    () => PersonalWorkout,
-    (personal_workout) => personal_workout.trainer,
-  )
-  personalWorkouts: PersonalWorkout[];
-
   @OneToMany(() => Booking, (booking) => booking.trainer)
   bookings: Booking[];
+
+  @OneToMany(() => TrainerWorkout, (trainerWorkout) => trainerWorkout.trainer, {
+    eager: true,
+  })
+  trainerWorkouts: TrainerWorkout[];
+
+  @OneToMany(() => DaysOffRequest, (daysOffRequest) => daysOffRequest.trainer)
+  daysOffRequests: DaysOffRequest[];
 }

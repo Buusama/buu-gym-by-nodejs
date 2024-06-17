@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
+  Patch,
   Query,
   UseFilters,
   UseGuards,
@@ -99,4 +101,28 @@ export class TrainersController {
   // async destroyTrainer(@Param('id') trainer_id: string) {
   //   return this.trainersService.destroyTrainer(Number(trainer_id));
   // }
+
+  @Get(':id/available-workouts')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getAvailableWorkouts(@Param('id') trainer_id: string) {
+    return this.trainersService.getAvailableWorkouts(Number(trainer_id));
+  }
+
+  @Get(':id/work-schedules')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  async getWorkSchedules(@Param('id') trainer_id: string) {
+    return this.trainersService.getWorkSchedules(Number(trainer_id));
+  }
+
+  @Patch(':id/work-schedules')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  async updateWorkSchedules(
+    @Param('id') trainer_id: string,
+    @Body() body: { day: number; shift: number; isSelected: boolean }[],
+  ) {
+    return this.trainersService.updateWorkSchedules(Number(trainer_id), body);
+  }
 }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
+import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
 export class CreateBookingDto {
@@ -110,13 +111,13 @@ export class FindBookingDto {
 
 export class FindAllBookingDto extends PageDto {
   @ApiProperty({ required: false })
-  service_class_id: number;
+  field: string;
+
+  @ApiProperty({ required: false, enum: TypeEnumLabel, type: 'string' })
+  type: string;
 
   @ApiProperty({ required: false })
-  member_id: number;
-
-  @ApiProperty({ required: false })
-  trainer_id: number;
+  value: string;
 
   @ApiProperty({ required: false })
   date: string;

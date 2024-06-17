@@ -1,18 +1,24 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ServiceTypeValue } from 'src/commons/enums/services/service-type';
 import { Booking } from 'src/entities/booking.entity';
 import { EquipmentCategory } from 'src/entities/equipment-category.entity';
 import { Equipment } from 'src/entities/equipment.entity';
 import { ServiceClass } from 'src/entities/service-class.entity';
 import { ServiceWorkout } from 'src/entities/service-workout.entity';
+import { Trainer } from 'src/entities/trainer.entity';
 import { User } from 'src/entities/user.entity';
 import { WorkoutEquipment } from 'src/entities/workout-equipment.entity';
+import { Workout } from 'src/entities/workout.entity';
+import { Between, MoreThan, Repository } from 'typeorm';
+import { FastApiService } from '../fastapi/fastapi.service';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
-import { CreateBookingDto, FindAllBookingDto, MemberCreateBookingDto } from './dto';
-
+import {
+  CreateBookingDto,
+  FindAllBookingDto,
+  MemberCreateBookingDto,
+} from './dto';
 @Injectable()
 export class BookingsService extends PageService {
   constructor(
@@ -24,6 +30,11 @@ export class BookingsService extends PageService {
     private readonly equipmentCategoryRepository: Repository<EquipmentCategory>,
     @InjectRepository(Equipment)
     private readonly equipmentRepository: Repository<Equipment>,
+    @InjectRepository(Trainer)
+    private readonly trainerRepository: Repository<Trainer>,
+    @InjectRepository(Workout)
+    private readonly workoutRepository: Repository<Workout>,
+    private fastApiService: FastApiService,
   ) {
     super();
   }
@@ -138,12 +149,12 @@ export class BookingsService extends PageService {
 
   private bookingSelectFields() {
     return [
-      'service.name AS serviceName',
-      'service.price AS servicePrice',
-      'service.thumbnail AS serviceThumbnail',
-      'service.service_type AS serviceType',
-      'service.duration AS serviceDuration',
-      'user.name AS trainerName',
+      // 'service.name AS serviceName',
+      // 'service.price AS servicePrice',
+      // 'service.thumbnail AS serviceThumbnail',
+      // 'service.service_type AS serviceType',
+      // 'service.duration AS serviceDuration',
+      // 'user.name AS trainerName',
       'BookingTrainerUser.name AS bookingTrainerName',
       'booking.date AS date',
       'booking.time AS time',
@@ -156,6 +167,7 @@ export class BookingsService extends PageService {
       'workout.name AS workoutName',
       'workout.thumbnail AS workoutThumbnail',
       'workout.duration AS workoutDuration',
+      'memberUser.name AS memberName',
     ];
   }
 
@@ -171,6 +183,8 @@ export class BookingsService extends PageService {
       .leftJoin('booking.trainer', 'BookingTrainer')
       .leftJoin('BookingTrainer.staff', 'BookingTrainerStaff')
       .leftJoin('BookingTrainerStaff.user', 'BookingTrainerUser')
+      .leftJoin('booking.member', 'member')
+      .leftJoin('member.user', 'memberUser')
       .where('booking.id = :id', { id })
       .select(this.bookingSelectFields())
       .getRawOne();
@@ -251,24 +265,27 @@ export class BookingsService extends PageService {
   async getBookings(user: User): Promise<PageResponseDto<any>> {
     const bookings = await this.bookingRepository
       .createQueryBuilder('booking')
-      .leftJoin('booking.serviceClass', 'serviceClass')
-      .leftJoin('serviceClass.service', 'service')
-      .leftJoin('serviceClass.trainer', 'trainer')
-      .leftJoin('trainer.staff', 'staff')
-      .leftJoin('staff.user', 'user')
+      // .leftJoin('booking.serviceClass', 'serviceClass')
+      // .leftJoin('serviceClass.service', 'service')
+      // .leftJoin('serviceClass.trainer', 'trainer')
+      // .leftJoin('trainer.staff', 'staff')
+      // .leftJoin('staff.user', 'user')
       .leftJoin('booking.workout', 'workout')
       .leftJoin('booking.trainer', 'BookingTrainer')
       .leftJoin('BookingTrainer.staff', 'BookingTrainerStaff')
       .leftJoin('BookingTrainerStaff.user', 'BookingTrainerUser')
+      .leftJoin('booking.member', 'member')
+      .leftJoin('member.user', 'memberUser')
       .where('booking.member_id = :memberId', { memberId: user.member.id })
       .select(this.bookingSelectFields())
       .getRawMany();
 
+    console.log(await this.fastApiService.getData());
     return new PageResponseDto(bookings);
   }
 
   async adminGetAllBookings(
-    dto: FindAllBookingDto
+    dto: FindAllBookingDto,
   ): Promise<PageResponseDto<any>> {
     const bookings = await this.bookingRepository
       .createQueryBuilder('booking')
@@ -281,17 +298,10 @@ export class BookingsService extends PageService {
       .leftJoin('booking.trainer', 'BookingTrainer')
       .leftJoin('BookingTrainer.staff', 'BookingTrainerStaff')
       .leftJoin('BookingTrainerStaff.user', 'BookingTrainerUser')
+      .leftJoin('booking.member', 'member')
+      .leftJoin('member.user', 'memberUser')
       .select(this.bookingSelectFields());
 
-    if (dto.service_class_id) {
-      bookings.andWhere('booking.service_class_id = :service_class_id', { service_class_id: dto.service_class_id });
-    }
-    if (dto.member_id) {
-      bookings.andWhere('booking.member_id = :member_id', { member_id: dto.member_id });
-    }
-    if (dto.trainer_id) {
-      bookings.andWhere('booking.trainer_id = :trainer_id', { trainer_id: dto.trainer_id });
-    }
     if (dto.date) {
       bookings.andWhere('booking.date = :date', { date: dto.date });
     }
@@ -299,10 +309,133 @@ export class BookingsService extends PageService {
       bookings.andWhere('booking.time = :time', { time: dto.time });
     }
     if (dto.workout_id) {
-      bookings.andWhere('booking.workout_id = :workout_id', { workout_id: dto.workout_id });
+      bookings.andWhere('booking.workout_id = :workout_id', {
+        workout_id: dto.workout_id,
+      });
+    }
+
+    if (dto.field && dto.type && dto.value) {
+      if (dto.type === 'like') {
+        dto.value = `%${dto.value}%`;
+      }
+      bookings.andWhere(`${dto.field} ${dto.type} :value`, {
+        value: dto.value,
+      });
     }
 
     const result = await bookings.getRawMany();
     return new PageResponseDto(result);
+  }
+
+  async solverSchedule() {
+    // Get all trainers
+    let counter = 1;
+    const allTrainers = await this.trainerRepository.find({
+      select: ['id'],
+    });
+    const formattedTrainers = allTrainers.map((trainer) => ({
+      id: trainer.id,
+    }));
+
+    // Get all workouts
+    const workouts = await this.workoutRepository.find({
+      select: ['id'],
+    });
+    const formattedWorkouts = workouts.map((workout) => ({ id: workout.id }));
+
+    // Get the current date
+    const now = new Date();
+    // Calculate the start of the week (Sunday)
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    startOfWeek.setHours(0, 0, 0, 0); // Set time to midnight
+
+    // Calculate the end of the week (Saturday)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999); // Set time to end of the day
+
+    // Convert dates to ISO string format
+    const startOfWeekISO = startOfWeek.toISOString();
+    const endOfWeekISO = endOfWeek.toISOString();
+
+    // Get all bookings within the current week and with workout_id > 0
+    const bookings = await this.bookingRepository.find({
+      select: ['id', 'date', 'time', 'workout_id', 'trainer_id'],
+      where: {
+        workout_id: MoreThan(0),
+        date: Between(startOfWeekISO, endOfWeekISO),
+      },
+    });
+
+    counter = 1;
+    const formattedBookings = bookings.map((booking) => {
+      const dateObj = new Date(booking.date);
+      return {
+        id: counter++,
+        ...booking,
+        day: dateObj.getDay(), // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+      };
+    });
+
+    counter = 1;
+    const bookeds = bookings
+      .map((booking) => {
+        if (booking.trainer_id) {
+          return {
+            id: counter++,
+            trainer_id: booking.trainer_id,
+            booking_id: booking.id,
+          };
+        }
+      })
+      .filter(Boolean);
+
+    // Get all trainer schedules
+    const trainerSchedules = await this.trainerRepository.find({
+      select: ['id', 'work_schedule'],
+    });
+
+    // Get all trainer workouts
+    const trainerWorkouts = await this.trainerRepository.find({
+      select: ['id', 'trainerWorkouts'],
+    });
+
+    counter = 1;
+    // Format trainer schedules
+    const formattedTrainerSchedules = trainerSchedules
+      .map((trainer) =>
+        trainer.work_schedule.map((schedule) => ({
+          id: counter++,
+          trainerId: trainer.id,
+          day: schedule.day,
+          shift: schedule.shift,
+        })),
+      )
+      .flat();
+
+    counter = 1;
+    // Format trainer workouts
+    const formattedTrainerWorkouts = trainerWorkouts
+      .map((trainer) =>
+        trainer.trainerWorkouts.map((workout) => ({
+          id: counter++,
+          trainerId: trainer.id,
+          workoutId: workout.workout_id,
+        })),
+      )
+      .flat();
+
+    // Call FastAPI service
+    const result = await this.fastApiService.solverSchedule({
+      trainers: formattedTrainers,
+      workouts: formattedWorkouts,
+      bookings: formattedBookings,
+      bookeds: bookeds,
+      trainer_workout: formattedTrainerWorkouts,
+      trainer_schedule: formattedTrainerSchedules,
+    });
+    return new PageResponseDto(result);
+    // console.log(formattedTrainerWorkouts);
+    // return new PageResponseDto(formattedTrainerWorkouts);
   }
 }

@@ -12,7 +12,10 @@ import { AwsService } from '../aws/aws.service';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
-import { CreateMemberMembershipsDto, createMemberMembershipPaymentDto } from './dto';
+import {
+  CreateMemberMembershipsDto,
+  createMemberMembershipPaymentDto,
+} from './dto';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
@@ -45,7 +48,6 @@ export class MembersService extends PageService {
 
   async getMembers(
     getListMembersDto: GetListMembersDto,
-    user: User,
   ): Promise<PageResponseDto<Member>> {
     const queryBuilder = await this.paginate(
       this.membersRepository,
@@ -65,8 +67,8 @@ export class MembersService extends PageService {
         'P.gender AS MemberGender',
         'MP.name AS PackageName',
       ])
-      .innerJoin(User, 'P', 'table.user_id = P.id')
-      .innerJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id');
+      .leftJoin(User, 'P', 'table.user_id = P.id')
+      .leftJoin(MembershipPlan, 'MP', 'table.membership_plan_id = MP.id');
 
     if (getListMembersDto.status === MemberStatusValue.ACTIVE) {
       queryBuilder.andWhere('table.end_date > :currentDate', {
@@ -116,6 +118,7 @@ export class MembersService extends PageService {
           'YYYY-MM-DD',
         );
         entity.EndDate = moment(entity.EndDate).format('YYYY-MM-DD');
+        entity.StartDate = moment(entity.StartDate).format('YYYY-MM-DD');
       });
       return response;
     });
@@ -148,25 +151,31 @@ export class MembersService extends PageService {
   }
 
   async createMember(memberDto: CreateMemberDto, avatar: Express.Multer.File) {
-    const { ...params } = memberDto;
-    const user = this.userRepository.create({
-      ...params,
-    });
-    await this.userRepository.save(user);
-
-    if (avatar) {
-      const image = await this.uploadAvatar(user.id, avatar);
-      user.avatar = image.Location;
+    try {
+      const { ...params } = memberDto;
+      const user = this.userRepository.create({
+        ...params,
+      });
       await this.userRepository.save(user);
+
+      if (avatar) {
+        const image = await this.uploadAvatar(user.id, avatar);
+        user.avatar = image.Location;
+        await this.userRepository.save(user);
+      }
+
+      const member = this.membersRepository.create({
+        user_id: user.id,
+        start_date: new Date(),
+        end_date: new Date(),
+        membership_plan_id: 0,
+      });
+      await this.membersRepository.save(member);
+
+      return await this.getById(member.id);
+    } catch (error) {
+      throw new Error(`Failed to create member: ${error.message}`);
     }
-
-    const member = this.membersRepository.create({
-      user_id: user.id,
-      ...params,
-    });
-
-    await this.membersRepository.save(member);
-    return this.getById(member.id);
   }
 
   async getMemberById(memberId: number) {
@@ -214,13 +223,10 @@ export class MembersService extends PageService {
         'P.avatar AS MemberAvatar',
         'P.birth_date AS MemberBirthDate',
         'MP.name AS PackageName',
-        'BM.measurement_date',
-        'BM.height',
-        'BM.weight',
       ])
-      .innerJoin(User, 'P', 'member.user_id = P.id')
-      .innerJoin(MembershipPlan, 'MP', 'member.membership_plan_id = MP.id')
-      .leftJoin(BodyMeasurement, 'BM', 'BM.member_id = member.id')
+      .leftJoin('member.user', 'P')
+      .leftJoin('member.membership_plan', 'MP')
+
       .where('member.id = :memberId', { memberId })
       .getRawOne()
       .then((response) => {
@@ -326,7 +332,9 @@ export class MembersService extends PageService {
       .getRawMany()
       .then((response) => {
         response.forEach((entity) => {
-          entity.payment_date = moment(entity.payment_date).format('YYYY-MM-DD');
+          entity.payment_date = moment(entity.payment_date).format(
+            'YYYY-MM-DD',
+          );
         });
         return new PageResponseDto(response);
       });
@@ -364,22 +372,22 @@ export class MembersService extends PageService {
   async getMemberFinancials(memberId: number) {
     // get Sales: doanh số, Revenue: doanh thu,  Receivable: phải thu
     // sales = revenue + receivable
-   const sales = await this.memberMembershipRepository
-    .createQueryBuilder('member_membership')
-    .select([
-      'SUM(MP.price) AS sales',
-    ])
-    .innerJoin(MembershipPlan, 'MP', 'member_membership.membership_plan_id = MP.id')
-    .where('member_membership.member_id = :memberId', { memberId })
-    .getRawOne();
+    const sales = await this.memberMembershipRepository
+      .createQueryBuilder('member_membership')
+      .select(['SUM(MP.price) AS sales'])
+      .innerJoin(
+        MembershipPlan,
+        'MP',
+        'member_membership.membership_plan_id = MP.id',
+      )
+      .where('member_membership.member_id = :memberId', { memberId })
+      .getRawOne();
 
     const revenue = await this.membershipPaymentRepository
-    .createQueryBuilder('membership_payment')
-    .select([
-      'SUM(membership_payment.payment_amount) AS revenue',
-    ])
-    .where('membership_payment.member_id = :memberId', { memberId })
-    .getRawOne();
+      .createQueryBuilder('membership_payment')
+      .select(['SUM(membership_payment.payment_amount) AS revenue'])
+      .where('membership_payment.member_id = :memberId', { memberId })
+      .getRawOne();
 
     const receivable = sales.sales - revenue.revenue;
 

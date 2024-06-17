@@ -1,8 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkoutEquipment } from './workout-equipment.entity';
-import { ServiceWorkout } from './service-workout.entity';
-import { PersonalWorkout } from './personal-workout.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Booking } from './booking.entity';
+import { ServiceWorkout } from './service-workout.entity';
+import { TrainerWorkout } from './trainer-workout.entity';
+import { WorkoutEquipment } from './workout-equipment.entity';
+import { Session } from './session.entity';
 
 @Entity('workouts')
 export class Workout {
@@ -39,12 +46,11 @@ export class Workout {
   })
   serviceWorkout: ServiceWorkout[];
 
-  @OneToMany(
-    () => PersonalWorkout,
-    (personalWorkout) => personalWorkout.workout,
-  )
-  personalWorkouts: PersonalWorkout[];
-
   @OneToMany(() => Booking, (booking) => booking.workout)
   bookings: Booking[];
+
+  @OneToMany(() => TrainerWorkout, (trainerWorkout) => trainerWorkout.workout, {
+    eager: true,
+  })
+  trainerWorkouts: TrainerWorkout[];
 }

@@ -1,28 +1,26 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { ServiceClass } from '../../../entities/service-class.entity';
 import { Member } from '../../../entities/member.entity';
+import { Trainer } from '../../../entities/trainer.entity'; // Assuming there is a Trainer entity
 import { DataSource } from 'typeorm';
 import { faker } from '@faker-js/faker';
 
 export default class BookingSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
     try {
-      // Lấy danh sách lịch và người dùng từ cơ sở dữ liệu
-      const serviceClasses = await dataSource
-        .getRepository(ServiceClass)
-        .find();
+      // Lấy danh sách người dùng và giáo viên từ cơ sở dữ liệu
       const members = await dataSource.getRepository(Member).find();
+      const trainers = await dataSource.getRepository(Trainer).find();
 
-      if (serviceClasses.length === 0 || members.length === 0) {
-        throw new Error('No serviceClasses or members found in the database.');
+      if (members.length === 0) {
+        throw new Error('No members found in the database.');
+      }
+
+      if (trainers.length === 0) {
+        throw new Error('No trainers found in the database.');
       }
 
       // Khởi tạo mảng dữ liệu booking
-      const bookingData = this.generateBookingData(
-        serviceClasses,
-        members,
-        200,
-      );
+      const bookingData = this.generateBookingData(members, trainers, 500);
 
       // Thực hiện truy vấn insert vào bảng 'bookings' với dữ liệu đã tạo
       await dataSource
@@ -39,46 +37,26 @@ export default class BookingSeeder extends Seeder {
   }
 
   private generateBookingData(
-    serviceClasses: ServiceClass[],
     members: Member[],
+    trainers: Trainer[],
     count: number,
   ) {
-    return Array.from({ length: count }, () => {
-      const useServiceClass = faker.datatype.boolean();
-      let bookingEntry: any = {};
+    const bookings = Array.from({ length: count }, () => {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      const randomDate = this.getRandomDateInCurrentMonth(
+        currentMonth,
+        currentYear,
+      );
 
-      if (useServiceClass) {
-        const randomServiceClass =
-          serviceClasses[
-            faker.number.int({ min: 0, max: serviceClasses.length - 1 })
-          ];
-        const randomDate =
-          this.getRandomDateForServiceClass(randomServiceClass);
-
-        bookingEntry = {
-          service_class_id: randomServiceClass.id,
-          trainer_id: null,
-          workout_id: null,
-          date: randomDate,
-          time: randomServiceClass.time,
-        };
-      } else {
-        const currentDate = new Date();
-        const currentMonth = currentDate.getMonth();
-        const currentYear = currentDate.getFullYear();
-        const randomDate = this.getRandomDateInCurrentMonth(
-          currentMonth,
-          currentYear,
-        );
-
-        bookingEntry = {
-          service_class_id: null,
-          trainer_id: faker.number.int({ min: 1, max: 20 }), // Assuming trainer IDs range from 1 to 20
-          workout_id: faker.number.int({ min: 1, max: 21 }), // Assuming workout IDs range from 1 to 21
-          date: randomDate.toISOString().split('T')[0],
-          time: randomDate.toISOString().split('T')[1].split('.')[0],
-        };
-      }
+      const bookingEntry = {
+        service_class_id: null,
+        trainer_id: null,
+        workout_id: faker.number.int({ min: 1, max: 21 }), // Assuming workout IDs range from 1 to 21
+        date: randomDate.toISOString().split('T')[0],
+        time: this.getRandomTimeInRange(), // Ensure time is within 6h to 21h
+      };
 
       const randomMember =
         members[faker.number.int({ min: 0, max: members.length - 1 })];
@@ -92,20 +70,23 @@ export default class BookingSeeder extends Seeder {
         status: faker.number.int({ min: 0, max: 1 }),
       };
     });
-  }
 
-  private getRandomDateForServiceClass(serviceClass: ServiceClass): string {
-    if (serviceClass.repeat_days) {
-      const startDate = new Date(serviceClass.start_date);
-      const endDate = new Date(serviceClass.end_date);
-      const randomDate = new Date(
-        startDate.getTime() +
-          Math.random() * (endDate.getTime() - startDate.getTime()),
-      );
-      return randomDate.toISOString().split('T')[0];
-    } else {
-      return serviceClass.start_date;
-    }
+    // Gán ngẫu nhiên giáo viên cho 20% số bookings
+    const bookingsWithTrainers = bookings
+      .slice(0, Math.floor(count * 0.2))
+      .map((booking) => {
+        const randomTrainer =
+          trainers[faker.number.int({ min: 0, max: trainers.length - 1 })];
+        return {
+          ...booking,
+          trainer_id: randomTrainer.id,
+        };
+      });
+
+    return [
+      ...bookingsWithTrainers,
+      ...bookings.slice(Math.floor(count * 0.2)),
+    ];
   }
 
   private getRandomDateInCurrentMonth(month: number, year: number): Date {
@@ -114,5 +95,13 @@ export default class BookingSeeder extends Seeder {
     return new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime()),
     );
+  }
+
+  private getRandomTimeInRange(): string {
+    const startHour = 6;
+    const endHour = 21;
+    const hour = faker.number.int({ min: startHour, max: endHour });
+    const minute = faker.number.int({ min: 0, max: 59 });
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
   }
 }

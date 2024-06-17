@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateProductSalesTable1710485601233
+export class CreateSessionWorkoutTable1718639750172
   implements MigrationInterface
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'product_sales',
+        name: 'session_workout',
         columns: [
           {
             name: 'id',
@@ -16,15 +16,11 @@ export class CreateProductSalesTable1710485601233
             generationStrategy: 'increment',
           },
           {
-            name: 'product_id',
+            name: 'session_id',
             type: 'int',
           },
           {
-            name: 'sale_id',
-            type: 'int',
-          },
-          {
-            name: 'quantity',
+            name: 'workout_id',
             type: 'int',
           },
         ],
@@ -34,6 +30,6 @@ export class CreateProductSalesTable1710485601233
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('product_sales');
+    await queryRunner.dropTable('session_workout');
   }
 }

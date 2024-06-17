@@ -1,14 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsOptional } from 'class-validator';
-import { MemberStatusValue } from 'src/commons/enums/members/member-status';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
-export class GetListMembersDto extends PageDto {
-  @ApiProperty({ required: false, enum: MemberStatusValue, type: 'number' })
+
+export class GetListDaysOffRequestDto extends PageDto {
+  @ApiProperty({ required: false, type: 'number' })
   @Transform(({ value }) => parseInt(value))
   @IsOptional()
-  @IsEnum(MemberStatusValue)
   status: number;
 
   @ApiProperty({ required: false })
@@ -19,4 +18,14 @@ export class GetListMembersDto extends PageDto {
 
   @ApiProperty({ required: false })
   value: string;
+}
+
+export class CreateDaysOffRequestDto {
+  @ApiProperty({ required: false })
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty({ required: false })
+  date: Date;
 }

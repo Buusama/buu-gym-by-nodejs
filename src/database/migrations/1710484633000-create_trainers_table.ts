@@ -36,6 +36,11 @@ export class CreateTrainersTable1701581915035 implements MigrationInterface {
             default: 0,
             isNullable: true,
           },
+          {
+            name: 'work_schedule',
+            type: 'json',
+            isNullable: true,
+          },
         ],
       }),
       true,
