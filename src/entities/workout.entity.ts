@@ -53,4 +53,7 @@ export class Workout {
     eager: true,
   })
   trainerWorkouts: TrainerWorkout[];
+
+  @ManyToMany(() => Session, session => session.workouts)
+  sessions: Session[];
 }

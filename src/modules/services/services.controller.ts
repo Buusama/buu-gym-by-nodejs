@@ -1,23 +1,20 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
   Query,
   UseFilters,
-  UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { Service } from '../../entities/service.entity';
-import { RoleGuard } from '../auth/guard/role.guard';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
+import { GetListServiceServiceClassesByDayDto } from './dto/get-list-services-service-classes.dto';
 import { GetListServicesDto } from './dto/get-list-services.dto';
 import { ServicesService } from './services.service';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
-import { GetListServiceServiceClassesByDayDto } from './dto/get-list-services-service-classes.dto';
 
 @ApiTags('services')
 @UseInterceptors(TransformInterceptor)
@@ -59,5 +56,26 @@ export class ServicesController {
     @Query() dto: GetListServiceServiceClassesByDayDto,
   ): Promise<PageResponseDto<Service>> {
     return this.servicesService.getServiceServiceClassesByDay(id, dto);
+  }
+
+  @Get(':id/sessions')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Get service sessions' })
+  async getServiceSessions(
+    @Param('id') id: number,
+  ): Promise<PageResponseDto<Service>> {
+    return this.servicesService.getServiceSessions(id);
+  }
+
+  @Get(':id/sessions/:sessionId/workouts')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Get service session workouts' })
+  async getServiceSessionWorkouts(
+    @Param('id') id: number,
+    @Param('sessionId') sessionId: number,
+  ): Promise<PageResponseDto<Service>> {
+    return this.servicesService.getServiceSessionWorkouts(id, sessionId);
   }
 }

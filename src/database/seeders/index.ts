@@ -30,14 +30,14 @@ export default class SeederManager extends Seeder {
     await new MemberSeeder().run(dataSource);
     await new BodyMeasurementSeeder().run(dataSource);
     await new WorkoutSeeder().run(dataSource);
-    // await new EquipmentCategorySeeder().run(dataSource);
-    // await new WorkoutEquipmentSeeder().run(dataSource);
+    await new EquipmentCategorySeeder().run(dataSource);
+    await new WorkoutEquipmentSeeder().run(dataSource);
     await new ServiceSeeder().run(dataSource);
     await new ServiceWorkoutSeeder().run(dataSource);
     await new ServiceClassesSeeder().run(dataSource);
     await new BookingSeeder().run(dataSource);
     await new RoomSeeder().run(dataSource);
-    // await new EquipmentSeeder().run(dataSource);
+    await new EquipmentSeeder().run(dataSource);
     await new MemberMembershipSeeder().run(dataSource);
     await new TrainerWorkoutSeeder().run(dataSource);
     await new DaysOffSeeder().run(dataSource);

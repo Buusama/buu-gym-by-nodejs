@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsString } from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
 
@@ -127,4 +127,60 @@ export class FindAllBookingDto extends PageDto {
 
   @ApiProperty({ required: false })
   workout_id: number;
+}
+
+
+export class CreateListBookingDto {
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  memberId: number;
+
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
+
+  @ApiProperty()
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
+
+  @ApiProperty()
+  @IsArray()
+  @IsNotEmpty()
+  trainingTimes: {
+    dayOfWeek: number;
+    start: string;
+    workout: number;
+    trainer: number;
+  }[];
+}
+
+export class CreateServiceTrainerBookingDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  memberId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  serviceId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  numberOfWeeks: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsArray()
+  trainingTimes: {
+    dayOfWeek: number;
+    start: string;
+    end: string;
+  }[];
+
 }

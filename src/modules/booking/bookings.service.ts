@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceTypeValue } from 'src/commons/enums/services/service-type';
 import { Booking } from 'src/entities/booking.entity';
@@ -16,9 +16,13 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import {
   CreateBookingDto,
+  CreateListBookingDto,
+  CreateServiceTrainerBookingDto,
   FindAllBookingDto,
   MemberCreateBookingDto,
 } from './dto';
+import * as moment from 'moment';
+
 @Injectable()
 export class BookingsService extends PageService {
   constructor(
@@ -105,13 +109,14 @@ export class BookingsService extends PageService {
       if (totalBookings >= equipment.max_capacity) {
         return false;
       }
-      return true;
     }
+
+    return true; // Return true only if all equipment have availability
   }
 
   private async getRequiredEquipment(
-    serviceClassId: number,
-    workoutId: number,
+    serviceClassId?: number,
+    workoutId?: number,
   ): Promise<EquipmentCategory[]> {
     if (serviceClassId) {
       const serviceClass = await this.serviceClassesRepository.findOne({
@@ -128,33 +133,40 @@ export class BookingsService extends PageService {
       }
 
       return this.equipmentCategoryRepository
-        .createQueryBuilder('e')
-        .innerJoin(WorkoutEquipment, 'we', 'we.equipment_id = e.id')
-        .innerJoin(ServiceWorkout, 'sw', 'sw.workout_id = we.workout_id')
-        .innerJoin(ServiceClass, 's', 's.service_id = sw.service_id')
-        .where('s.id = :serviceClassId', { serviceClassId })
-        .select(['e.id', 'e.max_capacity'])
+        .createQueryBuilder('equipment')
+        .innerJoin(WorkoutEquipment, 'workoutEquipment', 'workoutEquipment.equipment_id = equipment.id')
+        .innerJoin(ServiceWorkout, 'serviceWorkout', 'serviceWorkout.workout_id = workoutEquipment.workout_id')
+        .innerJoin(ServiceClass, 'serviceClass', 'serviceClass.service_id = serviceWorkout.service_id')
+        .where('serviceClass.id = :serviceClassId', { serviceClassId })
+        .select(['equipment.id', 'equipment.max_capacity'])
         .getMany();
     } else if (workoutId) {
       return this.equipmentCategoryRepository
-        .createQueryBuilder('e')
-        .innerJoin(WorkoutEquipment, 'we', 'we.equipment_id = e.id')
-        .where('we.workout_id = :workoutId', { workoutId })
-        .select(['e.id', 'e.max_capacity'])
+        .createQueryBuilder('equipment')
+        .innerJoin(WorkoutEquipment, 'workoutEquipment', 'workoutEquipment.equipment_id = equipment.id')
+        .where('workoutEquipment.workout_id = :workoutId', { workoutId })
+        .select(['equipment.id', 'equipment.max_capacity'])
         .getMany();
     }
 
     return [];
   }
 
+  private async checkDuplicateBookings(
+    date: string,
+    time: string,
+    memberId: number,
+  ): Promise<boolean> {
+    const booking = await this.bookingRepository.findOne({
+      where: { date, time, member_id: memberId },
+    });
+
+    return !!booking;
+  }
+
+
   private bookingSelectFields() {
     return [
-      // 'service.name AS serviceName',
-      // 'service.price AS servicePrice',
-      // 'service.thumbnail AS serviceThumbnail',
-      // 'service.service_type AS serviceType',
-      // 'service.duration AS serviceDuration',
-      // 'user.name AS trainerName',
       'BookingTrainerUser.name AS bookingTrainerName',
       'booking.date AS date',
       'booking.time AS time',
@@ -189,6 +201,7 @@ export class BookingsService extends PageService {
       .select(this.bookingSelectFields())
       .getRawOne();
   }
+
   async getBooking(user: User, id: number): Promise<PageResponseDto<any>> {
     const booking = await this.getBookingDetailsById(id);
 
@@ -219,13 +232,12 @@ export class BookingsService extends PageService {
 
     await this.bookingRepository.save(booking);
 
-    const bookingDetails = await this.getBookingDetailsById(booking.id);
-
     if (!checkEquipmentAvailability) {
       throw new ForbiddenException(
-        'Không đủ thiết bị để phục vụ cho lịch trình này',
+        `Không đủ thiết bị để phục vụ cho lịch ${booking.note}`,
       );
     }
+    const bookingDetails = await this.getBookingDetailsById(booking.id);
 
     return new PageResponseDto(bookingDetails);
   }
@@ -265,11 +277,6 @@ export class BookingsService extends PageService {
   async getBookings(user: User): Promise<PageResponseDto<any>> {
     const bookings = await this.bookingRepository
       .createQueryBuilder('booking')
-      // .leftJoin('booking.serviceClass', 'serviceClass')
-      // .leftJoin('serviceClass.service', 'service')
-      // .leftJoin('serviceClass.trainer', 'trainer')
-      // .leftJoin('trainer.staff', 'staff')
-      // .leftJoin('staff.user', 'user')
       .leftJoin('booking.workout', 'workout')
       .leftJoin('booking.trainer', 'BookingTrainer')
       .leftJoin('BookingTrainer.staff', 'BookingTrainerStaff')
@@ -437,5 +444,136 @@ export class BookingsService extends PageService {
     return new PageResponseDto(result);
     // console.log(formattedTrainerWorkouts);
     // return new PageResponseDto(formattedTrainerWorkouts);
+  }
+
+  async createListBooking(dto: CreateListBookingDto) {
+    const { memberId, startDate, endDate, trainingTimes } = dto;
+    const validBookings: CreateBookingDto[] = [];
+    const invalidBookings: CreateBookingDto[] = [];
+
+    let currentBookingDate = moment(startDate);
+
+    while (currentBookingDate.isSameOrBefore(moment(endDate))) {
+      for (const timeSlot of trainingTimes) {
+        const { dayOfWeek, start, workout, trainer } = timeSlot;
+        let bookingDate = moment(currentBookingDate).day(dayOfWeek);
+
+        // Ensure the booking date is in the future
+        if (bookingDate.isBefore(moment(), 'day')) {
+          bookingDate = moment(bookingDate).add(7, 'days');
+        }
+
+        const newBooking: CreateBookingDto = {
+          member_id: memberId,
+          date: bookingDate.format('YYYY-MM-DD'),
+          service_class_id: 0,
+          time: start,
+          workout_id: workout,
+          trainer_id: trainer,
+          participants: 1,
+          payment_method: 1,
+          note: `Đặt lịch hằng tuần thứ ${dayOfWeek} lúc ${start}`,
+        };
+
+        // Check required equipment and duplicate bookings in parallel
+        const [requiredEquipment, checkDuplicateBookings] = await Promise.all([
+          this.getRequiredEquipment(null, newBooking.workout_id),
+          this.checkDuplicateBookings(newBooking.date, newBooking.time, newBooking.member_id)
+        ]);
+
+        const checkEquipmentAvailability = await this.checkEquipmentAvailability(
+          requiredEquipment,
+          newBooking.date,
+          newBooking.time
+        );
+
+        if (checkEquipmentAvailability && !checkDuplicateBookings) {
+          validBookings.push(newBooking);
+        } else {
+          invalidBookings.push(newBooking);
+        }
+      }
+
+      // Move to the next week
+      currentBookingDate = currentBookingDate.add(1, 'week');
+    }
+
+    if (invalidBookings.length > 0) {
+      // Throw an exception if there are any invalid bookings
+      throw new BadRequestException({
+        message: `Các lịch sau không thể đặt: ${invalidBookings.map((b) => b.note).join(', ')}`,
+      });
+    }
+    else {
+      // Save all valid bookings
+      await this.bookingRepository.save(validBookings);
+    }
+
+    return new PageResponseDto(validBookings);
+  }
+
+  async createServiceTrainerBooking(
+    dto: CreateServiceTrainerBookingDto,
+  ) {
+    const { memberId, serviceId, numberOfWeeks, trainingTimes } = dto;
+    const validBookings: CreateBookingDto[] = [];
+    const invalidBookings: CreateBookingDto[] = [];
+
+    for (let week = 0; week < numberOfWeeks; week++) {
+      for (const timeSlot of trainingTimes) {
+        const { start, end, dayOfWeek } = timeSlot;
+        let bookingDate = moment().day(dayOfWeek).add(week, 'weeks');
+
+        // Ensure the booking date is in the future
+        if (bookingDate.isBefore(moment(), 'day')) {
+          bookingDate = moment(bookingDate).add(7, 'days');
+        }
+
+        const newBooking: CreateBookingDto = {
+          member_id: memberId,
+          date: bookingDate.format('YYYY-MM-DD'),
+          service_class_id: serviceId,
+          time: start,
+          workout_id: 0,
+          trainer_id: 0,
+          participants: 1,
+          payment_method: 1,
+          note: `Đặt lịch hằng tuần thứ ${dayOfWeek} lúc ${start}`,
+        };
+
+        // Check required equipment and duplicate bookings in parallel
+        const requiredEquipment = await this.getRequiredEquipment(
+          newBooking.service_class_id,
+          newBooking.workout_id
+        );
+        const checkEquipmentAvailability = await this.checkEquipmentAvailability(
+          requiredEquipment,
+          newBooking.date,
+          newBooking.time
+        );
+        const checkDuplicateBookings = await this.checkDuplicateBookings(
+          newBooking.date,
+          newBooking.time,
+          newBooking.member_id
+        );
+
+        if (checkEquipmentAvailability && !checkDuplicateBookings) {
+          validBookings.push(newBooking);
+        } else {
+          invalidBookings.push(newBooking);
+        }
+      }
+    }
+
+    if (invalidBookings.length > 0) {
+      throw new BadRequestException({
+        message: `Các lịch sau không thể đặt: ${invalidBookings.map((b) => b.note).join(', ')}`,
+      });
+    }
+
+    // Save all valid bookings to the database
+    await this.bookingRepository.save(validBookings);
+
+    return new PageResponseDto(validBookings);
   }
 }

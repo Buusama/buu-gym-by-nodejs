@@ -23,7 +23,7 @@ export class AuthService {
     @InjectRepository(Trainer)
     private trainerRepository: Repository<Trainer>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(
     authCredentialsDto: AuthCredentialsDto,
@@ -72,7 +72,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
     };
-    const accessToken: string = await this.jwtService.sign(payload);
+    const accessToken: string = await this.jwtService.sign(payload, { expiresIn: '1d' });
 
     // Prepare user info
     const userInfo: any = {

@@ -17,7 +17,7 @@ import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
 import { RoleGuard } from '../auth/guard/role.guard';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { BookingsService } from './bookings.service';
-import { MemberCreateBookingDto } from './dto';
+import { CreateListBookingDto, MemberCreateBookingDto } from './dto';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 
 @ApiTags('bookings')
@@ -49,5 +49,11 @@ export class BookingsController {
     @UserInRequest() user: User,
   ): Promise<PageResponseDto<any>> {
     return this.bookingsService.getBookings(user);
+  }
+  @Post('/list')
+  async createListBooking(
+    @Body() dto: CreateListBookingDto,
+  ) {
+    return this.bookingsService.createListBooking(dto);
   }
 }

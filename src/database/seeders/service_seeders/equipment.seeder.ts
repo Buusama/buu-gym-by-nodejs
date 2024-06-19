@@ -7,7 +7,7 @@ export default class EquipmentSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
     const conditions = ['Xuất sắc', 'Tốt', 'Kém'];
     const roomCount = 5;
-    const equipmentCount = 40;
+    const equipmentCount = 25;
 
     const equipments = Array.from({ length: 300 }, (_, i) => ({
       condition: conditions[Math.floor(Math.random() * conditions.length)],

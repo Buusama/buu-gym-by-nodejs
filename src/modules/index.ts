@@ -13,6 +13,7 @@ import { AuditObserverModule } from './observers/audit-observer.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { ServiceClassesModule } from './service-classes/service-classes.module';
 import { ServicesModule } from './services/services.module';
+import { SessionsModule } from './sessions/sessions.module';
 import { TrainersModule } from './trainers/trainers.module';
 import { UsersModule } from './users/users.module';
 import { WorkoutsModule } from './workouts/workouts.module';
@@ -35,6 +36,7 @@ class ApplicationModular {
       RoomsModule,
       EquipmentModule,
       EquipmentCategoryModule,
+      SessionsModule,
       // PersonalWorkoutModule,
       // PaymentsModule,
     ];
