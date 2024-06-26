@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
 import { Workout } from 'src/entities/workout.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,12 +6,16 @@ import { Repository } from 'typeorm';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { CreateWorkoutDto, GetListWorkoutsDto } from './dto';
+import { Trainer } from 'src/entities/trainer.entity';
+import { EquipmentCategory } from 'src/entities/equipment-category.entity';
 
 @Injectable()
 export class WorkoutsService extends PageService {
   constructor(
     @InjectRepository(Workout)
     private workoutsRepository: Repository<Workout>,
+    @InjectRepository(EquipmentCategory)
+    private equipmentsRepository: Repository<EquipmentCategory>,
   ) {
     super();
   }
@@ -22,7 +26,12 @@ export class WorkoutsService extends PageService {
     const queryBuilder = await this.paginate(
       this.workoutsRepository,
       getListWorkoutsDto,
-    );
+    )
+      .leftJoinAndMapMany('table.trainers', 'table.trainers', 'trainers')
+      .leftJoinAndSelect('trainers.staff', 'staff')
+      .leftJoinAndSelect('staff.user', 'user');
+
+
 
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
@@ -69,5 +78,99 @@ export class WorkoutsService extends PageService {
       await this.workoutsRepository.remove(existingWorkout);
     this.workoutsRepository.save(deletedWorkout);
     return new PageResponseDto(existingWorkout);
+  }
+
+  async getWorkoutEquipments(id: number): Promise<PageResponseDto<Workout>> {
+    const workout = await this.workoutsRepository.findOne({
+      where: { id: id },
+      select: ['id', 'equipments'],
+      relations: ['equipments'],
+    })
+    return new PageResponseDto(workout);
+  }
+
+  async addWorkoutEquipments(
+    id: number,
+    equipmentId: number,
+  ): Promise<PageResponseDto<Workout>> {
+    // Fetch the workout with the specified ID and its associated equipments
+    const workout = await this.workoutsRepository.findOne({
+      where: { id: id },
+      relations: ['equipments'],
+    });
+
+    if (!workout) {
+      throw new ConflictException('Workout not found');
+    }
+
+    // Fetch the equipment with the specified ID
+    const equipment = await this.equipmentsRepository.findOne({
+      where: { id: equipmentId },
+    });
+
+    if (!equipment) {
+      throw new ConflictException('Equipment not found');
+    }
+
+    // Check if the equipment is already in the workout's equipments
+    const existingEquipment = workout.equipments.find(
+      (e) => e.id === equipmentId,
+    );
+
+    if (existingEquipment) {
+      throw new ConflictException('Equipment already exists in the workout');
+    }
+    // Add the equipment to the workout's equipments
+    workout.equipments.push(equipment);
+
+    // Save the updated workout back to the repository
+    await this.workoutsRepository.save(workout);
+
+    // Return the updated workout in a PageResponseDto
+    return new PageResponseDto(workout);
+  }
+
+  async deleteWorkoutEquipments(
+    id: number,
+    equipmentId: number,
+  ): Promise<PageResponseDto<Workout>> {
+    // Fetch the workout with the specified ID and its associated equipments
+    const workout = await this.workoutsRepository.findOne({
+      where: { id: id },
+      relations: ['equipments'],
+    });
+
+    if (!workout) {
+      throw new ConflictException('Workout not found');
+    }
+
+    // Fetch the equipment with the specified ID
+    const equipment = await this.equipmentsRepository.findOne({
+      where: { id: equipmentId },
+    });
+
+    if (!equipment) {
+      throw new ConflictException('Equipment not found');
+    }
+
+    // Check if the equipment is in the workout's equipments
+    const existingEquipment = workout.equipments.find(
+      (e) => e.id === equipmentId,
+    );
+
+    if (!existingEquipment) {
+      throw new ConflictException('Equipment not found in the workout');
+    }
+
+    // Remove the equipment from the workout's equipments
+    workout.equipments = workout.equipments.filter(
+      (e) => e.id !== equipmentId,
+    );
+
+    // Save the updated workout back to the repository
+    await this.workoutsRepository.save(workout);
+
+    // Return the updated workout in a PageResponseDto
+    return new PageResponseDto(workout);
   }
 }

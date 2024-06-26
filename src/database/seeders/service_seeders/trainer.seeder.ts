@@ -15,7 +15,7 @@ export default class TrainerSeeder extends Seeder {
       const workSchedule = [];
       for (const day of daysOfWeek) {
         for (const shift of shifts) {
-          if (Math.random() > 0.5)
+          if (Math.random() > 0.2)
             workSchedule.push({ day, shift, isSelected: true });
         }
       }

@@ -14,12 +14,14 @@ export class CreateBookingsTable1713277418989 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'service_class_id',
+            name: 'service_id',
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'trainer_id',
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'member_id',
@@ -46,7 +48,11 @@ export class CreateBookingsTable1713277418989 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'time',
+            name: 'start_time',
+            type: 'time',
+          },
+          {
+            name: 'end_time',
             type: 'time',
           },
           {

@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { TrainerWorkout } from '../../../entities/trainer-workout.entity';
-import { Trainer } from '../../../entities/trainer.entity';
 import { DataSource } from 'typeorm';
+import { Trainer } from '../../../entities/trainer.entity';
 import { Workout } from '../../../entities/workout.entity';
 
 export default class TrainerWorkoutSeeder extends Seeder {
@@ -13,7 +12,7 @@ export default class TrainerWorkoutSeeder extends Seeder {
 
     for (let i = 0; i < trainer.length; i++) {
       for (let j = 0; j < workout.length; j++) {
-        if (faker.number.int({ min: 0, max: 10 }) < 7) {
+        if (Math.random() > 0.2) {
           specialTrainerWorkout.push({
             trainer_id: trainer[i].id,
             workout_id: workout[j].id,
@@ -24,7 +23,11 @@ export default class TrainerWorkoutSeeder extends Seeder {
     try {
       await dataSource
         .createEntityManager()
-        .save(TrainerWorkout, specialTrainerWorkout);
+        .createQueryBuilder()
+        .insert()
+        .into('trainer_workouts')
+      .values(specialTrainerWorkout)
+        .execute();
       console.log('TrainerWorkout seeding successful!');
     } catch (error) {
       console.error(

@@ -150,6 +150,6 @@ export class AuthService {
   }
 
   async getProfile(user: User): Promise<User> {
-    return user;
+    return user
   }
 }

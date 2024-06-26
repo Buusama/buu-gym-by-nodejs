@@ -20,18 +20,22 @@ export class CreateMembersTable1698896769626 implements MigrationInterface {
           {
             name: 'membership_plan_id',
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'start_date',
             type: 'datetime',
+            isNullable: true,
           },
           {
             name: 'end_date',
             type: 'datetime',
+            isNullable: true,
           },
           {
             name: 'status',
             type: 'smallint',
+            isNullable: true,
           },
         ],
       }),

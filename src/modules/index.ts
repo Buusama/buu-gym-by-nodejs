@@ -11,7 +11,6 @@ import { AuditObserverModule } from './observers/audit-observer.module';
 // import { PaymentsModule } from './payments/payments.module';
 // import { PersonalWorkoutModule } from './personal-workout/personal-workout.module';
 import { RoomsModule } from './rooms/rooms.module';
-import { ServiceClassesModule } from './service-classes/service-classes.module';
 import { ServicesModule } from './services/services.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { TrainersModule } from './trainers/trainers.module';
@@ -31,7 +30,6 @@ class ApplicationModular {
       MembershipPlansModule,
       AwsModule,
       FastApiModule,
-      ServiceClassesModule,
       BookingsModule,
       RoomsModule,
       EquipmentModule,

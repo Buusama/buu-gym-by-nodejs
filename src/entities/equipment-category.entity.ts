@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkoutEquipment } from './workout-equipment.entity';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Workout } from './workout.entity';
+import { Equipment } from './equipment.entity';
 
 @Entity('equipment_categories')
 export class EquipmentCategory {
@@ -12,10 +13,9 @@ export class EquipmentCategory {
   @Column()
   max_capacity: number;
 
-  @OneToMany(
-    () => WorkoutEquipment,
-    (workoutEquipment) => workoutEquipment.equipment_id,
-    { eager: true },
-  )
-  workoutEquipment: WorkoutEquipment[];
+  @ManyToMany(() => Workout, workout => workout.equipments)
+  workouts: Workout[];
+
+  @OneToMany(() => Equipment, equipment => equipment.equipment_category)
+  equipments: Equipment[];
 }

@@ -35,6 +35,8 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { MembersService } from './members.service';
+import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
+import { User } from 'src/entities/user.entity';
 
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)
@@ -42,7 +44,7 @@ import { MembersService } from './members.service';
 @Controller('members')
 @UseGuards(RoleGuard)
 export class MembersController {
-  constructor(private readonly membersService: MembersService) {}
+  constructor(private readonly membersService: MembersService) { }
 
   @Get()
   @ApiOkResponse({ description: 'List all member' })
@@ -153,9 +155,15 @@ export class MembersController {
   }
 
   @Get(':id/measurements')
-  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
+  @RequireRole(RoleValue.ADMIN, RoleValue.STAFF, RoleValue.TRAINER, RoleValue.MEMBER)
   @UseFilters(EntityNotFoundErrorFilter)
-  async getBodyMeasurements(@Param('id') member_id: string) {
-    return this.membersService.getMemberBodyMeasurements(Number(member_id));
+  async getBodyMeasurements(
+    @UserInRequest() user: User,
+    @Param('id') member_id: string) {
+    if (user.role === RoleValue.MEMBER) {
+      return this.membersService.getMemberBodyMeasurements(Number(user.member.id));
+    } else {
+      return this.membersService.getMemberBodyMeasurements(Number(member_id));
+    }
   }
 }

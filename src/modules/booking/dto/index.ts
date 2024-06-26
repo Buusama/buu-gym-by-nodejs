@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsArray, IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsDateString, IsNotEmpty, IsString, Validate } from 'class-validator';
 import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
 import { PageDto } from 'src/modules/pagination/dto/page.dto';
+import { UniqueTrainingTimesValidator } from 'src/validators/unique-training-times.validator';
 
 export class CreateBookingDto {
-  @ApiProperty()
-  @Transform(({ value }) => parseInt(value))
-  service_class_id: number;
-
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   workout_id: number;
@@ -20,6 +17,10 @@ export class CreateBookingDto {
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   trainer_id: number;
+
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  service_id?: number;
 
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
@@ -37,14 +38,13 @@ export class CreateBookingDto {
   date: string;
 
   @ApiProperty()
-  time: string;
+  start_time: string
+
+  @ApiProperty()
+  end_time: string
 }
 
 export class MemberCreateBookingDto {
-  @ApiProperty()
-  @Transform(({ value }) => parseInt(value))
-  service_class_id: number;
-
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   workout_id: number;
@@ -68,14 +68,13 @@ export class MemberCreateBookingDto {
   date: string;
 
   @ApiProperty()
-  time: string;
+  start_time: string
+
+  @ApiProperty()
+  end_time: string
 }
 
 export class UpdateBookingDto {
-  @ApiProperty()
-  @Transform(({ value }) => parseInt(value))
-  service_class_id: number;
-
   @ApiProperty()
   @Transform(({ value }) => parseInt(value))
   workout_id: number;
@@ -91,9 +90,6 @@ export class UpdateBookingDto {
 
 export class FindBookingDto {
   @ApiProperty()
-  service_class_id: number;
-
-  @ApiProperty()
   member_id: number;
 
   @ApiProperty()
@@ -103,7 +99,10 @@ export class FindBookingDto {
   date: string;
 
   @ApiProperty()
-  time: string;
+  start_time: string;
+
+  @ApiProperty()
+  end_time: string;
 
   @ApiProperty()
   workout_id: number;
@@ -123,14 +122,28 @@ export class FindAllBookingDto extends PageDto {
   date: string;
 
   @ApiProperty({ required: false })
-  time: string;
+  start_time: string;
+
+  @ApiProperty({ required: false })
+  end_time: string;
 
   @ApiProperty({ required: false })
   workout_id: number;
+
+  @ApiProperty({ required: false })
+  start_date: string;
+
+  @ApiProperty({ required: false })
+  end_date: string;
+
+  @ApiProperty({ required: false })
+  status: number;
 }
 
-
 export class CreateListBookingDto {
+  @ApiProperty()
+  @Transform(({ value }) => parseInt(value))
+  serviceId?: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -150,37 +163,74 @@ export class CreateListBookingDto {
   @ApiProperty()
   @IsArray()
   @IsNotEmpty()
+  @Validate(UniqueTrainingTimesValidator)
   trainingTimes: {
     dayOfWeek: number;
-    start: string;
+    start_time: string;
+    end_time: string;
     workout: number;
     trainer: number;
   }[];
 }
 
-export class CreateServiceTrainerBookingDto {
+export class MemberCreateListBookingDto {
   @ApiProperty()
-  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
-  memberId: number;
+  serviceId?: number;
 
   @ApiProperty()
+  @IsDateString()
   @IsNotEmpty()
-  @Transform(({ value }) => parseInt(value))
-  serviceId: number;
+  startDate: string;
 
   @ApiProperty()
+  @IsDateString()
   @IsNotEmpty()
-  @Transform(({ value }) => parseInt(value))
-  numberOfWeeks: number;
+  endDate: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsArray()
+  @IsNotEmpty()
+  @Validate(UniqueTrainingTimesValidator)
   trainingTimes: {
     dayOfWeek: number;
-    start: string;
-    end: string;
+    start_time: string;
+    end_time: string;
+    workout: number;
+    trainer: number;
   }[];
+}
 
+class ExtraBooking {
+  @IsNotEmpty()
+  date: string;
+
+  @IsNotEmpty()
+  start_time: string;
+
+  @IsNotEmpty()
+  end_time: string;
+
+  @IsNotEmpty()
+  workout_id: number;
+
+  @IsNotEmpty()
+  member_id: number;
+
+  @IsNotEmpty()
+  trainer_id?: number;
+}
+
+
+export class SolverScheduleDto {
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
+
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
+
+  @Type(() => ExtraBooking)
+  extraBookings?: ExtraBooking[];
 }

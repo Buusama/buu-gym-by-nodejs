@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ServiceClass } from './service-class.entity';
-import { ServiceWorkout } from './service-workout.entity';
+import { Session } from './session.entity';
+import { Booking } from './booking.entity';
 @Entity('services')
 export class Service {
   @PrimaryGeneratedColumn()
@@ -27,11 +27,11 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   thumbnail: string;
 
-  @OneToMany(() => ServiceWorkout, (serviceWorkout) => serviceWorkout.service, {
-    eager: true,
-  })
-  serviceWorkout: ServiceWorkout[];
+  @OneToMany(() => Session, session => session.service)
+  sessions: Session[];
+  
+  @OneToMany(() => Booking, booking => booking.service)
+  bookings: Booking[];
 
-  @OneToMany(() => ServiceClass, (service_class) => service_class.service)
-  serviceClasses: ServiceClass[];
+  serviceGallaryImages: any[];
 }

@@ -17,6 +17,10 @@ export default class StaffSeeder extends Seeder {
           from: new Date('2020-01-01'),
           to: new Date('2021-01-01'),
         }),
+        end_date: faker.date.between({
+          from: new Date('2021-01-01'),
+          to: new Date('2022-01-01'),
+        }),
       });
     }
 

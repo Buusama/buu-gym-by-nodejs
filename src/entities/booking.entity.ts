@@ -6,16 +6,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Member } from './member.entity';
-import { ServiceClass } from './service-class.entity';
 import { Trainer } from './trainer.entity';
 import { Workout } from './workout.entity';
+import { Service } from './service.entity';
 @Entity('bookings')
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  service_class_id: number;
 
   @Column()
   trainer_id: number;
@@ -25,6 +22,9 @@ export class Booking {
 
   @Column()
   workout_id: number;
+
+  @Column()
+  service_id: number;
 
   @Column()
   participants: number;
@@ -39,7 +39,10 @@ export class Booking {
   date: string;
 
   @Column()
-  time: string;
+  start_time: string;
+
+  @Column()
+  end_time: string;
 
   @Column()
   status: number;
@@ -48,10 +51,6 @@ export class Booking {
   @JoinColumn({ name: 'member_id' })
   member: Member;
 
-  @ManyToOne(() => ServiceClass, (service_class) => service_class.bookings)
-  @JoinColumn({ name: 'service_class_id' })
-  serviceClass: ServiceClass;
-
   @ManyToOne(() => Trainer, (trainer) => trainer.bookings)
   @JoinColumn({ name: 'trainer_id' })
   trainer: Trainer;
@@ -59,4 +58,8 @@ export class Booking {
   @ManyToOne(() => Workout, (workout) => workout.bookings)
   @JoinColumn({ name: 'workout_id' })
   workout: Workout;
+
+  @ManyToOne(() => Service, (service) => service.bookings)
+  @JoinColumn({ name: 'service_id' })
+  service: Service;
 }

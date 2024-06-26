@@ -61,6 +61,7 @@ export class CreateUsersTable1693193412439 implements MigrationInterface {
           {
             name: 'status',
             type: 'smallint',
+            default: 1,
           },
           {
             name: 'created_at',

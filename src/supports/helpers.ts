@@ -89,3 +89,35 @@ export const xlsxFileFilter = (req, file, cb) => {
   }
   cb(null, true);
 };
+
+export const converToDayOfWeek = (day: number): string => {
+  switch (day) {
+    case 0:
+      return 'Chủ nhật';
+    case 1:
+      return 'Thứ 2';
+    case 2:
+      return 'Thứ 3';
+    case 3:
+      return 'Thứ 4';
+    case 4:
+      return 'Thứ 5';
+    case 5:
+      return 'Thứ 6';
+    case 6:
+      return 'Thứ 7';
+    default:
+      return '';
+  }
+}
+
+export const convertTimeToShift = (time: string): number => {
+  const hour = parseInt(time.split(':')[0]);
+  if (hour >= 5 && hour < 12) {
+    return 0
+  } else if (hour >= 12 && hour < 17) {
+    return 1
+  } else {
+    return 2
+  }
+}

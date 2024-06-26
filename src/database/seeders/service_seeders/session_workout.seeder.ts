@@ -2,7 +2,6 @@ import { Seeder } from '@jorgebodega/typeorm-seeding';
 import { DataSource } from 'typeorm';
 import { Session } from '../../../entities/session.entity';
 import { Workout } from '../../../entities/workout.entity';
-import { SessionWorkout } from '../../../entities/session_workout.entity';
 
 export default class SessionWorkoutsSeeder extends Seeder {
   public async run(dataSource: DataSource): Promise<void> {
@@ -83,10 +82,9 @@ export default class SessionWorkoutsSeeder extends Seeder {
               where: { name: workoutName },
             });
             if (workout) {
-              await dataSource.createEntityManager().save(SessionWorkout, {
-                session_id: session.id,
-                workout_id: workout.id,
-              });
+              await dataSource.query(
+                `INSERT INTO session_workout (session_id, workout_id) VALUES (${session.id}, ${workout.id})`,
+              );  
             }
           }
         }

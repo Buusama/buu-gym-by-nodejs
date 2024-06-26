@@ -36,8 +36,7 @@ export class TrainersService extends PageService {
     queryBuilder
       .leftJoinAndSelect('table.staff', 'staff')
       .leftJoinAndSelect('staff.user', 'user')
-      .leftJoinAndSelect('table.trainerWorkouts', 'trainerWorkouts')
-      .leftJoinAndSelect('trainerWorkouts.workout', 'workout');
+      .leftJoinAndSelect('table.workouts', 'workouts');
 
     this.applyFilters(queryBuilder, getListTrainersDto);
 
@@ -96,9 +95,9 @@ export class TrainersService extends PageService {
       specialty: trainer.specialty,
       rating: trainer.rating,
       experience: trainer.experience,
-      trainerWorkouts: trainer.trainerWorkouts.map((workout) => ({
-        id: workout.workout.id,
-        name: workout.workout.name,
+      trainerWorkouts: trainer.workouts.map((workout) => ({
+        id: workout.id,
+        name: workout.name,
       })),
     }));
   }
@@ -229,13 +228,11 @@ export class TrainersService extends PageService {
       .createQueryBuilder('trainer')
       .leftJoinAndSelect('trainer.staff', 'staff')
       .leftJoinAndSelect('staff.user', 'user')
-      .leftJoinAndSelect('trainer.trainerWorkouts', 'trainerWorkouts')
-      .leftJoinAndSelect('trainerWorkouts.workout', 'workout')
+      .leftJoinAndMapMany('trainer.workouts', 'trainer.workouts', 'workouts')
       .where('trainer.id = :trainerId', { trainerId });
 
-    const rawEntities = await queryBuilder.getMany();
-    const entities = this.structureData(rawEntities);
-    return new PageResponseDto(entities[0]);
+    const rawEntities = await queryBuilder.getOne();
+    return new PageResponseDto(rawEntities);
   }
 
   async destroyTrainer(trainer_id: number) {
@@ -258,9 +255,7 @@ export class TrainersService extends PageService {
         // 'workout.description AS WorkoutDescription',
         // 'workout.duration AS WorkoutDuration',
       ])
-      .innerJoin('trainer.trainerWorkouts', 'trainerWorkouts')
-      .innerJoin('trainerWorkouts.workout', 'workout')
-      .where('trainer.id = :trainer_id', { trainer_id })
+      .innerJoin('trainer.workouts', 'workout')
       .getRawMany()
       .then((response) => new PageResponseDto(response));
   }

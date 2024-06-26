@@ -1,5 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Workout } from './workout.entity';
+import { Service } from './service.entity';
 
 @Entity('session')
 export class Session {
@@ -28,4 +29,8 @@ export class Session {
         },
     })
     workouts: Workout[];
+
+    @ManyToOne(() => Service, service => service.sessions)
+    @JoinColumn({ name: 'service_id' })
+    service: Service;
 }

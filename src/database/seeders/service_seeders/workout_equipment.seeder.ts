@@ -1,5 +1,4 @@
 import { Seeder } from '@jorgebodega/typeorm-seeding';
-import { WorkoutEquipment } from '../../../entities/workout-equipment.entity';
 import { DataSource } from 'typeorm';
 
 export default class WorkoutEquipmentSeeder extends Seeder {
@@ -8,7 +7,7 @@ export default class WorkoutEquipmentSeeder extends Seeder {
     
     for (let i = 1; i <= 20; i++) {
       for (let j = 1; j <= 25; j++) {
-        if (Math.random() > 0.5) {
+        if (Math.random() > 0.9) {
           specialWorkoutEquipment.push({
             workout_id: i,
             equipment_id: j
@@ -20,7 +19,11 @@ export default class WorkoutEquipmentSeeder extends Seeder {
     try {
       await dataSource
         .createEntityManager()
-        .save(WorkoutEquipment, specialWorkoutEquipment);
+        .createQueryBuilder()
+        .insert()
+        .into('workout_equipments')
+        .values(specialWorkoutEquipment)
+        .execute();
       console.log('Workout equipments seeded successfully');
     } catch (error) {
       console.error(

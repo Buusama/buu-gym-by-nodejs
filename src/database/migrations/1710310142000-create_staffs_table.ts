@@ -28,6 +28,7 @@ export class CreateStaffsTable1710483576925 implements MigrationInterface {
           {
             name: 'end_date',
             type: 'datetime',
+            isNullable: true,
           },
         ],
       }),

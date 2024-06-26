@@ -67,7 +67,6 @@ export class SessionsService extends PageService {
 
     async removeWorkoutFromSession(sessionId: number, workoutId: number): Promise<void> {
         // Tìm session có sessionId
-        console.log(sessionId + ' ' + workoutId);
         const session = await this.sessionRepo.findOne({
             where: { id: sessionId },
             relations: ['workouts'],
@@ -95,4 +94,7 @@ export class SessionsService extends PageService {
         await this.sessionRepo.save(session);
     }
 
+    async getSessionsByServiceId(serviceId: number) {
+        return await this.sessionRepo.find({ where: { service_id: serviceId }, relations: ['workouts', 'workouts.trainers'] });
+    }
 }

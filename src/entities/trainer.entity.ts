@@ -2,15 +2,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Booking } from './booking.entity';
-import { ServiceClass } from './service-class.entity';
-import { Staff } from './staff.entity';
-import { TrainerWorkout } from './trainer-workout.entity';
 import { DaysOffRequest } from './days-off-requests.entity';
+import { Staff } from './staff.entity';
+import { Workout } from './workout.entity';
 
 @Entity('trainers')
 export class Trainer {
@@ -36,17 +36,12 @@ export class Trainer {
   @JoinColumn({ name: 'staff_id' }) // Chỉ định tên cột cho việc kết nối
   staff: Staff;
 
-  @OneToMany(() => ServiceClass, (service_class) => service_class.trainer)
-  serviceClasses: ServiceClass[];
-
   @OneToMany(() => Booking, (booking) => booking.trainer)
   bookings: Booking[];
 
-  @OneToMany(() => TrainerWorkout, (trainerWorkout) => trainerWorkout.trainer, {
-    eager: true,
-  })
-  trainerWorkouts: TrainerWorkout[];
-
   @OneToMany(() => DaysOffRequest, (daysOffRequest) => daysOffRequest.trainer)
   daysOffRequests: DaysOffRequest[];
+
+  @ManyToMany(() => Workout, workout => workout.trainers)
+  workouts: Workout[];
 }

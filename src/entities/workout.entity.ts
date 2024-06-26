@@ -1,15 +1,15 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Booking } from './booking.entity';
-import { ServiceWorkout } from './service-workout.entity';
-import { TrainerWorkout } from './trainer-workout.entity';
-import { WorkoutEquipment } from './workout-equipment.entity';
 import { Session } from './session.entity';
+import { Trainer } from './trainer.entity';
+import { EquipmentCategory } from './equipment-category.entity';
 
 @Entity('workouts')
 export class Workout {
@@ -28,31 +28,37 @@ export class Workout {
   @Column({ type: 'text', nullable: true })
   thumbnail: string;
 
-  @Column()
-  room_id: number;
-
-  @Column()
-  capacity: number;
-
-  @OneToMany(
-    () => WorkoutEquipment,
-    (workoutEquipment) => workoutEquipment.workout,
-    { eager: true },
-  )
-  workoutEquipment: WorkoutEquipment[];
-
-  @OneToMany(() => ServiceWorkout, (serviceWorkout) => serviceWorkout.workout, {
-    eager: true,
-  })
-  serviceWorkout: ServiceWorkout[];
-
   @OneToMany(() => Booking, (booking) => booking.workout)
   bookings: Booking[];
 
-  @OneToMany(() => TrainerWorkout, (trainerWorkout) => trainerWorkout.workout, {
-    eager: true,
+  @ManyToMany(() => Trainer, trainer => trainer.workouts, { eager: true })
+  @JoinTable({
+    name: 'trainer_workouts', // Tên bảng liên kết
+    joinColumn: {
+      name: 'workout_id', // Tên cột của workout
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'trainer_id', // Tên cột của trainer
+      referencedColumnName: 'id',
+    },
   })
-  trainerWorkouts: TrainerWorkout[];
+  trainers: Trainer[];
+
+  @ManyToMany(() => EquipmentCategory, equipment => equipment.workouts, { eager: true })
+  @JoinTable({
+    name: 'workout_equipments', // Tên bảng liên kết
+    joinColumn: {
+      name: 'workout_id', // Tên cột của workout
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'equipment_id', // Tên cột của equipment
+      referencedColumnName: 'id',
+    },
+  })
+  equipments: EquipmentCategory[];
+
 
   @ManyToMany(() => Session, session => session.workouts)
   sessions: Session[];

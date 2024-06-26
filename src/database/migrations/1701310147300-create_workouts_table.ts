@@ -34,15 +34,6 @@ export class CreateWorkoutsTable1710477210022 implements MigrationInterface {
             length: '255',
             isNullable: true,
           },
-          {
-            name: 'room_id',
-            type: 'int',
-          },
-          {
-            name: 'capacity',
-            type: 'int',
-            unsigned: true,
-          },
         ],
       }),
       true,

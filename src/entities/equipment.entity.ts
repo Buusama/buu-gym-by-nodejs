@@ -2,8 +2,9 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 import { EquipmentCategory } from './equipment-category.entity';
 import { Room } from './room.entity';
@@ -25,7 +26,7 @@ export class Equipment {
   @Column()
   equipment_category_id: number;
 
-  @OneToOne(() => EquipmentCategory, { eager: true })
+  @ManyToOne(() => EquipmentCategory, { eager: true })
   @JoinColumn({ name: 'equipment_category_id' })
   equipment_category: EquipmentCategory;
 

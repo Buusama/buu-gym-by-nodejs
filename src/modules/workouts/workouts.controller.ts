@@ -8,26 +8,22 @@ import {
   Put,
   Query,
   UseFilters,
-  UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 import { Workout } from 'src/entities/workout.entity';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
-import { RoleGuard } from '../auth/guard/role.guard';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { CreateWorkoutDto, GetListWorkoutsDto } from './dto';
 import { WorkoutsService } from './workouts.service';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 
 @ApiTags('workouts')
 @UseInterceptors(TransformInterceptor)
 @Controller('workouts')
 export class WorkoutsController {
-  constructor(private readonly workoutsService: WorkoutsService) {}
+  constructor(private readonly workoutsService: WorkoutsService) { }
   @Get()
   @PublicRoute()
   @ApiOkResponse({ description: 'List all workout' })
@@ -71,4 +67,38 @@ export class WorkoutsController {
   ): Promise<PageResponseDto<Workout>> {
     return this.workoutsService.deleteWorkout(+id);
   }
+
+  @Get(':id/equipments')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Get workout equipments' })
+  async getWorkoutEquipments(
+    @Param('id') id: string,
+  ): Promise<PageResponseDto<Workout>> {
+    return this.workoutsService.getWorkoutEquipments(+id);
+  }
+
+  @Post(':id/equipments')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Add workout equipments' })
+  async addWorkoutEquipments(
+    @Param('id') id: string,
+    @Body('equipmentId') equipmentId: number,
+  ): Promise<PageResponseDto<Workout>> {
+    return this.workoutsService.addWorkoutEquipments(+id, equipmentId);
+  }
+
+  @Delete(':id/equipments/:equipmentId')
+  @PublicRoute()
+  @UseFilters(EntityNotFoundErrorFilter)
+  @ApiOkResponse({ description: 'Delete workout equipments' })
+  async deleteWorkoutEquipments(
+    @Param('id') id: string,
+    @Param('equipmentId') equipmentId: string,
+  ): Promise<PageResponseDto<Workout>> {
+    return this.workoutsService.deleteWorkoutEquipments(+id, +equipmentId);
+  }
+
+
 }

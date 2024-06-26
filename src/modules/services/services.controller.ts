@@ -1,12 +1,16 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
+  Post,
+  Put,
   Query,
+  UploadedFile,
   UseFilters,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
 import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
@@ -15,12 +19,15 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { GetListServiceServiceClassesByDayDto } from './dto/get-list-services-service-classes.dto';
 import { GetListServicesDto } from './dto/get-list-services.dto';
 import { ServicesService } from './services.service';
+import { createServiceDto } from './dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { imageFileFilter } from 'src/supports/helpers';
 
 @ApiTags('services')
 @UseInterceptors(TransformInterceptor)
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(private readonly servicesService: ServicesService) { }
   @Get()
   @PublicRoute()
   @ApiOkResponse({ description: 'List all services' })
@@ -47,16 +54,53 @@ export class ServicesController {
     return this.servicesService.getService(id);
   }
 
-  @Get(':id/service_classes')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @Post()
+  @PublicRoute()
+  @ApiOkResponse({ description: 'Create service' })
+  async createService(
+    @Body() dto: createServiceDto,
+    @UploadedFile() thumbnail: Express.Multer.File,
+
+  ) {
+    return this.servicesService.createService(dto, thumbnail);
+  }
+
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('thumbnail', {
+      limits: { fileSize: 20 * 1024 * 1024 /* 20MB */ },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @Put(':id')
   @PublicRoute()
   @UseFilters(EntityNotFoundErrorFilter)
-  @ApiOkResponse({ description: 'Get service service-classes' })
-  async getServiceServiceClassesByDay(
+  @ApiOkResponse({ description: 'Update service' })
+  async updateService(
     @Param('id') id: number,
-    @Query() dto: GetListServiceServiceClassesByDayDto,
-  ): Promise<PageResponseDto<Service>> {
-    return this.servicesService.getServiceServiceClassesByDay(id, dto);
+    @Body() dto: createServiceDto,
+    @UploadedFile() thumbnail: Express.Multer.File,
+  ) {
+    return this.servicesService.updateService(id, dto, thumbnail);
   }
+
+  // @Get(':id/service_classes')
+  // @PublicRoute()
+  // @UseFilters(EntityNotFoundErrorFilter)
+  // @ApiOkResponse({ description: 'Get service service-classes' })
+  // async getServiceServiceClassesByDay(
+  //   @Param('id') id: number,
+  //   @Query() dto: GetListServiceServiceClassesByDayDto,
+  // ): Promise<PageResponseDto<Service>> {
+  //   return this.servicesService.getServiceServiceClassesByDay(id, dto);
+  // }
 
   @Get(':id/sessions')
   @PublicRoute()

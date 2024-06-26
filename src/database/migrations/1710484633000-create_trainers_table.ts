@@ -26,7 +26,7 @@ export class CreateTrainersTable1701581915035 implements MigrationInterface {
           {
             name: 'specialty',
             type: 'varchar',
-            length: '50',
+            length: '200',
           },
           {
             name: 'rating',
