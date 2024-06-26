@@ -8,9 +8,9 @@ export class AwsService {
 
   constructor(private config: ConfigService) {
     this.s3 = new S3({
-      accessKeyId: config.get('AWS_ACCESS_KEY'),
-      secretAccessKey: config.get('AWS_SECRET_KEY'),
-      endpoint: config.get('AWS_MINIO_DOMAIN'),
+      accessKeyId: config.get('ENV_AWS_ACCESS_KEY'),
+      secretAccessKey: config.get('ENV_AWS_SECRET_KEY'),
+      endpoint: config.get('ENV_AWS_MINIO_DOMAIN'),
       s3ForcePathStyle: true, // needed with minio?
       signatureVersion: 'v4',
     });
