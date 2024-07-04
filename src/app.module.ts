@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { UserInterceptor } from 'src/interceptors/user-interceptor.interceptor';
-import { UserSubscriber } from 'src/subcribers/user-subcriber.subcriber';
+import { UserInterceptor } from './interceptors/user-interceptor.interceptor';
+import { UserSubscriber } from './subcribers/user-subcriber.subcriber';
 import { TrimValueInterceptor } from './interceptors/trim-value.interceptor';
 import applicationModular from './modules';
 import { JwtAuthGuard } from './modules/auth/guard/jwt-auth.guard';
