@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equipment } from 'src/entities/equipment.entity';
-import { Room } from 'src/entities/room.entity';
+import { Equipment } from '../../entities/equipment.entity';
+import { Room } from '../../entities/room.entity';
 import { Repository } from 'typeorm';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import { CreateEquipmentDto, GetListEquipmentDto } from './dto';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 
 @Injectable()
 export class EquipmentService extends PageService {

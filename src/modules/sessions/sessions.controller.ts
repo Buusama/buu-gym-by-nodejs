@@ -12,9 +12,9 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { Session } from '../../entities/session.entity';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { SessionDto } from './dto';

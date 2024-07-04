@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import moment from 'moment';
-import { MemberStatusValue } from 'src/commons/enums/members/member-status';
-import { BodyMeasurement } from 'src/entities/body-measurement.entity';
-import { MemberMembership } from 'src/entities/member-membership.entity';
-import { Member } from 'src/entities/member.entity';
+import { MemberStatusValue } from '../../commons/enums/members/member-status';
+import { BodyMeasurement } from '../../entities/body-measurement.entity';
+import { MemberMembership } from '../../entities/member-membership.entity';
+import { Member } from '../../entities/member.entity';
 import { Repository } from 'typeorm';
 import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { User } from '../../entities/user.entity';
@@ -19,9 +19,9 @@ import {
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { MembershipPayment } from 'src/entities/membership-payment.entity';
-import { Transaction } from 'src/entities/transaction.entity';
-import { TransactionValue } from 'src/commons/enums/payments/transaction';
+import { MembershipPayment } from '../../entities/membership-payment.entity';
+import { Transaction } from '../../entities/transaction.entity';
+import { TransactionValue } from '../../commons/enums/payments/transaction';
 
 @Injectable()
 export class MembersService extends PageService {

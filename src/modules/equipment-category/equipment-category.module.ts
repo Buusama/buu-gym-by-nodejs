@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 import { EquipmentCategoriesController } from './equipment-category.controller';
 import { EquipmentCategoriesService } from './equipment-category.service';
 

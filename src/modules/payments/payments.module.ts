@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Transaction } from 'src/entities/transaction.entity';
-import { MembershipPayment } from 'src/entities/membership-payment.entity';
+import { Transaction } from '../../entities/transaction.entity';
+import { MembershipPayment } from '../../entities/membership-payment.entity';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 @Module({

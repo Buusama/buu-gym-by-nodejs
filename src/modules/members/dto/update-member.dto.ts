@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { UpdateUserDto } from 'src/modules/users/dto/update-user.dto';
+import { UpdateUserDto } from '../../../modules/users/dto/update-user.dto';
 
 export class UpdateMemberDto extends UpdateUserDto {
   @ApiProperty({ required: false })

@@ -11,10 +11,10 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
-import { Workout } from 'src/entities/workout.entity';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
+import { Workout } from '../../entities/workout.entity';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { CreateWorkoutDto, GetListWorkoutsDto } from './dto';
 import { WorkoutsService } from './workouts.service';

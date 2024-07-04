@@ -1,6 +1,6 @@
 import { Action } from '../enums/global-enum';
 import { SetMetadata } from '@nestjs/common';
-import { AppSubjects } from 'src/modules/casl/casl-ability.factory';
+import { AppSubjects } from '../../modules/casl/casl-ability.factory';
 
 export type Permission = {
   action: Action;

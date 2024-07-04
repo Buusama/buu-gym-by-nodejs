@@ -19,12 +19,12 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
-import { Member } from 'src/entities/member.entity';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
-import { RoleGuard } from 'src/modules/auth/guard/role.guard';
-import { imageFileFilter } from 'src/supports/helpers';
+import { RequireRole } from '../../commons/decorators/require-role.decorator';
+import { RoleValue } from '../../commons/enums/role-enum';
+import { Member } from '../../entities/member.entity';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
+import { RoleGuard } from '../../modules/auth/guard/role.guard';
+import { imageFileFilter } from '../../supports/helpers';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import {
@@ -35,8 +35,8 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { GetListMembersDto } from './dto/get-list-members.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { MembersService } from './members.service';
-import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
-import { User } from 'src/entities/user.entity';
+import { UserInRequest } from '../../commons/decorators/user-in-request.decorator';
+import { User } from '../../entities/user.entity';
 
 @ApiTags('members')
 @UseInterceptors(TransformInterceptor)

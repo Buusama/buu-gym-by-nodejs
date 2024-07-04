@@ -6,7 +6,7 @@ import {
   registerDecorator,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { BaseEnum } from 'src/commons/enums/base-enum';
+import { BaseEnum } from '../commons/enums/base-enum';
 
 @ValidatorConstraint({ name: 'enumValidator', async: true })
 @Injectable()

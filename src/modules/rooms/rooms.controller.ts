@@ -14,11 +14,11 @@ import {
 import { CreateRoomDto, GetListRoomDto } from './dto';
 import { RoomsService } from './rooms.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { RoleGuard } from '../auth/guard/role.guard';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { RequireRole } from '../../commons/decorators/require-role.decorator';
+import { RoleValue } from '../../commons/enums/role-enum';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
 
 @ApiTags('rooms')
 @UseInterceptors(TransformInterceptor)

@@ -13,13 +13,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { RoleGuard } from '../auth/guard/role.guard';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { RequireRole } from '../../commons/decorators/require-role.decorator';
+import { RoleValue } from '../../commons/enums/role-enum';
 import { EquipmentService } from './equipment.service';
 import { CreateEquipmentDto, GetListEquipmentDto } from './dto';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
 
 @ApiTags('equipments')
 @UseInterceptors(TransformInterceptor)

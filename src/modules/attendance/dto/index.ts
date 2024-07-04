@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { PageDto } from "src/modules/pagination/dto/page.dto";
+import { PageDto } from "../../../modules/pagination/dto/page.dto";
 
 export class CreateAttendanceDto  {
     @ApiProperty ()

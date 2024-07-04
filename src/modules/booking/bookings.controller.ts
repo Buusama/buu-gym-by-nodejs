@@ -11,16 +11,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
-import { User } from 'src/entities/user.entity';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { RequireRole } from '../../commons/decorators/require-role.decorator';
+import { UserInRequest } from '../../commons/decorators/user-in-request.decorator';
+import { RoleValue } from '../../commons/enums/role-enum';
+import { User } from '../../entities/user.entity';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { RoleGuard } from '../auth/guard/role.guard';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { BookingsService } from './bookings.service';
 import { CreateListBookingDto, MemberCreateBookingDto, MemberCreateListBookingDto } from './dto';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
 
 @ApiTags('bookings')
 @UseInterceptors(TransformInterceptor)

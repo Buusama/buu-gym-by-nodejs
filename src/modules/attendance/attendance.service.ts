@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Attendance } from "src/entities/attendance.entity";
+import { Attendance } from "../../entities/attendance.entity";
 import { Repository } from "typeorm";
 import { PageService } from "../pagination/page.service";
 import { CreateAttendanceDto, FindAllAttendanceDto } from "./dto";

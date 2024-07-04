@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
-import { MembershipPlan } from 'src/entities/membership-plan.entity';
+import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetListMembershipPlansDto } from './dto/get-list-membersip_plans.dto';

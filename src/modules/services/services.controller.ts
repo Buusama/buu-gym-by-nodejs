@@ -11,9 +11,9 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { Service } from '../../entities/service.entity';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { GetListServiceServiceClassesByDayDto } from './dto/get-list-services-service-classes.dto';
@@ -21,7 +21,7 @@ import { GetListServicesDto } from './dto/get-list-services.dto';
 import { ServicesService } from './services.service';
 import { createServiceDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { imageFileFilter } from 'src/supports/helpers';
+import { imageFileFilter } from '../../supports/helpers';
 
 @ApiTags('services')
 @UseInterceptors(TransformInterceptor)

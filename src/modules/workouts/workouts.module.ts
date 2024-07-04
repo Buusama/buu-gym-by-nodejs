@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkoutsController } from './workouts.controller';
-import { Workout } from 'src/entities/workout.entity';
+import { Workout } from '../../entities/workout.entity';
 import { WorkoutsService } from './workouts.service';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Workout, EquipmentCategory])],

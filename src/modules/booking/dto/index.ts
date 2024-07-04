@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDateString, IsNotEmpty, IsString, Validate } from 'class-validator';
-import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
-import { PageDto } from 'src/modules/pagination/dto/page.dto';
-import { UniqueTrainingTimesValidator } from 'src/validators/unique-training-times.validator';
+import { TypeEnumLabel } from '../../../commons/enums/sort/type-enum';
+import { PageDto } from '../../../modules/pagination/dto/page.dto';
+import { UniqueTrainingTimesValidator } from '../../../validators/unique-training-times.validator';
 
 export class CreateBookingDto {
   @ApiProperty()

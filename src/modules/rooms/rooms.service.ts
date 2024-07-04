@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
-import { Room } from 'src/entities/room.entity';
+import { Room } from '../../entities/room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetListRoomDto } from './dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
-import { Equipment } from 'src/entities/equipment.entity';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
+import { Equipment } from '../../entities/equipment.entity';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 
 @Injectable()
 export class RoomsService extends PageService {

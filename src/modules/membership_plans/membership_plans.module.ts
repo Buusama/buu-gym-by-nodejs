@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MembershipPlan } from 'src/entities/membership-plan.entity';
+import { MembershipPlan } from '../../entities/membership-plan.entity';
 import { MembershipPlansService } from './membership_plans.service';
 import { MembershipPlansController } from './membership_plans.controller';
 

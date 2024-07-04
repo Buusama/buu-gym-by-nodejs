@@ -7,12 +7,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { MemberGenderValue } from 'src/commons/enums/members/member-gender';
-import { MemberStatusValue } from 'src/commons/enums/members/member-status';
-import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
-import { Trainer } from 'src/entities/trainer.entity';
-import { PageDto } from 'src/modules/pagination/dto/page.dto';
-import { IsUnique } from 'src/validators/unique-column.validator';
+import { MemberGenderValue } from '../../../commons/enums/members/member-gender';
+import { MemberStatusValue } from '../../../commons/enums/members/member-status';
+import { TypeEnumLabel } from '../../../commons/enums/sort/type-enum';
+import { Trainer } from '../../../entities/trainer.entity';
+import { PageDto } from '../../../modules/pagination/dto/page.dto';
+import { IsUnique } from '../../../validators/unique-column.validator';
 
 export class GetListTrainersDto extends PageDto {
   @ApiProperty({ required: false, type: 'number' })

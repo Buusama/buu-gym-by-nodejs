@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { TrainersController } from './trainers.controller';
 import { TrainersService } from './trainers.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Trainer } from 'src/entities/trainer.entity';
+import { Trainer } from '../../entities/trainer.entity';
 import { AwsModule } from '../aws/aws.module';
-import { UniqueColumnValidator } from 'src/validators/unique-column.validator';
+import { UniqueColumnValidator } from '../../validators/unique-column.validator';
 @Module({
   imports: [TypeOrmModule.forFeature([Trainer]), AwsModule],
   controllers: [TrainersController],

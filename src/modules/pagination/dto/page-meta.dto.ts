@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GlobalEnum } from 'src/commons/enums/global-enum';
+import { GlobalEnum } from '../../../commons/enums/global-enum';
 
 export class PageMetaDto {
   @ApiProperty()

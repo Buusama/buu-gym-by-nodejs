@@ -4,10 +4,10 @@ import {
   AuthMatchingCredentialsDto,
 } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RoleGuard } from './guard/role.guard';
-import { User } from 'src/entities/user.entity';
+import { User } from '../../entities/user.entity';
 
 @Controller('auth')
 export class AuthController {

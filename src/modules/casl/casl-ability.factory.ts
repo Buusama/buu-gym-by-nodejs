@@ -6,8 +6,8 @@ import {
   InferSubjects,
 } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { Action } from 'src/commons/enums/global-enum';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { Action } from '../../commons/enums/global-enum';
+import { RoleValue } from '../../commons/enums/role-enum';
 import { Member } from '../../entities/member.entity';
 import { User } from '../../entities/user.entity';
 

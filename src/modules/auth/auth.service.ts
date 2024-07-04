@@ -6,7 +6,7 @@ import { AuthPayload } from './interfaces/auth-payload.interface';
 import { User } from '../../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { RoleValue } from '../../commons/enums/role-enum';
 import { Member } from '../../entities/member.entity';
 import { Staff } from '../../entities/staff.entity';
 import { Trainer } from '../../entities/trainer.entity';

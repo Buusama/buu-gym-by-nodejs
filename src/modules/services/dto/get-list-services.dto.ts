@@ -7,8 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { TypeEnumLabel } from 'src/commons/enums/sort/type-enum';
-import { PageDto } from 'src/modules/pagination/dto/page.dto';
+import { TypeEnumLabel } from '../../../commons/enums/sort/type-enum';
+import { PageDto } from '../../../modules/pagination/dto/page.dto';
 
 export class GetListServicesDto extends PageDto {
   @ApiProperty({ required: false, type: 'number' })

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Transaction } from 'typeorm';
-import { MembershipPayment } from 'src/entities/membership-payment.entity';
+import { MembershipPayment } from '../../entities/membership-payment.entity';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 
 @Injectable()

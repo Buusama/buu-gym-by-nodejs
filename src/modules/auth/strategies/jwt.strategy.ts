@@ -5,7 +5,7 @@ import { AuthPayload } from '../interfaces/auth-payload.interface';
 import { User } from '../../../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RoleValue } from 'src/commons/enums/role-enum';
+import { RoleValue } from '../../../commons/enums/role-enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'at-jwt') {

@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { TransformInterceptor } from "src/interceptors/transform.interceptor";
+import { TransformInterceptor } from "../../interceptors/transform.interceptor";
 import { RoleGuard } from "../auth/guard/role.guard";
-import { RequireRole } from "src/commons/decorators/require-role.decorator";
-import { RoleValue } from "src/commons/enums/role-enum";
+import { RequireRole } from "../../commons/decorators/require-role.decorator";
+import { RoleValue } from "../../commons/enums/role-enum";
 import { AttendanceService } from "./attendance.service";
 import { CreateAttendanceDto, FindAllAttendanceDto } from "./dto";
 

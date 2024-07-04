@@ -24,7 +24,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetListUsersDto } from './dto/get-list-users.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { imageFileFilter } from 'src/supports/helpers';
+import { imageFileFilter } from '../../supports/helpers';
 
 @ApiTags('users')
 @UseInterceptors(TransformInterceptor)

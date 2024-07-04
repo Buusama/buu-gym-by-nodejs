@@ -1,13 +1,13 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
-import { Workout } from 'src/entities/workout.entity';
+import { Workout } from '../../entities/workout.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { CreateWorkoutDto, GetListWorkoutsDto } from './dto';
-import { Trainer } from 'src/entities/trainer.entity';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
+import { Trainer } from '../../entities/trainer.entity';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 
 @Injectable()
 export class WorkoutsService extends PageService {

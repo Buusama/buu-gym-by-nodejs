@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Trainer } from 'src/entities/trainer.entity';
+import { Trainer } from '../../entities/trainer.entity';
 import { Repository } from 'typeorm';
 import { AwsService } from '../aws/aws.service';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';

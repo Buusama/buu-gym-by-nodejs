@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PageService } from '../pagination/page.service';
-import { DaysOffRequest } from 'src/entities/days-off-requests.entity';
+import { DaysOffRequest } from '../../entities/days-off-requests.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { CreateDaysOffRequestDto, GetListDaysOffRequestDto } from './dto';
-import { DaysOffRequestStatusValue } from 'src/commons/enums/days-off-request/days-off-request-status';
+import { DaysOffRequestStatusValue } from '../../commons/enums/days-off-request/days-off-request-status';
 
 @Injectable()
 export class DaysOffRequestService extends PageService {

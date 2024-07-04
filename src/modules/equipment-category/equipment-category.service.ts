@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EquipmentCategory } from 'src/entities/equipment-category.entity';
-import { Room } from 'src/entities/room.entity';
 import { Repository } from 'typeorm';
+import { EquipmentCategory } from '../../entities/equipment-category.entity';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';

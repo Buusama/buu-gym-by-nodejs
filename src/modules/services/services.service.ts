@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceTypeValue } from 'src/commons/enums/services/service-type';
-import { Service } from 'src/entities/service.entity';
-import { Session } from 'src/entities/session.entity';
+import { ServiceTypeValue } from '../../commons/enums/services/service-type';
+import { Service } from '../../entities/service.entity';
+import { Session } from '../../entities/session.entity';
 import { Brackets, Repository } from 'typeorm';
 import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';

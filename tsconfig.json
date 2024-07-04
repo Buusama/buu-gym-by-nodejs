@@ -10,11 +10,10 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"],
-      "src/*": ["src/*"]
-    },
+    // "baseUrl": ".",
+    // "paths": {
+    //   "src/*": ["src/*"]
+    // },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

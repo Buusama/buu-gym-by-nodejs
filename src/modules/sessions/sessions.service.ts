@@ -1,10 +1,10 @@
-import { Session } from "src/entities/session.entity";
+import { Session } from "../../entities/session.entity";
 import { PageService } from "../pagination/page.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { SessionDto } from "./dto";
 import { PageResponseDto } from "../pagination/dto/page-response.dto";
-import { Workout } from "src/entities/workout.entity";
+import { Workout } from "../../entities/workout.entity";
 import { ConflictException, NotFoundException } from "@nestjs/common";
 
 export class SessionsService extends PageService {

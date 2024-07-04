@@ -6,22 +6,16 @@ import {
   Patch,
   Query,
   UseFilters,
-  UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { RequireRole } from 'src/commons/decorators/require-role.decorator';
-import { RoleValue } from 'src/commons/enums/role-enum';
-import { Trainer } from 'src/entities/trainer.entity';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
-import { RoleGuard } from '../auth/guard/role.guard';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { PublicRoute } from '../../commons/decorators/public-route.decorator';
+import { Trainer } from '../../entities/trainer.entity';
+import { EntityNotFoundErrorFilter } from '../../exception_filters/entity-not-found-error.filter';
+import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { GetListTrainersDto } from './dto';
 import { TrainersService } from './trainers.service';
-import { User } from 'src/entities/user.entity';
-import { UserInRequest } from 'src/commons/decorators/user-in-request.decorator';
-import { EntityNotFoundErrorFilter } from 'src/exception_filters/entity-not-found-error.filter';
-import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 
 @ApiTags('trainers')
 @UseInterceptors(TransformInterceptor)
