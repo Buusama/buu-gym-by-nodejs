@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
   UseInterceptors,
@@ -27,7 +29,7 @@ import { PublicRoute } from 'src/commons/decorators/public-route.decorator';
 @RequireRole(RoleValue.MEMBER)
 @UseGuards(RoleGuard)
 export class BookingsController {
-  constructor(private readonly bookingsService: BookingsService) {}
+  constructor(private readonly bookingsService: BookingsService) { }
   @Post()
   async createBooking(
     @UserInRequest() user: User,
@@ -49,5 +51,21 @@ export class BookingsController {
     @UserInRequest() user: User,
   ): Promise<PageResponseDto<any>> {
     return this.bookingsService.getBookings(user);
+  }
+
+  @Delete(':id')
+  async cancelBooking(
+    @UserInRequest() user: User,
+    @Param('id') id: number,
+  ) {
+    return this.bookingsService.memberCancelBooking(user, id);
+  }
+
+  @Put(':id/confirm')
+  async confirmBooking(
+    @UserInRequest() user: User,
+    @Param('id') id: number,
+  ) {
+    return this.bookingsService.confirmBooking(user, id);
   }
 }

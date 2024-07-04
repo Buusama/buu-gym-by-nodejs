@@ -46,6 +46,7 @@ export class MembersService extends PageService {
       .then((response) => new PageResponseDto(response));
   }
 
+
   async getMembers(
     getListMembersDto: GetListMembersDto,
   ): Promise<PageResponseDto<Member>> {

@@ -10,6 +10,7 @@ import { User } from './user.entity';
 import { MembershipPlan } from './membership-plan.entity';
 import { Trainer } from './trainer.entity';
 import { Booking } from './booking.entity';
+import { Attendance } from './attendance.entity';
 @Entity('members')
 export class Member {
   @PrimaryGeneratedColumn()
@@ -37,4 +38,7 @@ export class Member {
 
   @OneToMany(() => Booking, (booking) => booking.member)
   bookings: Booking[];
+
+  @OneToMany(() => Attendance, (attendance) => attendance.member)
+  attendances: Attendance[];
 }

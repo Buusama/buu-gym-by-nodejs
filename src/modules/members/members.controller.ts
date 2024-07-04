@@ -54,7 +54,7 @@ export class MembersController {
   ): Promise<PageResponseDto<Member>> {
     return this.membersService.getMembers(getListMembersDto);
   }
-
+  
   @ApiConsumes('multipart/form-data')
   @Post()
   @RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
@@ -166,4 +166,5 @@ export class MembersController {
       return this.membersService.getMemberBodyMeasurements(Number(member_id));
     }
   }
+  
 }

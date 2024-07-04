@@ -42,7 +42,7 @@ export class BookingsService extends PageService {
     super();
   }
 
-  private async checkEquipmentAvailability(
+  async checkEquipmentAvailability(
     requiredEquipment: EquipmentCategory[],
     date: string,
     start_time: string,
@@ -50,32 +50,56 @@ export class BookingsService extends PageService {
   ): Promise<boolean> {
     const equipmentIds = requiredEquipment.map((e) => e.id);
 
-    const totalBookingEquipment = await this.bookingRepository
-      .createQueryBuilder('booking')
-      .leftJoin('booking.workout', 'workout')
-      .leftJoin('workout.equipments', 'equipment_category')
-      .where('booking.date = :date', { date })
-      .andWhere('booking.start_time < :end_time', { end_time })
-      .andWhere('booking.end_time > :start_time', { start_time })
-      .andWhere('equipment_category.id IN (:...equipmentIds)', { equipmentIds })
-      .select('equipment_category.id AS equipment_id')
-      .addSelect('COUNT(booking.id) AS total')
-      .groupBy('equipment_category.id')
-      .getRawMany();
+    //in ra các booking trong thời điểm đó
+    // const booking = await this.bookingRepository.createQueryBuilder('booking')
+    //   .where('booking.date = :date', { date })
+    //   .andWhere('booking.start_time <= :end_time', { end_time })
+    //   .andWhere('booking.end_time >= :start_time', { start_time })
+    //   .getRawMany();
+
+    // console.log("booking", booking);
+
+
+    let queryBuilder = await this.equipmentCategoryRepository
+      .createQueryBuilder('equipmentCategory')
+      .innerJoin('workout_equipments', 'we', 'we.equipment_id = equipmentCategory.id')
+      .innerJoin('workouts', 'w', 'w.id = we.workout_id')
+      .innerJoin('bookings', 'b', 'b.workout_id = w.id')
+      .where('b.date = :date', { date })
+      .andWhere('b.start_time <= :end_time', { end_time })
+      .andWhere('b.end_time >= :start_time', { start_time })
+      .groupBy('equipmentCategory.id')
+      .addSelect('equipmentCategory.id', 'equipment_id')
+      .addSelect('COUNT(b.id)', 'total');
+
+    if (equipmentIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere('equipmentCategory.id IN (:...equipmentIds)', {
+        equipmentIds,
+      });
+    }
+
+    const totalBookingEquipment = await queryBuilder.getRawMany();
+
+    // console.log("totalBookingEquipment", totalBookingEquipment);
 
     for (const equipment of requiredEquipment) {
-      const totalWorkoutBookings = totalBookingEquipment.find(
-        (e) => e.equipment_id === equipment.id,
-      )?.total || 0;
-      console.log(totalWorkoutBookings, equipment.max_capacity, equipment.equipments.length)
-      if (totalWorkoutBookings >= equipment.max_capacity * equipment.equipments.length) {
+      // console.log("equipmentId", equipment.id);
+      const total = totalBookingEquipment.find((e) => e.equipment_id === equipment.id)?.total || 0;
+      // console.log("totalBooking", total);
+      const availableEquipment = equipment.equipments.length * equipment.max_capacity - total;
+      // console.log("availableEquipment", availableEquipment);
+      if (availableEquipment <= 0) {
         return false;
       }
+
     }
+
     return true;
   }
 
-  private async getRequiredEquipment(workoutId?: number): Promise<EquipmentCategory[]> {
+
+
+  async getRequiredEquipment(workoutId?: number): Promise<EquipmentCategory[]> {
     if (workoutId) {
       return this.equipmentCategoryRepository.find({
         where: { workouts: { id: workoutId } },
@@ -270,6 +294,7 @@ export class BookingsService extends PageService {
       combinedBookings = [...combinedBookings, ...extraBookings];
     }
 
+    console.log("combinedBookings", combinedBookings);
     counter = 1;
     const formattedBookings = combinedBookings.map((booking) => {
       const dateObj = new Date(booking.date);
@@ -329,7 +354,7 @@ export class BookingsService extends PageService {
       )
       .flat();
 
-    if (formattedBookings.length < 50) {
+    if (formattedBookings.length < 50 && formattedTrainers.length > 0) {
       return new PageResponseDto({
         status: true,
         message: 'Số lượng lịch đặt quá ít',
@@ -363,81 +388,22 @@ export class BookingsService extends PageService {
   }
 
   async createListBooking(dto: CreateListBookingDto) {
-    const { memberId, startDate, endDate, trainingTimes } = dto;
-    const { serviceId } = dto;
+    const { memberId, startDate, endDate, trainingTimes, serviceId } = dto;
     const validBookings: CreateBookingDto[] = [];
     const invalidBookings: { note: string, reason: string }[] = [];
+    let temporaryIdCounter = 1000000;
 
     let currentBookingDate = moment(startDate);
     while (currentBookingDate.isSameOrBefore(moment(endDate))) {
-      for (const timeSlot of trainingTimes) {
-        const { dayOfWeek, start_time, end_time, workout, trainer } = timeSlot;
-
-        let bookingDate = moment(currentBookingDate).day(dayOfWeek);
-
-        if (bookingDate.isBefore(moment(), 'day')) {
-          bookingDate = bookingDate.add(1, 'week');
-        }
-
-        if (bookingDate.isSameOrAfter(moment(startDate)) && bookingDate.isSameOrBefore(moment(endDate))) {
-          const newBooking: CreateBookingDto = {
-            member_id: memberId,
-            service_id: serviceId,
-            date: bookingDate.format('YYYY-MM-DD'),
-            start_time: start_time,
-            end_time: end_time,
-            workout_id: workout,
-            trainer_id: trainer,
-            participants: 1,
-            payment_method: 1,
-            note: `Đặt lịch hằng tuần ${converToDayOfWeek(dayOfWeek)} lúc ${start_time}- ${end_time}`,
-          };
-
-          const [requiredEquipment, checkDuplicateBookings] = await Promise.all([
-            this.getRequiredEquipment(newBooking.workout_id),
-            this.checkDuplicateBookings(newBooking.date, newBooking.start_time, newBooking.end_time, newBooking.member_id),
-          ]);
-
-          const checkEquipmentAvailability = await this.checkEquipmentAvailability(
-            requiredEquipment,
-            newBooking.date,
-            newBooking.start_time,
-            newBooking.end_time,
-          );
-
-          if (checkEquipmentAvailability && !checkDuplicateBookings) {
-            validBookings.push(newBooking);
-          } else {
-            const reason = checkDuplicateBookings ? "Lịch đặt bị trùng lặp" : "Thiết bị không khả dụng";
-            const errorEntry = { note: newBooking.note, reason };
-            if (!invalidBookings.find(entry => entry.note === errorEntry.note && entry.reason === errorEntry.reason)) {
-              invalidBookings.push(errorEntry);
-            }
-          }
-        }
-      }
+      await this.processTrainingTimes(currentBookingDate, trainingTimes, startDate, endDate, validBookings, invalidBookings, memberId, serviceId);
 
       const weekStartDate = currentBookingDate.format('YYYY-MM-DD');
-      const weekEndDate = currentBookingDate.add(6, 'day').format('YYYY-MM-DD');
+      const weekEndDate = moment(currentBookingDate).add(6, 'day').format('YYYY-MM-DD');
 
-      // Filter extraBookings for the current week
-      const weekExtraBookings = validBookings.filter((booking) => {
-        return moment(booking.date).isBetween(weekStartDate, weekEndDate);
-      });
-      // Assign fake booking_id to extra bookings
-      weekExtraBookings.forEach((booking: any, index) => {
-        booking.id = - index;
-      });
-      // Check if trainers can be assigned for the week including valid and extra bookings
-      const checkAssignedTrainer = await this.solverSchedule(weekStartDate, weekEndDate, validBookings.concat(weekExtraBookings)).then((res: any) => {
-        return res.data.status;
-      });
+      const weekExtraBookings = this.filterExtraBookingsForWeek(validBookings, weekStartDate, weekEndDate, temporaryIdCounter);
+      temporaryIdCounter += weekExtraBookings.length;
 
-      if (!checkAssignedTrainer) {
-        throw new BadRequestException({
-          message: `Số lượng huấn luyện viên không đủ để phân công lịch đặt từ ${weekStartDate} đến ${weekEndDate}`,
-        });
-      }
+      await this.checkAssignedTrainers(weekStartDate, weekEndDate, validBookings, weekExtraBookings);
 
       currentBookingDate = currentBookingDate.add(1, 'week');
     }
@@ -449,9 +415,101 @@ export class BookingsService extends PageService {
       });
     }
 
+    validBookings.forEach((booking: any) => delete booking.id);
+
     const savedBookings = await this.bookingRepository.save(validBookings);
-    return new PageResponseDto(validBookings);
+    return new PageResponseDto(savedBookings);
   }
+
+  private async processTrainingTimes(
+    currentBookingDate: moment.Moment,
+    trainingTimes: any[],
+    startDate: string,
+    endDate: string,
+    validBookings: CreateBookingDto[],
+    invalidBookings: { note: string, reason: string }[],
+    memberId: number,
+    serviceId: number
+  ) {
+    for (const timeSlot of trainingTimes) {
+      const bookingDate = this.getBookingDate(currentBookingDate, timeSlot.dayOfWeek);
+
+      if (bookingDate.isSameOrAfter(moment(startDate)) && bookingDate.isSameOrBefore(moment(endDate))) {
+        const newBooking = this.createBooking(memberId, serviceId, bookingDate, timeSlot);
+
+        const [requiredEquipment, checkDuplicateBookings] = await Promise.all([
+          this.getRequiredEquipment(newBooking.workout_id),
+          this.checkDuplicateBookings(newBooking.date, newBooking.start_time, newBooking.end_time, newBooking.member_id),
+        ]);
+
+        const checkEquipmentAvailability = await this.checkEquipmentAvailability(
+          requiredEquipment,
+          newBooking.date,
+          newBooking.start_time,
+          newBooking.end_time,
+        );
+
+        if (checkEquipmentAvailability && !checkDuplicateBookings) {
+          validBookings.push(newBooking);
+        } else {
+          this.addInvalidBooking(newBooking, checkDuplicateBookings, invalidBookings);
+        }
+      }
+    }
+  }
+
+  private getBookingDate(currentBookingDate: moment.Moment, dayOfWeek: number) {
+    let bookingDate = moment(currentBookingDate).day(dayOfWeek);
+    if (bookingDate.isBefore(moment(), 'day')) {
+      bookingDate = bookingDate.add(1, 'week');
+    }
+    return bookingDate;
+  }
+
+  private createBooking(memberId: number, serviceId: number, bookingDate: moment.Moment, timeSlot: any) {
+    const { start_time, end_time, workout, trainer, dayOfWeek } = timeSlot;
+    return {
+      member_id: memberId,
+      service_id: serviceId,
+      date: bookingDate.format('YYYY-MM-DD'),
+      start_time,
+      end_time,
+      workout_id: workout,
+      trainer_id: trainer,
+      participants: 1,
+      payment_method: 1,
+      note: `Đặt lịch hằng tuần ${converToDayOfWeek(dayOfWeek)} lúc ${start_time}- ${end_time}`,
+    };
+  }
+
+  private addInvalidBooking(newBooking: CreateBookingDto, checkDuplicateBookings: boolean, invalidBookings: { note: string, reason: string }[]) {
+    const reason = checkDuplicateBookings ? "Lịch đặt bị trùng lặp" : "Thiết bị không khả dụng";
+    const errorEntry = { note: newBooking.note, reason };
+    if (!invalidBookings.find(entry => entry.note === errorEntry.note && entry.reason === errorEntry.reason)) {
+      invalidBookings.push(errorEntry);
+    }
+  }
+
+  private filterExtraBookingsForWeek(validBookings: CreateBookingDto[], weekStartDate: string, weekEndDate: string, temporaryIdCounter: number) {
+    const extraBookings = validBookings
+      .filter(booking => moment(booking.date).isBetween(weekStartDate, weekEndDate, null, '[]'))
+      .map((booking: any) => {
+        booking.id = ++temporaryIdCounter;
+        return booking;
+      });
+    return extraBookings;
+  }
+
+  private async checkAssignedTrainers(weekStartDate: string, weekEndDate: string, validBookings: CreateBookingDto[], weekExtraBookings: CreateBookingDto[]) {
+    const checkAssignedTrainer = await this.solverSchedule(weekStartDate, weekEndDate, validBookings.concat(weekExtraBookings)).then((res: any) => res.data.status);
+    if (!checkAssignedTrainer) {
+      throw new BadRequestException({
+        message: `Số lượng huấn luyện viên không đủ để phân công lịch đặt từ ${weekStartDate} đến ${weekEndDate}`,
+      });
+    }
+  }
+
+
 
   async memberCreateListBooking(user: User, dto: MemberCreateListBookingDto) {
     const { ...params } = dto;
@@ -494,5 +552,40 @@ export class BookingsService extends PageService {
     });
 
     return new PageResponseDto(availableTrainers);
+  }
+
+  async deleteBooking(id: number) {
+    const booking = await this.bookingRepository.findOne({
+      where: { id },
+    });
+    await this.bookingRepository.remove(booking);
+    return new PageResponseDto(booking);
+  }
+
+  async memberCancelBooking(user: User, id: number) {
+    const booking = await this.bookingRepository.findOne({
+      where: { id },
+    });
+
+    if (booking.member_id !== user.member.id) {
+      throw new ForbiddenException('Bạn không có quyền truy cập');
+    }
+
+    await this.bookingRepository.remove(booking);
+    return new PageResponseDto(booking);
+  }
+
+  async confirmBooking(user: User, id: number) {
+    const booking = await this.bookingRepository.findOne({
+      where: { id },
+    });
+
+    if (booking.member_id !== user.member.id || user.staff.trainer.id !== booking.trainer_id) {
+      throw new ForbiddenException('Bạn không có quyền truy cập');
+    }
+
+    booking.status = 1;
+    await this.bookingRepository.save(booking);
+    return new PageResponseDto(booking);
   }
 }

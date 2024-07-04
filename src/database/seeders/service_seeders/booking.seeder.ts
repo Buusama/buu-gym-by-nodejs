@@ -18,7 +18,7 @@ export default class BookingSeeder extends Seeder {
       }
 
       // Generate booking data
-      const bookingData = this.generateBookingData(workouts, members, trainers, 500);
+      const bookingData = this.generateBookingData(workouts, members, trainers, 300);
 
       // Insert booking data into the 'bookings' table
       await dataSource
@@ -83,21 +83,31 @@ export default class BookingSeeder extends Seeder {
   }
 
   private getRandomDateInCurrentMonth(month: number, year: number): Date {
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 2, 0); // Last day of the month
+    const start = new Date('2024-07-01');
+    const end = new Date('2024-07-30'); // Last day of the month
     return new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime()),
     );
   }
 
-  //return start_time , end_time
   private getRandomTimeInRange(duration: number): { start_time: string, end_time: string } {
-    const start = new Date();
-    start.setHours(8, 0, 0, 0);
-    const end = new Date();
-    end.setHours(20, 0, 0, 0);
+    const morningStart = new Date();
+    morningStart.setHours(5, 0, 0, 0);
+    const morningEnd = new Date();
+    morningEnd.setHours(7, 0, 0, 0);
+
+    const eveningStart = new Date();
+    eveningStart.setHours(17, 0, 0, 0);
+    const eveningEnd = new Date();
+    eveningEnd.setHours(18, 0, 0, 0);
+
+    const isMorning = Math.random() > 0.7;
+    const start = isMorning ? morningStart : eveningStart;
+    const end = isMorning ? morningEnd : eveningEnd;
+
     const randomStart = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
     const randomEnd = new Date(randomStart.getTime() + duration * 60000);
+
     return {
       start_time: randomStart.toTimeString().split(' ')[0],
       end_time: randomEnd.toTimeString().split(' ')[0],

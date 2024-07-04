@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -27,7 +28,7 @@ import { PageResponseDto } from '../pagination/dto/page-response.dto';
 export class AdminBookingsController {
   constructor(private readonly bookingsService: BookingsService) { }
 
-  @Post('')
+  @Post()
   async createListBooking(@Body() dto: CreateListBookingDto) {
     return this.bookingsService.createListBooking(dto);
   }
@@ -57,6 +58,10 @@ export class AdminBookingsController {
     return this.bookingsService.recommendTrainers(id);
   }
 
+  @Delete(':id')
+  async deleteBooking(@Param('id') id: number) {
+    return this.bookingsService.deleteBooking(id);
+  }
 
 
 }

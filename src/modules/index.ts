@@ -1,6 +1,8 @@
+import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { AwsModule } from './aws/aws.module';
 import { BookingsModule } from './booking/bookings.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { DaysOffRequestModule } from './days-off-requests/days_off_requests.module';
 import { EquipmentCategoryModule } from './equipment-category/equipment-category.module';
 import { EquipmentModule } from './equipment/equipment.module';
@@ -21,6 +23,7 @@ class ApplicationModular {
     return [
       UsersModule,
       AuthModule,
+      DashboardModule,
       AuditObserverModule,
       MembersModule,
       TrainersModule,
@@ -35,6 +38,7 @@ class ApplicationModular {
       EquipmentModule,
       EquipmentCategoryModule,
       SessionsModule,
+      AttendanceModule,
       // PersonalWorkoutModule,
       // PaymentsModule,
     ];

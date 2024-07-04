@@ -7,7 +7,7 @@ export default class WorkoutEquipmentSeeder extends Seeder {
     
     for (let i = 1; i <= 20; i++) {
       for (let j = 1; j <= 25; j++) {
-        if (Math.random() > 0.9) {
+        if (Math.random() > 0.7) {
           specialWorkoutEquipment.push({
             workout_id: i,
             equipment_id: j
