@@ -7,7 +7,7 @@ import { PageMetaDto } from '../pagination/dto/page-meta.dto';
 import { PageResponseDto } from '../pagination/dto/page-response.dto';
 import { PageService } from '../pagination/page.service';
 import { GetListTrainersDto } from './dto';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Injectable()
 export class TrainersService extends PageService {

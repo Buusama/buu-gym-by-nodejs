@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MemberStatusValue } from 'src/commons/enums/members/member-status';
 import { BodyMeasurement } from 'src/entities/body-measurement.entity';
 import { MemberMembership } from 'src/entities/member-membership.entity';

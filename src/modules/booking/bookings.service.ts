@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Booking } from 'src/entities/booking.entity';
 import { EquipmentCategory } from 'src/entities/equipment-category.entity';
 import { Equipment } from 'src/entities/equipment.entity';

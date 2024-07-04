@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { diskStorage } from 'multer';
 
 export function getMinuteEvery(step: number) {
