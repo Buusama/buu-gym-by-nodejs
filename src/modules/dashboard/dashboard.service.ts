@@ -99,8 +99,8 @@ export class DashboardService {
             .addSelect('user.email AS member_email')
             .addSelect('user.phone AS member_phone')
             .addSelect('COUNT(booking.id) AS booking_count')
-            .where('STR_TO_DATE(booking.date, "%Y-%m-%d") >= :firstDay', { firstDay: firstDayISO })
-            .andWhere('STR_TO_DATE(booking.date, "%Y-%m-%d") <= :lastDay', { lastDay: lastDayISO })
+            .where('booking.date >= :firstDay', { firstDay: firstDayISO })
+            .andWhere('booking.date <= :lastDay', { lastDay: lastDayISO })
             .groupBy('booking.member_id')
             .orderBy('booking_count', 'DESC')
             .limit(10)
@@ -127,7 +127,7 @@ export class DashboardService {
             .leftJoin('trainer.bookings', 'booking', 'booking.date = :currentDate AND booking.start_time <= :currentTime AND booking.end_time >= :currentTime')
             .innerJoin('trainer.staff', 'staff')
             .innerJoin('staff.user', 'user')
-            .where('JSON_CONTAINS(trainer.work_schedule, :workingDay, "$")')
+            .where('JSON_CONTAINS(trainer.work_schedule, :workingDay)')
             .andWhere('booking.id IS NULL')
             .select(['user.name', 'user.phone', 'user.email', 'trainer.staff_id', 'trainer.experience', 'trainer.specialty', 'trainer.rating'])
             .setParameters({
@@ -168,5 +168,47 @@ export class DashboardService {
         return new PageResponseDto(availableWorkouts);
     }
 
+
+    // thống kê doanh thu từng ngày trong tháng-năm 
+    async getRevenueByMonth(month: number, year: number) {
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0);
+
+        const firstDayISO = firstDay.toISOString().split('T')[0];
+        const lastDayISO = lastDay.toISOString().split('T')[0];
+
+        const query = await this.memberMembershipRepository.createQueryBuilder('member_membership')
+            .select('DAY(member_membership.start_date) AS day')
+            .addSelect('SUM(MP.price) AS sales')
+            .innerJoin(MembershipPlan, 'MP', 'member_membership.membership_plan_id = MP.id')
+            .where('member_membership.start_date >= :firstDay', { firstDay: firstDayISO })
+            .andWhere('member_membership.start_date <= :lastDay', { lastDay: lastDayISO })
+            .groupBy('DAY(member_membership.start_date)')
+            .orderBy('day')
+            .getRawMany();
+
+        return new PageResponseDto(query);
+    }
+
+    // thống kê doanh thu theo từng tháng trong năm
+    async getRevenueByYear(year: number) {
+        const firstDay = new Date(year, 0, 1);
+        const lastDay = new Date(year, 11, 31);
+
+        const firstDayISO = firstDay.toISOString().split('T')[0];
+        const lastDayISO = lastDay.toISOString().split('T')[0];
+
+        const query = await this.memberMembershipRepository.createQueryBuilder('member_membership')
+            .select('MONTH(member_membership.start_date) AS month')
+            .addSelect('SUM(MP.price) AS sales')
+            .innerJoin(MembershipPlan, 'MP', 'member_membership.membership_plan_id = MP.id')
+            .where('member_membership.start_date >= :firstDay', { firstDay: firstDayISO })
+            .andWhere('member_membership.start_date <= :lastDay', { lastDay: lastDayISO })
+            .groupBy('MONTH(member_membership.start_date)')
+            .orderBy('month')
+            .getRawMany();
+
+        return new PageResponseDto(query);
+    }
 
 }

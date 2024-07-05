@@ -54,4 +54,14 @@ export class DashboardController {
         return this.dashboardService.getAvailableWorkouts();
     }
 
+    @Get('/revenue-monthly')
+    async getRevenueByMonth(@Query('month') month: number, @Query('year') year: number){
+        return this.dashboardService.getRevenueByMonth(month, year);
+    }
+
+    @Get('/revenue-yearly')
+    async getRevenueByYear(@Query('year') year: number){
+        return this.dashboardService.getRevenueByYear(year);
+    }
+
 }
