@@ -12,7 +12,7 @@ import { CreateAttendanceDto, FindAllAttendanceDto } from "./dto";
 @ApiBearerAuth('access-token')
 @Controller('attendance')
 @UseGuards(RoleGuard)
-@RequireRole(RoleValue.ADMIN)
+@RequireRole(RoleValue.ADMIN, RoleValue.STAFF)
 export class AttendanceController {
     constructor(private readonly attendanceService: AttendanceService) { }
 

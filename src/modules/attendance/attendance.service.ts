@@ -19,20 +19,17 @@ export class AttendanceService extends PageService {
     async getAttendance(dto: FindAllAttendanceDto) {
         const query = this.paginate(this.attendanceRepository, dto);
 
-        if (dto.date) {
-            query.andWhere('date = :date', { date: dto.date });
+        if (dto.start_date && dto.end_date) {
+            query.andWhere('date BETWEEN :start_date AND :end_date', {
+                start_date: dto.start_date,
+                end_date: dto.end_date
+            });
         }
 
         if (dto.member_id) {
-            query.andWhere('member_id = :member_id', { member_id: dto.member_id });
-        }
-
-        if (dto.time_in) {
-            query.andWhere('time_in = :time_in', { time_in: dto.time_in });
-        }
-
-        if (dto.time_out) {
-            query.andWhere('time_out = :time_out', { time_out: dto.time_out });
+            query.andWhere('member_id = :member_id', {
+                member_id: dto.member_id
+            });
         }
 
         const entities = await query.getMany();

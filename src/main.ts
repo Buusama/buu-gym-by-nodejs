@@ -18,8 +18,12 @@ async function bootstrap() {
     }),
   );
   setupApiDocument(app);
-  // setupS3Configs(); // uncomment this line if you want to use AWS S3
-  app.enableCors();
+  setupS3Configs(); // uncomment this line if you want to use AWS S3
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept',
+  });
 
   await app.listen(3000);
 }

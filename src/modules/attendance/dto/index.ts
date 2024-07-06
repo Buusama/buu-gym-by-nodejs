@@ -18,14 +18,11 @@ export class CreateAttendanceDto  {
 
 export class FindAllAttendanceDto extends PageDto {
     @ApiProperty({ required: false })
-    date: Date;
+    start_date: string;
+
+    @ApiProperty({ required: false })
+    end_date: string;
 
     @ApiProperty({ required: false })
     member_id: number;
-
-    @ApiProperty({ required: false })
-    time_in: string;
-
-    @ApiProperty({ required: false })
-    time_out: string;
 }
